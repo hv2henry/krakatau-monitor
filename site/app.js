@@ -32,7 +32,7 @@ const I18N = {
     province: "Wilayah",
     position: "Posisi",
     updated: "diperbarui",
-    fetched: "diambil",
+    fetched: "Diambil",
     stale: "KEDALUWARSA",
     nationwide: "Seluruh Indonesia",
     period: "Periode",
@@ -68,7 +68,7 @@ const I18N = {
     map_note: "Peta skematik — garis pantai Natural Earth. BUKAN untuk navigasi.",
     sat_none: "Citra harian belum tersedia.",
     sec_loop: "Animasi Himawari-9 (Inframerah)",
-    src_loop: 'Sumber: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a> / JMA Himawari-9 AHI Band 13',
+    src_loop: 'Sumber: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
     loop_none: "Animasi belum tersedia (butuh ≥4 frame). Akan muncul pada build berikutnya.",
     loop_cap: "Putar untuk melihat pergerakan awan/abu. Putih = puncak awan dingin/tinggi; gelap = permukaan hangat. Garis pantai tipis + titik merah = Anak Krakatau.",
     loop_eruptions: "Tanda merah pada garis waktu = waktu erupsi menurut MAGMA/PVMBG.",
@@ -76,10 +76,9 @@ const I18N = {
     model_no_top: "Tidak ada puncak awan abu resmi hari ini — semua lapisan ditampilkan setara.",
     model_relevant: "paling relevan hari ini",
     model_traj_kind: "Garis pergerakan memakai angin prakiraan yang berubah per jam ({kind}); varian angin-tetap tersedia di forecast_model.json.",
-    src_lang_report: "Teks laporan ditampilkan apa adanya dalam bahasa Indonesia (bahasa sumber PVMBG).",
-    src_lang_vona: "Teks VONA apa adanya dari MAGMA.",
-    src_lang_vaac: "Kutipan advisori & catatan ditampilkan apa adanya dalam bahasa Inggris (bahasa sumber BoM).",
+    verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan — termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
+    star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
     loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
     loop_verified: "Waktu frame terverifikasi: grid citra 10-menit Himawari {grid} · slot citra ada di NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Klik untuk membuka tile sumber NASA frame ini (verifikasi mandiri)",
@@ -126,7 +125,7 @@ const I18N = {
     province: "Region",
     position: "Position",
     updated: "updated",
-    fetched: "fetched",
+    fetched: "Fetched",
     stale: "STALE",
     nationwide: "Indonesia-wide",
     period: "Period",
@@ -162,7 +161,7 @@ const I18N = {
     map_note: "Schematic map — Natural Earth coastlines. NOT for navigation.",
     sat_none: "Daily imagery not available yet.",
     sec_loop: "Himawari-9 Animation (Infrared)",
-    src_loop: 'Source: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a> / JMA Himawari-9 AHI Band 13',
+    src_loop: 'Source: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
     loop_none: "Animation not available yet (needs ≥4 frames). It will appear on the next build.",
     loop_cap: "Press play to watch cloud/ash motion. White = cold/high cloud tops; dark = warm surface. Thin coastline + red dot = Anak Krakatau.",
     loop_eruptions: "Red marks on the timeline = eruption times per MAGMA/PVMBG.",
@@ -170,10 +169,9 @@ const I18N = {
     model_no_top: "No official ash-cloud top today — all layers shown equally.",
     model_relevant: "most relevant today",
     model_traj_kind: "Trajectories use hourly-evolving forecast wind ({kind}); a steady-wind variant ships in forecast_model.json.",
-    src_lang_report: "Report text is verbatim Indonesian (PVMBG source language).",
-    src_lang_vona: "VONA text is verbatim from MAGMA.",
-    src_lang_vaac: "Advisory & remarks text is verbatim English (BoM source language).",
+    verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited — including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
+    star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
     loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
     loop_verified: "Frame times verified: Himawari 10-min imaging grid {grid} · imaging slot present on NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Click to open NASA's source tile for this frame (self-verification)",
@@ -287,7 +285,7 @@ function renderReport() {
   $("#card-report").innerHTML = `
     <div class="kv"><span class="k">${T("period")}</span><span class="v"><b>${esc(r.period)}</b></span></div>
     <div class="kv"><span class="k">${T("observer")}</span><span class="v">${esc(r.author || "—")}</span></div>
-    <p class="stamp">${T("src_lang_report")}</p>
+    <p class="stamp">${T("verbatim_note")}</p>
     <div class="kv"><span class="k">${T("visual")}</span><span class="v">${esc(r.visual || "—")}</span></div>
     <div class="kv"><span class="k">${T("weather")}</span><span class="v">${esc(r.climate || "—")}</span></div>
     <div class="grid2" style="margin-top:10px">
@@ -310,12 +308,11 @@ function renderEruptions() {
 
 function renderVona() {
   const list = SNAP.vona || [];
-  const head = `<p class="stamp">${T("src_lang_vona")}</p>`;
-  $("#card-vona").innerHTML = list.length ? head + `<ul class="feed">${list.map((v) => `
+  $("#card-vona").innerHTML = list.length ? `<ul class="feed">${list.map((v) => `
     <li><span class="badge sm ${esc(v.code)}">${esc(v.code)}</span>
         <span class="t" style="display:inline;margin-left:8px">${esc(v.wib || fmtWib(v.issued_utc))}</span>
       <div style="margin-top:4px">${esc(v.text || "")}</div></li>`).join("")}</ul>`
-    : head + `<p class="stamp">${T("no_vona")}</p>`;
+    : `<p class="stamp">${T("no_vona")}</p>`;
 }
 
 function layerTable(layers) {
@@ -348,7 +345,6 @@ function renderVaac() {
     ${layerTable(v.observed_layers)}
     <p class="stamp">${T("abbr_note")}</p>
     <div style="margin-top:12px">${fc}</div>
-    <p class="stamp">${T("src_lang_vaac")}</p>
     ${v.remarks ? `<div class="callout"><b>${T("remarks")}:</b> ${esc(v.remarks)}</div>` : ""}
     ${v.next_advisory_by_wib ? `<div class="kv"><span class="k">${T("next_adv")}</span><span class="v">${esc(v.next_advisory_by_wib)}</span></div>` : ""}
     <div class="grid2" style="margin-top:12px">
@@ -388,7 +384,7 @@ function renderModel() {
   }
   const rows = MODEL.layers.map((l, i) => `
     <tr><td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${BAND_COLORS[i % 6]};margin-right:7px"></span>${esc(l.layer)}
-      ${l.relevant_today ? `<span class="badge sm l3" style="margin-left:6px">${T("model_relevant")}</span>` : ""}</td>
+      ${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
       <td>${esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)}</td>
       <td><b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°) · ${l.speed_ms.toFixed(1)} m/s</td>
       <td class="stamp">R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}</td></tr>`).join("");
@@ -407,14 +403,8 @@ function renderModel() {
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
     <table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>
-    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")}</p>
-    <label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.86rem;cursor:pointer">
-      <input type="checkbox" id="model-on-map"> ${T("model_show_map")}</label>`;
-  $("#model-on-map").addEventListener("change", (e) => {
-    MAP.on.model = e.target.checked;
-    const g = MAP.groups.model;
-    if (g && MAP.el) { if (e.target.checked) g.addTo(MAP.el); else MAP.el.removeLayer(g); }
-  });
+    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")} · ${T("star_note")}</p>
+`;
   $("#model-on-map").checked = !!MAP.on.model;
 }
 
@@ -677,14 +667,15 @@ function galleryShow(i) {
       <button class="lb-n" aria-label="next">&#8250;</button>
       <div class="lb-cap"></div>`;
     document.body.appendChild(lb);
+    const closeLb = () => { lb.classList.remove("on"); document.body.style.overflow = ""; };
     lb.addEventListener("click", (e) => {
-      if (e.target === lb || e.target.classList.contains("lb-x")) lb.classList.remove("on");
+      if (e.target === lb || e.target.classList.contains("lb-x")) closeLb();
       if (e.target.classList.contains("lb-p")) galleryShow(GALLERY.idx - 1);
       if (e.target.classList.contains("lb-n")) galleryShow(GALLERY.idx + 1);
     });
     document.addEventListener("keydown", (e) => {
       if (!lb.classList.contains("on")) return;
-      if (e.key === "Escape") lb.classList.remove("on");
+      if (e.key === "Escape") { lb.classList.remove("on"); document.body.style.overflow = ""; }
       if (e.key === "ArrowLeft") galleryShow(GALLERY.idx - 1);
       if (e.key === "ArrowRight") galleryShow(GALLERY.idx + 1);
     });
@@ -693,6 +684,7 @@ function galleryShow(i) {
   lb.querySelector(".lb-cap").textContent =
     `${it.cap}  (${GALLERY.idx + 1} ${T("gal_of")} ${GALLERY.items.length})`;
   lb.classList.add("on");
+  document.body.style.overflow = "hidden";   // scroll lock while viewing
 }
 document.addEventListener("click", (e) => {
   const im = e.target.closest ? e.target.closest("img.pic") : null;
@@ -702,11 +694,11 @@ document.addEventListener("click", (e) => {
 /* ------------------------------------------------------------ boot -------- */
 function stamp() {
   if (!SNAP) return;
-  $("#chip-updated-txt").textContent = relWib(SNAP.generated_utc);
-  $("#chip-updated").title = `${T("updated")}: ${fmtWib(SNAP.generated_utc)}`;
   const ageH = (Date.now() - new Date(SNAP.generated_utc).getTime()) / 3600e3;
-  $("#chip-updated").classList.toggle("stale", ageH > 1.5);
-  $("#chip-updated").classList.toggle("ok", ageH <= 1.5);
+  $("#chip-updated-txt").textContent = `${T("fetched")} ${relWib(SNAP.generated_utc)}`;
+  $("#chip-updated-txt").title = `${T("fetched")}: ${fmtWib(SNAP.generated_utc)}`;
+  const dot = $("#upd-dot");
+  if (dot) dot.classList.toggle("stale", ageH > 1.5);
   $("#foot-stamp").textContent = `${T("updated")}: ${fmtWib(SNAP.generated_utc)} · schema v${SNAP.schema_version} · WIB = UTC+7`;
 }
 

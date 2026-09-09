@@ -57,7 +57,7 @@ GIBS_LAYERS = {"snpp": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
 SAT_BOX = (100.0, 112.0, -12.0, -1.0)   # lon0 lon1 lat0 lat1
 SAT_Z = 7
 
-CREDIT_GIBS = ("NASA GIBS / Earthdata — {sensor} Corrected Reflectance (True Color), "
+CREDIT_GIBS = ("NASA GIBS/Earthdata — {sensor} Corrected Reflectance (True Color), "
                "{date}. https://worldview.earthdata.nasa.gov")
 
 

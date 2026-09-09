@@ -51,6 +51,14 @@ header.top {
 .btn .ic { width: 15px; height: 15px; }
 .btn[aria-pressed="true"] { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
 
+/* ---------- fetch-age subbar ---------- */
+.subbar { max-width: var(--max-width-wide); margin: 0 auto; padding: 5px 18px 0;
+  display: flex; align-items: center; gap: 7px;
+  font: 500 .72rem var(--font-ui); color: var(--text-muted); }
+.subbar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lvl-1); flex: none; }
+.subbar .dot.stale { background: var(--vona-red); }
+.star { color: var(--accent); font-size: 1rem; margin-left: 6px; }
+
 /* ---------- sections / cards ---------- */
 section { margin-top: 34px; }
 .sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }

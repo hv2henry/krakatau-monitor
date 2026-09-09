@@ -378,10 +378,35 @@ def build(args) -> int:
     now = datetime.now(timezone.utc)
 
     print("[build] collecting MAGMA / PVMBG ...")
-    mon = volcano_monitor.collect(args.volcano, None, with_report=True)
+    mon, mon_err = None, None
+    if os.environ.get("KRAKATAU_TEST_MAGMA_FAIL"):
+        mon_err = RuntimeError("simulated outage")
+    else:
+        for base in ("https://magma.esdm.go.id", "https://magma.vsi.esdm.go.id"):
+            volcano_monitor.BASE = base
+            try:
+                mon = volcano_monitor.collect(args.volcano, None, with_report=True)
+                mon_err = None
+                break
+            except Exception as e:  # noqa: BLE001
+                mon_err = e
+                print(f"  [warn] {base} failed: {str(e)[:90]}", file=sys.stderr)
+    if mon is None:
+        print(f"  [degraded] MAGMA unreachable: {str(mon_err)[:90]} — publishing with last-known gaps labelled", file=sys.stderr)
+        mon = {"volcano": args.volcano, "code": "KRA", "province": "Lampung",
+               "level": None, "level_name": None, "generated_utc": None,
+               "recent_eruptions": [], "latest_vona": [], "latest_report": {},
+               "indonesia_level_counts": None, "error": str(mon_err)[:200]}
 
     print("[build] collecting Darwin VAAC ...")
-    vaac = darwin_vaac.fetch(args.volcano)
+    if os.environ.get("KRAKATAU_TEST_VAAC_FAIL"):
+        vaac = {"state": "error", "error": "simulated outage", "advisory": None}
+    else:
+        try:
+            vaac = darwin_vaac.fetch(args.volcano)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [degraded] Darwin VAAC unreachable: {str(e)[:90]}", file=sys.stderr)
+            vaac = {"state": "error", "error": str(e)[:200], "advisory": None}
 
     # ---- snapshot ---------------------------------------------------------
     rep = mon.get("latest_report") or {}
@@ -531,8 +556,15 @@ def build(args) -> int:
             print(f"  loop: {len(loop['frames'])} frames "
                   f"({loop['frames'][0]['t_wib']} -> {loop['frames'][-1]['t_wib']})")
 
+    source_errors = {}
+    if mon.get("error"):
+        source_errors["magma"] = mon["error"]
+    if vaac.get("state") == "error":
+        source_errors["darwin_vaac"] = vaac.get("error")
+
     snapshot = {
         "schema_version": 1,
+        "source_errors": source_errors,
         "generated_utc": now.isoformat(timespec="seconds").replace("+00:00", "Z"),
         "generated_wib": wib_human(now.isoformat()),
         "volcano": {"name": mon.get("volcano"), "code": mon.get("code"),
@@ -662,7 +694,14 @@ def build(args) -> int:
         print("[build] no model computed")
 
     embed_into_index(embed)
-    print("[build] done.")
+    if source_errors and len(source_errors) >= 2:
+        print("[build] ALL primary sources unreachable — keeping the previous site "
+              "instead of publishing a hollow one.", file=sys.stderr)
+        return 1
+    if source_errors:
+        print(f"[build] done (degraded: {', '.join(source_errors)} labelled on-page).")
+    else:
+        print("[build] done.")
     return 0
 
 

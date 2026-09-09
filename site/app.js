@@ -79,6 +79,9 @@ const I18N = {
     verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan — termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
+    src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
+    magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
+    vaac_unreachable: "Darwin VAAC tidak terjangkau saat pembaruan terakhir; periksa langsung bom.gov.au untuk advisori terkini.",
     loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
     loop_verified: "Waktu frame terverifikasi: grid citra 10-menit Himawari {grid} · slot citra ada di NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Klik untuk membuka tile sumber NASA frame ini (verifikasi mandiri)",
@@ -172,6 +175,9 @@ const I18N = {
     verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited — including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
+    src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
+    magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
+    vaac_unreachable: "Darwin VAAC was unreachable at the last rebuild; check bom.gov.au directly for the current advisory.",
     loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
     loop_verified: "Frame times verified: Himawari 10-min imaging grid {grid} · imaging slot present on NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Click to open NASA's source tile for this frame (self-verification)",
@@ -261,6 +267,11 @@ function applyI18n() {
 
 function renderStatus() {
   const s = SNAP.status, v = SNAP.volcano;
+  if (SNAP.error || s.level == null) {
+    $("#card-status").innerHTML = `<div class="callout warn">${T("magma_unreachable")}</div>
+      <p class="stamp">${esc(SNAP.error || s.error || "")}</p>`;
+    return;
+  }
   const lv = s.level || 0;
   $("#card-status").innerHTML = `
     <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
@@ -327,6 +338,11 @@ function layerTable(layers) {
 
 function renderVaac() {
   const v = SNAP.vaac;
+  if (v.state === "error") {
+    $("#card-vaac").innerHTML = `<div class="callout warn">${T("vaac_unreachable")}</div>
+      <p class="stamp">${esc(v.error || "")}</p>`;
+    return;
+  }
   if (v.state !== "advisory" || !v.advisory_nr) {
     $("#card-vaac").innerHTML = `<div class="callout warn"><b>${T("vaac_nil")}.</b>
       ${v.state === "stale" ? T("vaac_stale") : T("vaac_nil_body")}</div>`;
@@ -712,8 +728,20 @@ function safeRender(name, fn) {
   }
 }
 
+function renderBanner() {
+  const box = $("#src-banner");
+  if (!box) return;
+  const errs = (SNAP && SNAP.source_errors) || {};
+  const keys = Object.keys(errs);
+  if (!keys.length) { box.hidden = true; box.innerHTML = ""; return; }
+  const names = keys.map((k) => (k === "magma" ? "MAGMA/PVMBG" : "Darwin VAAC")).join(", ");
+  box.hidden = false;
+  box.innerHTML = T("src_err_banner").replace("{list}", esc(names));
+}
+
 function renderAll() {
   applyI18n();
+  safeRender("banner", renderBanner);
   safeRender("status", renderStatus);
   safeRender("report", renderReport);
   safeRender("eruptions", renderEruptions);

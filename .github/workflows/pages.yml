@@ -1,8 +1,18 @@
 name: Build & deploy dashboard
 
+# ---------------------------------------------------------------------------
+#   Automatic : every 15 minutes the job re-collects MAGMA + Darwin VAAC,
+#               re-stitches NASA imagery, and redeploys.
+#   Manual    : "Run workflow" button in the Actions tab.
+#               Tick `publish_forecast_model` to push the secondary model to
+#               the site — that checkbox IS the human-in-the-loop approval.
+#               Type your handle in `approver_name`; it is stamped on the page.
+# ---------------------------------------------------------------------------
 on:
   schedule:
     - cron: '*/15 * * * *'
+  push:                 # rebuild on any commit (also re-registers the schedule)
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       publish_forecast_model:
@@ -19,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: write   # needed ONLY so an approved model file can be committed back
   pages: write
   id-token: write
 
@@ -29,13 +39,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Dependencies
         run: |
           pip install -r requirements.txt
           pip install pillow
+
       - name: Build site data + assets
         run: |
           if [ -f src/build_site.py ]; then B=src/build_site.py; else B=build_site.py; fi
@@ -44,6 +57,7 @@ jobs:
           else
             python3 $B
           fi
+
       - name: Commit the approved model so it survives future rebuilds
         if: github.event.inputs.publish_forecast_model == 'true'
         run: |
@@ -51,7 +65,9 @@ jobs:
           git config user.email "krakatau-bot@users.noreply.github.com"
           git add site/data/forecast_model.json
           git diff --cached --quiet || { git commit -m "forecast model approved by ${{ github.event.inputs.approver_name || github.actor }}"; git push; }
+
       - uses: actions/configure-pages@v5
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site

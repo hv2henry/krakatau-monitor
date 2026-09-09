@@ -1,0 +1,45 @@
+# --- secrets: never commit these -------------------------------------------
+.env
+.env.*
+!.env.example
+!secrets.example.env
+*.token
+*.key
+credentials.json
+secrets.json
+
+# --- runtime state-----------------------------------------------------------
+state.json
+state*.json
+history.jsonl
+ash_latest.json
+cron.log
+ash.log
+
+# --- downloaded satellite data ----------------------------------------------
+sat_cache/
+*.nc
+*.bz2
+sat/*.nc
+sat/*.bz2
+
+# --- generated output --------------------------------------------------------
+dashboard.html
+ash_map.svg
+*.svg.tmp
+
+# --- python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- editors / os ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

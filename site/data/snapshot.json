@@ -1,0 +1,306 @@
+{
+ "schema_version": 1,
+ "generated_utc": "2026-09-09T08:40:01Z",
+ "generated_wib": "09 Sep 2026, 15:40 WIB",
+ "volcano": {
+  "name": "Anak Krakatau",
+  "code": "KRA",
+  "province": "Lampung",
+  "lat": -6.102,
+  "lon": 105.423
+ },
+ "status": {
+  "level": 3,
+  "level_name": "Level III (Siaga)",
+  "source": "MAGMA Indonesia / PVMBG",
+  "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
+  "fetched_utc": "2026-09-09T08:40:02Z",
+  "fetched_wib": "09 Sep 2026, 15:40 WIB",
+  "indonesia_counts": {
+   "Normal": 42,
+   "Waspada": 22,
+   "Siaga": 5,
+   "Awas": 0
+  }
+ },
+ "report": {
+  "period": "Rabu - 09 September 2026 06:00-12:00 WIB",
+  "author": "Rioboniek Situmorang",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah hingga sedang ke arah utara dan timur laut.",
+  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah utara dan timur laut. Suhu udara sekitar 26-28.6°C. Kelembaban 72-84%.",
+  "seismic_counts": {
+   "Low Frequency": 2,
+   "Vulkanik Dangkal": 1,
+   "Tremor Menerus": 1
+  },
+  "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
+  "seismogram_asset": "assets/seismogram.png",
+  "source": "MAGMA Indonesia / PVMBG",
+  "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
+  "fetched_wib": "09 Sep 2026, 15:40 WIB"
+ },
+ "eruptions": [
+  {
+   "time_label_wib": "00:47 WIB",
+   "utc": "2026-09-08T17:47:00Z",
+   "wib": "09 Sep 2026, 00:47 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Rabu, 09 September 2026, pukul 00:47 WIB. Visual letusan tidak teramati. Erupsi ini terekam di seismograf dengan amplitudo maksimum 51 mm dan durasi 28 detik.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/0e159023-abb1-11f1-a61d-005056b54356/show"
+  }
+ ],
+ "vona": [
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-09-08 04:34:00 UTC",
+   "wib": "08 Sep 2026, 11:34 WIB",
+   "text": "Eruption at 0434 UTC (1134 local). Ash-cloud is not observed. Ash-cloud is not observed..",
+   "url": "https://magma.esdm.go.id/v1/vona/22593?signature=db900e48d358430906f21bca19dc4d6743f4aa81d32146855f4e5d77dfcdb72c"
+  },
+  {
+   "code": "RED",
+   "issued_utc": "2026-09-05 02:00:00 UTC",
+   "wib": "05 Sep 2026, 09:00 WIB",
+   "text": "Eruption at 0200 UTC (0900 local). Ash-cloud is not observed. Ash-cloud is not observed..",
+   "url": "https://magma.esdm.go.id/v1/vona/22575?signature=4bce6aa9ba49588f081932c1c7f70bf9e2ec6e6159818c722d6bd692cfc19289"
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-24 08:24:00 UTC",
+   "wib": "24 Agu 2026, 15:24 WIB",
+   "text": "Eruption with volcanic ash cloud at 0824 UTC (1524 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving from north to northeast. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22420?signature=c95fefdd0ba0d7fdf09bf1f82aac1eaaa67c3ae03dec4914deb57806a0517248"
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-22 13:07:00 UTC",
+   "wib": "22 Agu 2026, 20:07 WIB",
+   "text": "Eruption with volcanic ash cloud at 1307 UTC (2007 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving from southwest, west to northwest. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22408?signature=a64979ed0fbae6179f01ceea2a2ec7fd04e88d76848c63e4dbbe6cb0e7637179"
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-17 02:22:00 UTC",
+   "wib": "17 Agu 2026, 09:22 WIB",
+   "text": "Eruption with volcanic ash cloud at 0222 UTC (0922 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving to northwest. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22355?signature=bae0a1119c89b634c60febabcaf9619d4eba0812da9da184161c40a0c0ff1d32"
+  }
+ ],
+ "vaac": {
+  "state": "advisory",
+  "advisory_nr": "2026/204",
+  "dtg_utc": "2026-09-09T05:30Z",
+  "dtg_wib": "09 Sep 2026, 12:30 WIB",
+  "age_hours": 3.2,
+  "is_current": true,
+  "eruption_details": "VA TO FL050 OBS AT 09/0510Z",
+  "info_source": "HIMAWARI-9, CVGHM",
+  "observed_layers": [
+   {
+    "base": "SFC",
+    "top": "FL050",
+    "top_km": 1.52,
+    "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km di atas permukaan laut",
+    "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km above sea level",
+    "base_human_id": "permukaan tanah (SFC)",
+    "base_human_en": "ground level (SFC)",
+    "move_toward": "W",
+    "speed_kt": 5,
+    "speed_ms": 2.6,
+    "polygon": [
+     {
+      "lat": -6.3333,
+      "lon": 105.4833
+     },
+     {
+      "lat": -6.3833,
+      "lon": 104.95
+     },
+     {
+      "lat": -5.8833,
+      "lon": 104.8833
+     },
+     {
+      "lat": -5.6667,
+      "lon": 105.3333
+     },
+     {
+      "lat": -5.9,
+      "lon": 105.6
+     }
+    ]
+   }
+  ],
+  "forecasts": {
+   "+6h": {
+    "valid_utc": "2026-09-09T11:10Z",
+    "valid_wib": "09 Sep 2026, 18:10 WIB",
+    "layers": [
+     {
+      "base": "SFC",
+      "top": "FL050",
+      "top_km": 1.52,
+      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km di atas permukaan laut",
+      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km above sea level",
+      "base_human_id": "permukaan tanah (SFC)",
+      "base_human_en": "ground level (SFC)",
+      "move_toward": null,
+      "speed_kt": null,
+      "speed_ms": null,
+      "polygon": [
+       {
+        "lat": -6.25,
+        "lon": 105.4333
+       },
+       {
+        "lat": -6.2667,
+        "lon": 104.7667
+       },
+       {
+        "lat": -5.6833,
+        "lon": 104.65
+       },
+       {
+        "lat": -5.45,
+        "lon": 105.1833
+       },
+       {
+        "lat": -5.9,
+        "lon": 105.55
+       }
+      ]
+     }
+    ]
+   },
+   "+12h": {
+    "valid_utc": "2026-09-09T17:10Z",
+    "valid_wib": "10 Sep 2026, 00:10 WIB",
+    "layers": [
+     {
+      "base": "SFC",
+      "top": "FL050",
+      "top_km": 1.52,
+      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km di atas permukaan laut",
+      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km above sea level",
+      "base_human_id": "permukaan tanah (SFC)",
+      "base_human_en": "ground level (SFC)",
+      "move_toward": null,
+      "speed_kt": null,
+      "speed_ms": null,
+      "polygon": [
+       {
+        "lat": -6.2,
+        "lon": 105.4333
+       },
+       {
+        "lat": -6.2667,
+        "lon": 104.7167
+       },
+       {
+        "lat": -5.5333,
+        "lon": 104.6
+       },
+       {
+        "lat": -5.4167,
+        "lon": 105.25
+       },
+       {
+        "lat": -6.0167,
+        "lon": 105.55
+       }
+      ]
+     }
+    ]
+   },
+   "+18h": {
+    "valid_utc": "2026-09-09T23:10Z",
+    "valid_wib": "10 Sep 2026, 06:10 WIB",
+    "layers": [
+     {
+      "base": "SFC",
+      "top": "FL050",
+      "top_km": 1.52,
+      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km di atas permukaan laut",
+      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km above sea level",
+      "base_human_id": "permukaan tanah (SFC)",
+      "base_human_en": "ground level (SFC)",
+      "move_toward": null,
+      "speed_kt": null,
+      "speed_ms": null,
+      "polygon": [
+       {
+        "lat": -6.0333,
+        "lon": 105.5167
+       },
+       {
+        "lat": -6.25,
+        "lon": 105.4167
+       },
+       {
+        "lat": -6.2833,
+        "lon": 104.7333
+       },
+       {
+        "lat": -5.7167,
+        "lon": 104.6
+       },
+       {
+        "lat": -5.5167,
+        "lon": 105.2333
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "remarks": "VA IDENTIFIABLE ON SATELLITE IMAGERY. VA HEIGHT AND FORECAST MOVEMENT BASED ON SATELLITE IMAGERY, MODEL GUIDANCE AND GROUND REPORTS.",
+  "next_advisory_by_utc": "2026-09-09T11:30Z",
+  "next_advisory_by_wib": "09 Sep 2026, 18:30 WIB",
+  "graphic_asset": "assets/vaac_graphic.png",
+  "bulletin_text": "FVAU04 ADRM 090530\nVA ADVISORY\nDTG: 20260909/0530Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/204\nINFO SOURCE: HIMAWARI-9, CVGHM\nERUPTION DETAILS: VA TO FL050 OBS AT 09/0510Z\nOBS VA DTG: 09/0510Z\nOBS VA CLD: SFC/FL050 S0620 E10529 - S0623 E10457 - S0553\nE10453 - S0540 E10520 - S0554 E10536 MOV W 05KT\nFCST VA CLD +6 HR: 09/1110Z SFC/FL050 S0615 E10526 - S0616\nE10446 - S0541 E10439 - S0527 E10511 - S0554 E10533\nFCST VA CLD +12 HR: 09/1710Z SFC/FL050 S0612 E10526 - S0616\nE10443 - S0532 E10436 - S0525 E10515 - S0601 E10533\nFCST VA CLD +18 HR: 09/2310Z SFC/FL050 S0602 E10531 - S0615\nE10525 - S0617 E10444 - S0543 E10436 - S0531 E10514\nRMK: VA IDENTIFIABLE ON SATELLITE IMAGERY.  VA HEIGHT AND\nFORECAST MOVEMENT BASED ON SATELLITE IMAGERY, MODEL GUIDANCE\nAND GROUND REPORTS.\nNXT ADVISORY: NO LATER THAN 20260909/1130Z=",
+  "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
+  "data_url": "https://www.bom.gov.au/aviation/php/process.php",
+  "via": "POST https://www.bom.gov.au/aviation/php/process.php",
+  "warning": null
+ },
+ "satellite": {
+  "snpp": {
+   "sensor": "snpp",
+   "gibs_layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
+   "date": "2026-09-08",
+   "asset": "assets/sat_snpp.jpg",
+   "bbox": [
+    100.0,
+    112.0,
+    -12.0,
+    -1.0
+   ],
+   "zoom": 7,
+   "missing_tiles": 0,
+   "credit": "NASA GIBS / Earthdata — Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-09-08. https://worldview.earthdata.nasa.gov"
+  },
+  "aqua": {
+   "sensor": "aqua",
+   "gibs_layer": "MODIS_Aqua_CorrectedReflectance_TrueColor",
+   "date": "2026-09-08",
+   "asset": "assets/sat_aqua.jpg",
+   "bbox": [
+    100.0,
+    112.0,
+    -12.0,
+    -1.0
+   ],
+   "zoom": 7,
+   "missing_tiles": 0,
+   "credit": "NASA GIBS / Earthdata — Aqua MODIS Corrected Reflectance (True Color), 2026-09-08. https://worldview.earthdata.nasa.gov"
+  }
+ },
+ "loop": null,
+ "official_links": {
+  "magma": "https://magma.esdm.go.id",
+  "pvmbg": "https://geologi.esdm.go.id",
+  "bnpb": "https://www.bnpb.go.id",
+  "bpbd_lampung": "https://bpbd.lampungprov.go.id",
+  "bpbd_banten": "https://bpbd.bantenprov.go.id",
+  "darwin_vaac": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml"
+ }
+}

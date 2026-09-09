@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Henry Beton
+Copyright (c) 2026 Anak Krakatau community monitor contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,22 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+------------------------------------------------------------------------------
+NOTE ON DATA AND OUTPUT
+
+The MIT licence above covers the CODE only. It does not license:
+
+  * the underlying hazard data, which belongs to the originating agencies and
+    is redistributed here with attribution under their open-data terms:
+      - PVMBG/Badan Geologi, Kementerian ESDM (MAGMA Indonesia)
+      - Bureau of Meteorology, Australia (Darwin VAAC) — (c) Commonwealth of
+        Australia, used with attribution
+      - JMA/NOAA (Himawari-9 products via NOAA Open Data on AWS)
+      - NASA EOSDIS GIBS/FIRMS (imagery and thermal anomalies)
+      - Natural Earth (public-domain map vectors)
+  * the derived ash-transport model output, which is an UNCONFIRMED estimate.
+    Any redistribution of it must keep the disclosure text shipped in
+    site/app.js (I18N.disclosure) and the attribution to this project.
+
+See CONTRIBUTING.md and the "Data credits & licensing" section of README.md.

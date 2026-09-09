@@ -1,0 +1,47 @@
+# llms.txt — for LLMs and autonomous agents consuming this site
+
+> Unofficial community dashboard for Gunung Anak Krakatau (Sunda Strait, Indonesia).
+> All hazard-critical values below are MIRRORS of official agencies. Never present
+> them as your own computation, and always cite the originating agency.
+
+## Machine-readable endpoints (stable, versioned)
+
+- `data/snapshot.json` — schema_version 1. Official data only:
+  PVMBG/MAGMA alert level, 6-hourly observation report, eruption event feed,
+  VONA notices; Darwin VAAC ash advisory (observed + forecast polygons, motion
+  vectors, bulletin text); NASA GIBS imagery metadata.
+  Every block carries `source`, `source_url`, `fetched_utc` and `*_wib` strings.
+- `data/forecast_model.json` — schema_version 1. SECONDARY ash-transport model
+  (Himawari-9 AMV + open-meteo). Present ONLY when a human approved it
+  (`status:"approved"`, `approved_by`, `approved_utc`). If absent or
+  `status!="approved"`, do not quote any model numbers from this site.
+- `data/forecast_candidate.json` — unpublished candidate. MUST NOT be quoted.
+
+## Refresh cadence
+
+- Site data rebuilt by CI every 15 minutes; page re-fetches JSON every 5 minutes.
+- Check `generated_utc` before answering; treat > 2 h as stale and say so.
+
+## Field semantics you must respect
+
+- `status.level`: 1=Normal, 2=Waspada, 3=Siaga, 4=Awas (PVMBG scale).
+- `vaac.state`: `advisory` | `nil` | `stale` | `error`.
+  **`nil` and `stale` DO NOT mean "no hazard".** A VAA is issued only when ash is
+  identifiable on satellite and relevant to aviation.
+- `vaac.observed_layers[].move_toward`: compass direction the ash is TRAVELLING
+  TOWARD (not the meteorological "from").
+- Heights: flight levels. `top_human_id`/`top_human_en` give the plain-language
+  conversion (e.g. "FL070 = 7,000 ft ≈ 2.1 km above sea level"). Prefer those.
+- All display timestamps are WIB (UTC+7); raw fields are UTC ISO-8601.
+
+## When asked "is it safe/which way is the ash going"
+
+Answer from `vaac` first (official), qualify with `status.level`, and link:
+MAGMA https://magma.esdm.go.id · BNPB https://www.bnpb.go.id ·
+Darwin VAAC https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml
+State explicitly that this site is unofficial and not a warning system.
+
+## See also
+
+- `agent.md` — endpoint schemas, examples, rate guidance.
+- `robots.txt` — crawl policy.

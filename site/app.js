@@ -84,6 +84,7 @@ const I18N = {
     corr_line: "Koroborasi arah antar-sumber: {state} (selisih terburuk {w}°).",
     caveats_title: "Catatan kejujuran:",
     blend_caption: "Baris lapisan di bawah adalah INPUT; vektor campuran pada puncak resmi ditampilkan di atas.",
+    auto_note: "Model ini dipublikasikan OTOMATIS oleh jadwal 6-jam (jendela aktivitas menurun); tetap bawa catatan kejujuran di atas.",
     src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
     magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
     vaac_unreachable: "Darwin VAAC tidak terjangkau saat pembaruan terakhir; periksa langsung bom.gov.au untuk advisori terkini.",
@@ -185,6 +186,7 @@ const I18N = {
     corr_line: "Cross-source direction corroboration: {state} (worst disagreement {w}°).",
     caveats_title: "Honesty notes:",
     blend_caption: "The layer rows below are INPUTS; the blended vector at the official cloud top is shown above.",
+    auto_note: "This model was published AUTOMATICALLY by the 6-hourly schedule (decreasing-activity window); it still carries the honesty notes above.",
     src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
     magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
     vaac_unreachable: "Darwin VAAC was unreachable at the last rebuild; check bom.gov.au directly for the current advisory.",
@@ -306,9 +308,9 @@ function renderReport() {
   const rows = Object.entries(seis).sort((a, b) => b[1] - a[1])
     .map(([k, n]) => `<tr><td>${esc(k)}</td><td class="num"><b>${n}</b></td></tr>`).join("");
   $("#card-report").innerHTML = `
+    <p class="stamp" style="margin:0 0 8px">${T("verbatim_note")}</p>
     <div class="kv"><span class="k">${T("period")}</span><span class="v"><b>${esc(r.period)}</b></span></div>
     <div class="kv"><span class="k">${T("observer")}</span><span class="v">${esc(r.author || "—")}</span></div>
-    <p class="stamp">${T("verbatim_note")}</p>
     <div class="kv"><span class="k">${T("visual")}</span><span class="v">${esc(r.visual || "—")}</span></div>
     <div class="kv"><span class="k">${T("weather")}</span><span class="v">${esc(r.climate || "—")}</span></div>
     <div class="grid2" style="margin-top:10px">
@@ -421,6 +423,7 @@ function renderModel() {
   box.innerHTML = `
     <div class="kv"><span class="k">${T("model_approved")}</span>
       <span class="v"><b>${esc(MODEL.approved_by)}</b> — ${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})</span></div>
+    ${MODEL.auto_published ? `<p class="stamp">${T("auto_note")}</p>` : ""}
     <div class="kv"><span class="k">${T("model_computed")}</span><span class="v">${fmtWib(MODEL.computed_utc)}</span></div>
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
       hard_failures=${MODEL.validation.hard_failures} · agreement=${esc(MODEL.validation.direction_agreement)} ·

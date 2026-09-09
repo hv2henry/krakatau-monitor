@@ -31,6 +31,7 @@ import json
 import math
 import os
 import re
+import shutil
 import ssl
 import sys
 import urllib.request
@@ -371,6 +372,58 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
 
 
 # ------------------------------------------------------------------ build
+def verdict_hard_failures(embed) -> bool:
+    """The 6h auto-publish gate: refuse unless validation found zero hard fails."""
+    vf = embed.get("validation_hard_failures")
+    return bool(vf) if vf is not None else False
+
+
+def archive_run(embed, vaac) -> None:
+    """Six-hourly memory: our model, the VAAC state, and the official chart.
+    Pruned so the repo stays light: 60 model snapshots, 40 VAAC states,
+    30 graphical advisories (one per advisory number)."""
+    base = os.path.join(SITE, "data", "archive")
+    mdir, vdir = os.path.join(base, "models"), os.path.join(base, "vaac")
+    os.makedirs(mdir, exist_ok=True)
+    os.makedirs(vdir, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%MZ")
+    cand = os.path.join(SITE, "data", "forecast_candidate.json")
+    if os.path.exists(cand):
+        shutil.copy(cand, os.path.join(mdir, f"model-{stamp}.json"))
+    vstate = {"t": stamp, "state": vaac.get("state"),
+              "advisory_nr": (vaac.get("advisory") or {}).get("advisory_nr"),
+              "dtg_utc": (vaac.get("advisory") or {}).get("dtg_utc"),
+              "observed_layers": (vaac.get("advisory") or {}).get("observed_layers"),
+              "remarks": (vaac.get("advisory") or {}).get("remarks")}
+    json.dump(vstate, open(os.path.join(vdir, f"vaac-{stamp}.json"), "w",
+                           encoding="utf-8"), ensure_ascii=False, indent=1)
+    gfx = (vaac.get("advisory") or {}).get("graphic_url")
+    nr = ((vaac.get("advisory") or {}).get("advisory_nr") or "unknown").replace("/", "-")
+    if gfx:
+        b = http(gfx, 40, 2)
+        if b:
+            open(os.path.join(vdir, f"graphic-{nr}.png"), "wb").write(b)
+    # index for humans and machines
+    models = sorted(f for f in os.listdir(mdir) if f.endswith(".json"))[-60:]
+    for f in sorted(os.listdir(mdir)):
+        if f.endswith(".json") and f not in models:
+            os.remove(os.path.join(mdir, f))
+    vstates = sorted(f for f in os.listdir(vdir) if f.startswith("vaac-"))[-40:]
+    for f in sorted(os.listdir(vdir)):
+        if f.startswith("vaac-") and f not in vstates:
+            os.remove(os.path.join(vdir, f))
+    gfxs = sorted(f for f in os.listdir(vdir) if f.startswith("graphic-"))[-30:]
+    for f in sorted(os.listdir(vdir)):
+        if f.startswith("graphic-") and f not in gfxs:
+            os.remove(os.path.join(vdir, f))
+    json.dump({"updated": stamp,
+               "models": [f"models/{f}" for f in models],
+               "vaac_states": [f"vaac/{f}" for f in vstates],
+               "vaac_graphics": [f"vaac/{f}" for f in gfxs]},
+              open(os.path.join(base, "index.json"), "w", encoding="utf-8"), indent=1)
+    print(f"[build] archived: model-{stamp}, vaac-{stamp}, graphics={len(gfxs)}")
+
+
 def build(args) -> int:
     embed = {}
     os.makedirs(os.path.join(SITE, "data"), exist_ok=True)
@@ -837,6 +890,7 @@ def build(args) -> int:
         bt_stats = {"n": len(pairs), "mean_abs_deg": round(sum(errs) / len(errs), 1),
                     "median_abs_deg": round(sorted(errs)[len(errs) // 2], 1)}
     embed["backtest"] = bt_stats
+    embed["validation_hard_failures"] = len(verdict["hard_failures"]) if "verdict" in dir() else 0
     mp = os.path.join(SITE, "data", "forecast_model.json")
     if bt_stats and os.path.exists(mp):
         try:
@@ -845,6 +899,29 @@ def build(args) -> int:
             json.dump(mj, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         except Exception:
             pass
+
+    # ---- 6-hourly auto-publish (maintainer decision for the decreasing-activity
+    # window): clean validation only, always stamped, always carrying caveats ----
+    if args.auto_publish:
+        mp = os.path.join(SITE, "data", "forecast_model.json")
+        try:
+            cand_now = json.load(open(os.path.join(SITE, "data", "forecast_candidate.json"),
+                                      encoding="utf-8"))
+        except Exception:
+            cand_now = None
+        if cand_now and not verdict_hard_failures(embed):
+            cand_now["status"] = "approved"
+            cand_now["auto_published"] = True
+            cand_now["approved_by"] = "auto:6h (" + (os.environ.get("GITHUB_ACTOR") or "ci") + ")"
+            cand_now["approved_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+            cand_now["approved_wib"] = wib_human(cand_now["approved_utc"])
+            cand_now["backtest"] = embed.get("backtest")
+            json.dump(cand_now, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            print("[build] model auto-published by 6h schedule (validation clean)")
+
+    # ---- archive: our finding + Darwin VAAC state + graphical advisory ----
+    if args.archive:
+        archive_run(embed, vaac)
 
     embed_into_index(embed)
     if source_errors and len(source_errors) >= 2:
@@ -866,6 +943,11 @@ if __name__ == "__main__":
     ap.add_argument("--no-sat", action="store_true")
     ap.add_argument("--no-loop", action="store_true")
     ap.add_argument("--loop-frames", type=int, default=12)
+    ap.add_argument("--archive", action="store_true",
+                    help="archive this run's model + Darwin VAAC state & graphical advisory")
+    ap.add_argument("--auto-publish", action="store_true",
+                    help="publish the model without a human if validation is clean "
+                         "(6-hourly schedule only; stamped auto_published)")
     ap.add_argument("--slots", type=int, default=3)
     ap.add_argument("--ash-timeout", type=int, default=600)
     ap.add_argument("--approve-forecast", action="store_true",

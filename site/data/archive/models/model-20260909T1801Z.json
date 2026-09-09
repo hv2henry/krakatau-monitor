@@ -11,7 +11,7 @@
    "magma_vona",
    "darwin_vaac"
   ],
-  "content_hash": "39968cc753f54b39"
+  "content_hash": "68444698ff898792"
  },
  "layers": [
   {
@@ -2254,7 +2254,7 @@
    "nearest_vector_km": 72.6,
    "confidence": "high",
    "uncertainty_deg": 5.0,
-   "ensemble_spread_deg": 36.1,
+   "ensemble_spread_deg": 44.1,
    "n_eff": 45.1,
    "blended_toward_deg": 155.57857575589057,
    "blended_u_ms": 1.38,
@@ -4479,7 +4479,7 @@
    "nearest_vector_km": 89.1,
    "confidence": "high",
    "uncertainty_deg": 5.0,
-   "ensemble_spread_deg": 9.0,
+   "ensemble_spread_deg": 9.1,
    "n_eff": 15.9,
    "blended_toward_deg": 125.96609547123707,
    "blended_u_ms": 3.38,
@@ -8921,8 +8921,8 @@
    "en": "Sources diverge by 45-90 degrees: neither corroborated nor squarely conflicting."
   },
   {
-   "id": "Model cuaca (ECMWF/GFS/ICON) saling berbeda hingga 36° pada sebagian lapisan.",
-   "en": "NWP models (ECMWF/GFS/ICON) disagree by up to 36 degrees on some layers."
+   "id": "Model cuaca (ECMWF/GFS/ICON) saling berbeda hingga 44° pada sebagian lapisan.",
+   "en": "NWP models (ECMWF/GFS/ICON) disagree by up to 44 degrees on some layers."
   },
   {
    "id": "Tanpa kunci FIRMS: tidak ada uji-silak hotspot independen untuk 'erupsi berlangsung'.",

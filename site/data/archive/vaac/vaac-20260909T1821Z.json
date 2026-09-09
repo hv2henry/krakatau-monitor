@@ -1,0 +1,44 @@
+{
+ "t": "20260909T1821Z",
+ "state": "advisory",
+ "advisory_nr": "2026/206",
+ "dtg_utc": "2026-09-09T17:00Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "SW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.0667,
+     "lon": 105.8667
+    },
+    {
+     "lat": -6.7,
+     "lon": 105.1167
+    },
+    {
+     "lat": -6.7,
+     "lon": 104.5667
+    },
+    {
+     "lat": -5.9333,
+     "lon": 104.8167
+    },
+    {
+     "lat": -5.6333,
+     "lon": 105.05
+    },
+    {
+     "lat": -5.6667,
+     "lon": 105.9
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT IDENTIFIABLE ON SAT IMAGERY DUE TO MET CLOUD AND DARKNESS, LAST OBS MOVING SW. VA HEIGHT AND FORECAST MOVEMENT BASED ON EARLIER SATELLITE IMAGERY, MODEL GUIDANCE AND GROUND REPORTS."
+}

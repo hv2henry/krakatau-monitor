@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "status": "approved",
+ "status": "candidate",
  "computed_utc": "2026-09-09T18:00:00+00:00",
  "computed_wib": "10 Sep 2026, 01:00 WIB",
  "validation": {
@@ -8939,11 +8939,7 @@
   "uncertainty_deg": 5.0,
   "at_km": 1.52
  },
- "backtest": {
-  "n": 2,
-  "mean_abs_deg": 67.0,
-  "median_abs_deg": 69.9
- },
+ "backtest": null,
  "plume_top": {
   "km": 1.52,
   "fl": "FL050",
@@ -8954,9 +8950,5 @@
  "sources": [
   "Himawari-9 AMV (NOAA S3, JMA product)",
   "open-meteo pressure-level winds"
- ],
- "auto_published": true,
- "approved_by": "auto:6h (hv2henry)",
- "approved_utc": "2026-09-09T18:21:53Z",
- "approved_wib": "10 Sep 2026, 01:21 WIB"
+ ]
 }

@@ -231,6 +231,17 @@ def parse_report(page: str) -> dict:
     return rep
 
 
+def vona_ash_top(text: str) -> tuple[int | None, int | None]:
+    """VONA carries a satellite/ground ash-top estimate when ash is identified:
+    'Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level'.
+    Returns (feet, metres) or (None, None)."""
+    m = re.search(r"ash-cloud top is around ([0-9,]+)\s*FT\s*\(([0-9,]+)\s*M\)",
+                  text or "", re.I)
+    if not m:
+        return None, None
+    return int(m.group(1).replace(",", "")), int(m.group(2).replace(",", ""))
+
+
 def parse_seismic_counts(text: str) -> dict:
     """Turn the prose seismic summary into {event_type: count}."""
     counts = {}
@@ -305,6 +316,9 @@ def collect(volcano: str, code: str | None, with_report: bool = True,
             vona = parse_vona(fetch(f"{BASE}/v1/vona?code={code}"))
         except Exception as e:  # noqa: BLE001  — not every volcano has a VONA feed
             vona = [{"error": str(e)}]
+        for v in vona:
+            ft, mt = vona_ash_top(v.get("text"))
+            v["ash_top_ft"], v["ash_top_m"] = ft, mt
 
     report = {}
     if with_report and match and match.get("report_url"):

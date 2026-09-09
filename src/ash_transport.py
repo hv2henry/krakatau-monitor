@@ -262,100 +262,195 @@ def circular_mean(deg: np.ndarray) -> tuple[float, float]:
     return float(np.degrees(np.arctan2(s, c)) % 360), float(np.hypot(s, c))
 
 
-def amv_profile(observations: list[dict], lat: float, lon: float, radius: float,
-                qmin: float) -> list[dict]:
-    """Bin nearby AMVs into altitude layers. Returns one row per layer."""
+LEVELS_P = [1000, 925, 850, 700, 600, 500, 400, 300]
+ENSEMBLE_MODELS = ["ecmwf_ifs025", "gfs_global", "icon_seamless"]
+K_DIFFUSIVITY = 5e3        # m2/s horizontal eddy diffusivity (ash-plume literature order)
+SETTLE_CLASSES = {"fine": 0.02, "medium": 0.12, "coarse": 0.60}   # m/s Stokes settling
+
+
+def nwp_profile(lat: float, lon: float, hours: int = 12) -> dict:
+    """One open-meteo call: winds + temperatures at 8 pressure levels, hourly,
+    plus the same wind direction from 3 independent NWP models (ensemble spread).
+    Temperatures make the pressure<->altitude conversion real (hypsometric)
+    instead of assuming an isothermal atmosphere."""
+    hourly = []
+    for p in LEVELS_P:
+        hourly += [f"wind_speed_{p}hPa", f"wind_direction_{p}hPa", f"temperature_{p}hPa"]
+    # with &models=, open-meteo returns plain keys for best_match plus
+    # model-suffixed keys for each member — do NOT request suffixed names manually
+    url = (f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+           f"&timezone=GMT&forecast_hours={hours}&hourly=" + ",".join(hourly) +
+           "&models=best_match," + ",".join(ENSEMBLE_MODELS))
+    d = json.loads(http_get(url).decode("utf-8"))
+    h = d["hourly"]
+    # with &models=, every variable is per-model suffixed; best_match is our base
+    kmh = 1.0 / 3.6 if d.get("hourly_units", {}).get("wind_speed_700hPa_best_match") == "km/h" else 1.0
+    n = len(h["time"])
+    out = {"times": h["time"], "levels": {}, "ensemble": {}, "units_km_h": bool(kmh != 1.0)}
+    for p in LEVELS_P:
+        sp_c, dd_c, tt_c = (h.get(f"wind_speed_{p}hPa_best_match") or [None] * n,
+                            h.get(f"wind_direction_{p}hPa_best_match") or [None] * n,
+                            h.get(f"temperature_{p}hPa_best_match") or [None] * n)
+        recs = []
+        for i, t in enumerate(h["time"]):
+            if sp_c[i] is None or dd_c[i] is None:
+                continue
+            spd = sp_c[i] * kmh
+            frm = dd_c[i]
+            recs.append({"t": t, "speed_ms": spd, "from_deg": frm,
+                         "u_ms": -spd * np.sin(np.radians(frm)),
+                         "v_ms": -spd * np.cos(np.radians(frm)),
+                         "temp_c": tt_c[i]})
+        out["levels"][p] = recs
+    for p in (850, 700, 500):
+        dirs = [h[f"wind_direction_{p}hPa_{m}"][0] for m in ENSEMBLE_MODELS
+                if h.get(f"wind_direction_{p}hPa_{m}")]
+        out["ensemble"][p] = dirs
+    return out
+
+
+def level_heights_km(nwp: dict) -> dict:
+    """Hypsometric integration of the model's own temperature profile:
+    dz = (Rd * Tv / g) * ln(p1/p2). Falls back to standard-atmosphere formula."""
+    temps = {}
+    for p, recs in (nwp or {}).get("levels", {}).items():
+        if recs and recs[0].get("temp_c") is not None:
+            temps[p] = recs[0]["temp_c"]
+    heights = {}
+    if len(temps) >= 3:
+        ps = sorted(temps, reverse=True)
+        z = 0.1
+        heights[ps[0]] = z
+        for a, b in zip(ps, ps[1:]):
+            tv = 273.15 + (temps[a] + temps[b]) / 2.0
+            z += (287.05 * tv / 9.81) * np.log(a / b) / 1000.0
+            heights[b] = z
+    for p in LEVELS_P:
+        if p not in heights:
+            heights[p] = 44.3308 * (1.0 - (p / 1013.25) ** 0.190284)
+    return heights
+
+
+def ensemble_spread_deg(nwp: dict, p: int) -> float | None:
+    dirs = [d for d in (nwp or {}).get("ensemble", {}).get(p, []) if d is not None]
+    if len(dirs) < 2:
+        return None
+    r = np.radians(dirs)
+    R = np.hypot(np.mean(np.sin(r)), np.mean(np.cos(r)))
+    return float(min(90.0, np.degrees(np.sqrt(-2.0 * np.log(max(R, 0.05))))))
+
+
+def wind_at(nwp: dict, heights: dict, t_idx: int, h_km: float):
+    """Interpolant of the NWP wind field at (time index, height)."""
+    ps = sorted((p for p in nwp["levels"] if nwp["levels"][p]),
+                key=lambda p: heights[p])
+    if not ps:
+        return 0.0, 0.0
+    lo = hi = None
+    for p in ps:
+        if heights[p] <= h_km:
+            lo = p
+        else:
+            hi = p
+            break
+    def rec(p):
+        rs = nwp["levels"][p]
+        return rs[t_idx] if t_idx < len(rs) else rs[-1]
+    if lo is None:
+        return rec(ps[0])["u_ms"], rec(ps[0])["v_ms"]
+    if hi is None:
+        return rec(ps[-1])["u_ms"], rec(ps[-1])["v_ms"]
+    z0, z1 = heights[lo], heights[hi]
+    w = 0.0 if z1 == z0 else (h_km - z0) / (z1 - z0)
+    r0, r1 = rec(lo), rec(hi)
+    return r0["u_ms"] * (1 - w) + r1["u_ms"] * w, r0["v_ms"] * (1 - w) + r1["v_ms"] * w
+
+
+def amv_profile(observations, lat, lon, radius, qmin, nwp=None, heights=None):
+    """Weighted band statistics. Every vector counts by how close it is to the
+    vent (Gaussian kernel, sigma 150 km) and by its own quality (QI), because a
+    vector 300 km away across the Sunda Strait is NOT the wind at the crater.
+    Also blends the NWP background wind and reports an honest uncertainty."""
     rows = []
-    bands = [(p, alt, lab) for p, alt, lab in LEVELS]
-    # define layers by pressure so they line up with the forecast levels
     edges = [(900, 1060), (750, 900), (600, 750), (450, 600), (300, 450), (100, 300)]
     labels = ["~0-1 km surface", "~1-2 km ASH-CRITICAL", "~2-4 km ASH-CRITICAL",
               "~4-6 km", "~6-9 km", "~9-16 km upper"]
+    SIGMA_KM = 150.0
     for (plo, phi), lab in zip(edges, labels):
-        agg_u, agg_v, agg_spd, dirs, qis, ees, prss, bts, srcs, dists = [], [], [], [], [], [], [], [], [], []
+        agg = []
         for o in observations:
             if not o:
                 continue
             m = ((np.abs(o["lat"] - lat) < radius) & (np.abs(o["lon"] - lon) < radius) &
                  (o["prs"] >= plo) & (o["prs"] < phi) & (o["qi"] >= qmin))
-            if not m.any():
-                continue
-            agg_u += list(o["u"][m]); agg_v += list(o["v"][m])
-            agg_spd += list(o["spd"][m]); dirs += list(o["dir"][m])
-            qis += list(o["qi"][m]); ees += list(o["ee"][m])
-            prss += list(o["prs"][m]); bts += list(o["bt"][m])
-            srcs += [o["meta"]["tag"]] * int(m.sum())
-            dists += [haversine(lat, lon, a, b) for a, b in zip(o["lat"][m], o["lon"][m])]
-        if len(agg_u) < 3:
-            rows.append({"layer": lab, "pressure_range": [plo, phi], "n": len(agg_u),
-                         "data": False})
+            for i in np.where(m)[0]:
+                d = haversine(lat, lon, float(o["lat"][i]), float(o["lon"][i]))
+                w = float(np.exp(-(d / SIGMA_KM) ** 2) * (float(o["qi"][i]) / 100.0))
+                agg.append((w, d, float(o["u"][i]), float(o["v"][i]), float(o["qi"][i])))
+        if len(agg) < 3:
+            rows.append({"layer": lab, "data": False, "n": len(agg),
+                         "pressure_range": [plo, phi]})
             continue
-        mu, mv = float(np.mean(agg_u)), float(np.mean(agg_v))
-        # Meteorological convention: u=+east, v=+north.
-        #   direction wind blows FROM = atan2(-u,-v)   (= the product's Wind_Dir)
-        #   direction ash travels TOWARD = atan2(+u,+v) = FROM + 180
-        toward = float(np.degrees(np.arctan2(mu, mv)) % 360)
-        frm, cons = circular_mean(np.array(dirs))
-        frm = float((frm + 360) % 360)
+        W = np.array([a[0] for a in agg])
+        U = np.array([a[2] for a in agg])
+        V = np.array([a[3] for a in agg])
+        uw, vw = float((W * U).sum() / W.sum()), float((W * V).sum() / W.sum())
+        unit_u = U / np.hypot(U, V)
+        unit_v = V / np.hypot(U, V)
+        R = float(np.hypot((W * unit_u).sum(), (W * unit_v).sum()) / W.sum())
+        n_eff = float(W.sum() ** 2 / (W ** 2).sum())
+        toward = float(np.degrees(np.arctan2(uw, vw)) % 360)
+        spd = float(np.hypot(uw, vw))
+        unc = float(min(60.0, max(5.0, np.degrees(np.sqrt(-2.0 * np.log(max(R, 0.05)))) / np.sqrt(max(n_eff, 1.0)))))
+        p_mid = (plo + phi) / 2
+        # NWP background at the band's pressure, t0
+        nwp_u = nwp_v = None
+        if nwp:
+            near_p = min(nwp["levels"], key=lambda p: abs(p - p_mid))
+            rs = nwp["levels"][near_p]
+            if rs:
+                nwp_u, nwp_v = rs[0]["u_ms"], rs[0]["v_ms"]
+        # transparent blend: AMV weight grows with effective sample & quality
+        qi_mean = float(np.mean([a[4] for a in agg]))
+        w_amv = min(1.0, n_eff / 10.0) * (qi_mean / 100.0)
+        w_nwp = 0.5
+        if nwp_u is not None:
+            bu = (w_amv * uw + w_nwp * nwp_u) / (w_amv + w_nwp)
+            bv = (w_amv * vw + w_nwp * nwp_v) / (w_amv + w_nwp)
+        else:
+            bu, bv = uw, vw
+        h_km = None
+        if heights:
+            near_p = min(heights, key=lambda p: abs(p - p_mid))
+            h_km = round(float(heights[near_p]), 2)
+        espread = None
+        if nwp:
+            near_p = min(nwp["levels"], key=lambda p: abs(p - p_mid))
+            espread = ensemble_spread_deg(nwp, near_p)
         rows.append({
-            "layer": lab, "pressure_range": [plo, phi], "n": len(agg_u), "data": True,
-            "speed_ms": float(np.mean(agg_spd)),
-            "u_ms": mu, "v_ms": mv,
-            "from_deg": frm, "from_compass": compass(frm),
+            "layer": lab, "data": True, "n": len(agg), "n_eff": round(n_eff, 1),
+            "pressure_range": [plo, phi],
+            "alt_km": h_km if h_km is not None else round(float(pressure_to_km(p_mid)), 2),
+            "mean_altitude_km": h_km if h_km is not None else round(float(pressure_to_km(p_mid)), 2),
+            "from_deg": float((toward + 180) % 360),
+            "from_compass": compass(float((toward + 180) % 360)),
             "toward_deg": toward, "toward_compass": compass(toward),
-            "consistency_R": round(cons, 3),
-            "confidence": _confidence(cons, len(agg_u), float(np.min(dists)) if dists else 9e9),
-            "mean_pressure_hPa": float(np.mean(prss)),
-            "mean_altitude_km": round(float(pressure_to_km(np.mean(prss))), 2),
-            "median_expected_error_ms": float(np.nanmedian(ees)),
-            "median_QI": float(np.median(qis)),
-            "mean_BT_K": float(np.nanmean(bts)),
-            "sources": sorted(set(srcs)),
-            "nearest_vector_km": round(float(np.min(dists)), 1) if dists else None,
-            "median_vector_km": round(float(np.median(dists)), 1) if dists else None,
+            "speed_ms": round(spd, 1),
+            "u_ms": round(uw, 2), "v_ms": round(vw, 2),
+            "blended_u_ms": round(bu, 2), "blended_v_ms": round(bv, 2),
+            "blended_toward_deg": float(np.degrees(np.arctan2(bu, bv)) % 360),
+            "blended_speed_ms": round(float(np.hypot(bu, bv)), 1),
+            "blend_weights": {"amv": round(w_amv, 2), "nwp": w_nwp},
+            "consistency_R": round(R, 3),
+            "uncertainty_deg": round(unc, 1),
+            "ensemble_spread_deg": round(espread, 1) if espread is not None else None,
+            "mean_qi": round(qi_mean, 1),
+            "nearest_vector_km": round(float(min(a[1] for a in agg)), 1),
+            "median_vector_km": round(float(np.median([a[1] for a in agg])), 1),
+            "confidence": ("high" if R >= 0.90 and n_eff >= 8 else
+                           "moderate" if R >= 0.70 else "LOW - vectors disagree"),
         })
     return rows
-
-
-# ---------------------------------------------------------------- open-meteo
-def open_meteo_winds(lat: float, lon: float, hours: int) -> dict:
-    """Pressure-level wind forecast. Units are km/h — converted to m/s."""
-    params = ",".join(f"wind_speed_{p}hPa,wind_direction_{p}hPa" for p, _, _ in LEVELS)
-    url = (f"{OPEN_METEO}?latitude={lat}&longitude={lon}&timezone=GMT"
-           f"&forecast_hours={hours}&hourly={params}")
-    d = json.loads(http_get(url, 45).decode())
-    h, units = d["hourly"], d.get("hourly_units", {})
-    out = {"times": h["time"], "levels": {}, "units": units,
-           "model": d.get("timezone_abbreviation"), "elevation_m": d.get("elevation")}
-    for p, alt, lab in LEVELS:
-        sp, dd = h.get(f"wind_speed_{p}hPa"), h.get(f"wind_direction_{p}hPa")
-        if not sp:
-            continue
-        k = KMH_TO_MS if units.get(f"wind_speed_{p}hPa") == "km/h" else 1.0
-        recs = []
-        for i, t in enumerate(h["time"]):
-            if sp[i] is None or dd[i] is None:
-                continue
-            s = sp[i] * k
-            frm = dd[i]
-            recs.append({"t": t, "speed_ms": s, "from_deg": frm,
-                         "u_ms": -s * np.sin(np.radians(frm)),
-                         "v_ms": -s * np.cos(np.radians(frm))})
-        out["levels"][p] = recs
-    return out
-
-
-def _parse_fc_time(s: str) -> datetime:
-    dt = datetime.strptime(s[:13], "%Y-%m-%dT%H")
-    return dt.replace(tzinfo=timezone.utc)
-
-
-def nearest_fc(om: dict, p: int, at_utc: datetime) -> dict | None:
-    """Forecast record whose valid time is closest to at_utc."""
-    recs = om.get("levels", {}).get(p)
-    if not recs:
-        return None
-    return min(recs, key=lambda r: abs((_parse_fc_time(r["t"]) - at_utc).total_seconds()))
 
 
 # ---------------------------------------------------------------- trajectories
@@ -380,6 +475,52 @@ def integrate(lat0: float, lon0: float, u_of_t, v_of_t, start: datetime,
                     "hours": round((i + 1) * dt_min / 60.0, 2),
                     "dist_km": round(haversine(lat0, lon0, lat, lon), 1)})
     return out
+
+
+def trajectory_settling(lat0, lon0, h0_km, nwp, heights, start, hours=12,
+                        dt_min=10):
+    """Advect parcels for three settling classes through the time-evolving,
+    height-interpolated NWP wind field, plus a horizontal diffusion envelope
+    sigma(t) = sqrt(2 K t). A pure advection line oversells precision; this
+    turns it into an honest envelope with only stdlib+numpy."""
+    out = {}
+    steps = int(hours * 60 / dt_min)
+    for cname, vs in SETTLE_CLASSES.items():
+        lat, lon, h = lat0, lon0, h0_km
+        pts = [{"lat": round(lat, 4), "lon": round(lon, 4), "hours": 0.0,
+                "alt_km": round(h, 2), "sigma_km": 0.0}]
+        for i in range(steps):
+            t_idx = min(i, len(nwp["times"]) - 1)
+            u, v = wind_at(nwp, heights, t_idx, max(h, 0.05))
+            dt = dt_min * 60.0
+            lat += (v * dt) / 111320.0
+            lon += (u * dt) / (111320.0 * max(np.cos(np.radians(lat)), 1e-6))
+            h = max(0.05, h - vs * dt / 1000.0)
+            t_sec = (i + 1) * dt
+            sigma = np.sqrt(2.0 * K_DIFFUSIVITY * t_sec) / 1000.0
+            pts.append({"lat": round(lat, 4), "lon": round(lon, 4),
+                        "hours": round((i + 1) * dt_min / 60.0, 2),
+                        "alt_km": round(h, 2), "sigma_km": round(sigma, 1)})
+        out[cname] = pts
+    return out
+
+
+def envelope_polygon(fine_pts):
+    """Cross-track buffer polygon from the diffusion sigma at each point."""
+    left, right = [], []
+    for i, pt in enumerate(fine_pts):
+        nxt = fine_pts[min(i + 1, len(fine_pts) - 1)]
+        prv = fine_pts[max(i - 1, 0)]
+        dlon = nxt["lon"] - prv["lon"]
+        dlat = nxt["lat"] - prv["lat"]
+        norm = np.hypot(dlon, dlat) or 1e-9
+        px, py = -dlat / norm, dlon / norm
+        sg = pt.get("sigma_km", 0.0)
+        dlat_s = sg / 111.32
+        dlon_s = sg / (111.32 * max(np.cos(np.radians(pt["lat"])), 1e-6))
+        left.append([round(pt["lon"] + px * dlon_s, 4), round(pt["lat"] + py * dlat_s, 4)])
+        right.append([round(pt["lon"] - px * dlon_s, 4), round(pt["lat"] - py * dlat_s, 4)])
+    return left + right[::-1]
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -738,38 +879,34 @@ def main() -> int:
             except Exception:
                 pass
 
-    amv_rows = amv_profile(observations, args.lat, args.lon, args.radius, args.qmin)
-
-    # --- forecast winds ---
+    # --- NWP background: winds + temperatures + 3-model ensemble, one call ---
+    nwp = None
     try:
-        om = open_meteo_winds(args.lat, args.lon, int(args.hours))
+        nwp = nwp_profile(args.lat, args.lon, int(args.hours))
     except Exception as e:  # noqa: BLE001
         print(f"[error] open-meteo: {e}", file=sys.stderr)
-        om = {"times": [], "levels": {}, "units": {}}
+    heights = level_heights_km(nwp) if nwp else {}
 
-    # --- trajectories: use observed AMV where available, else the forecast ---
-    # Two separate trajectory sets, never blended inside one path:
-    #   PRIMARY   = observed Himawari-9 wind held steady. Defensible: it is a
-    #               real measurement, and a constant-wind parcel path is easy to
-    #               reason about. Used for the exposure table and the map.
-    #   FORECAST  = open-meteo pressure-level winds evolving hour by hour.
-    #               Shown separately as "where it may go if the flow evolves".
-    traj, traj_fc = {}, {}
+    # --- weighted AMV band statistics, blended with the NWP background ---
+    amv_rows = amv_profile(observations, args.lat, args.lon, args.radius,
+                           args.qmin, nwp=nwp, heights=heights)
+
+    # --- trajectories: blended wind held steady, evolving+settling+diffusion ---
+    traj, traj_fc, traj_cls, env = {}, {}, {}, {}
     for r in amv_rows:
         if not r.get("data"):
             continue
-        u_obs, v_obs = r["u_ms"], r["v_ms"]
+        bu, bv = r["blended_u_ms"], r["blended_v_ms"]
         traj[r["layer"]] = integrate(args.lat, args.lon,
-                                     lambda t, u=u_obs: u, lambda t, v=v_obs: v,
+                                     lambda t, u=bu: u, lambda t, v=bv: v,
                                      start, args.hours)
-        p_mid = (r["pressure_range"][0] + r["pressure_range"][1]) / 2
-        fc_lvl = min(om["levels"], key=lambda p: abs(p - p_mid)) if om.get("levels") else None
-        if fc_lvl:
-            traj_fc[r["layer"]] = integrate(
-                args.lat, args.lon,
-                lambda t, _p=fc_lvl: (nearest_fc(om, _p, t) or {}).get("u_ms"),
-                lambda t, _p=fc_lvl: (nearest_fc(om, _p, t) or {}).get("v_ms"),
-                start, args.hours)
+        if nwp:
+            h0 = r.get("alt_km") or r.get("mean_altitude_km") or 1.5
+            cls = trajectory_settling(args.lat, args.lon, h0, nwp, heights,
+                                      start, hours=args.hours)
+            traj_fc[r["layer"]] = cls["fine"]
+            traj_cls[r["layer"]] = {k: v for k, v in cls.items() if k != "fine"}
+            env[r["layer"]] = envelope_polygon(cls["fine"])
 
     exp = exposure(args.lat, args.lon, traj, start, skip_km=args.skip_km)
     firms = firms_hotspots(args.firms_key, args.lat, args.lon, args.pad, args.days) if args.firms_key else {}
@@ -780,12 +917,16 @@ def main() -> int:
             "analysis_utc": start.isoformat(), "amv_slot": slot,
             "observations": [o["meta"] for o in observations],
             "observed_wind_profile": amv_rows,
-            "forecast_wind": {str(k): v[:12] for k, v in om.get("levels", {}).items()},
+            "forecast_wind": {str(k): v[:12] for k, v in (nwp or {}).get("levels", {}).items()},
+            "level_heights_km": {str(k): round(v, 2) for k, v in heights.items()},
+            "ensemble_dirs": {str(k): v for k, v in (nwp or {}).get("ensemble", {}).items()},
             "trajectories_observed": traj, "trajectories_forecast": traj_fc,
+            "trajectories_settling": traj_cls, "envelopes": env,
+            "settling_classes_ms": SETTLE_CLASSES, "diffusivity_m2_s": K_DIFFUSIVITY,
             "downwind_exposure": exp, "firms": firms,
         }, ensure_ascii=False, indent=2, default=str))
     else:
-        print(render(args, amv_rows, om, traj, start, exp, firms, traj_fc))
+        print(render(args, amv_rows, nwp or {"times": [], "levels": {}}, traj, start, exp, firms, traj_fc))
 
     if not args.no_svg and traj:
         try:

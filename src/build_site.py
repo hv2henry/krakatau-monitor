@@ -427,6 +427,7 @@ def build(args) -> int:
             open(p, "wb").write(b)
             graphic_asset = "assets/vaac_graphic.png"
 
+    snapshot_vona = []
     eruptions = []
     for e in mon.get("recent_eruptions", [])[:12]:
         eruptions.append({
@@ -441,9 +442,12 @@ def build(args) -> int:
     for v in mon.get("latest_vona", [])[:8]:
         if not v.get("issued_utc"):
             continue
-        vona.append({"code": v.get("code"), "issued_utc": v.get("issued_utc"),
-                     "wib": wib_human(v.get("issued_utc")), "text": v.get("text"),
-                     "url": v.get("url")})
+        e = {"code": v.get("code"), "issued_utc": v.get("issued_utc"),
+             "wib": wib_human(v.get("issued_utc")), "text": v.get("text"),
+             "url": v.get("url"), "ash_top_m": v.get("ash_top_m"),
+             "ash_top_ft": v.get("ash_top_ft")}
+        vona.append(e)
+        snapshot_vona.append(e)
 
     def layer_json(ly):
         return {"base": ly.get("base"), "top": ly.get("top"),
@@ -619,7 +623,8 @@ def build(args) -> int:
     if cand:
         verdict = V.validate(mon, vaac, cand.get("observed_wind_profile"),
                              {"levels": {int(k): x for k, x in cand.get("forecast_wind", {}).items()},
-                              "times": []}, volcano=args.volcano)
+                              "times": []},
+                             firms=cand.get("firms"), volcano=args.volcano)
         # Official plume-top height (Darwin VAAC observed cloud top), if any.
         # This is what decides WHICH model layers matter today: on 2026-09-08 the
         # top was ~2.1 km (low layers steer the ash); on 2026-09-05 it was
@@ -633,6 +638,92 @@ def build(args) -> int:
                              "human_id": fl_human(top_layer.get("top"), "id"),
                              "human_en": fl_human(top_layer.get("top"), "en"),
                              "source": "Darwin VAAC observed cloud top"}
+        if plume_top is None:
+            # VONA fallback: MAGMA's own ash-top estimate keeps the height anchor
+            # alive on nil/stale VAAC days (the 2026-09-08 failure mode).
+            for v in (snapshot_vona or []):
+                if v.get("ash_top_m"):
+                    km = round(v["ash_top_m"] / 1000.0, 2)
+                    plume_top = {"km": km, "fl": f"{v['ash_top_m']} M",
+                                 "human_id": f"≈ {km:.1f} km dpl",
+                                 "human_en": f"≈ {km:.1f} km asl",
+                                 "source": "VONA/MAGMA ash-top estimate",
+                                 "issued_wib": v.get("wib")}
+                    break
+
+        def _caveats(layers_list, plume_top, vaac, cand, verdict):
+            """The human report's honesty, mirrored for machine consumers."""
+            out = []
+            nearest = [l.get("nearest_vector_km") for l in layers_list
+                       if l.get("nearest_vector_km") and l.get("relevant_today")]
+            if nearest and min(nearest) > 150:
+                out.append({
+                    "id": f"Tidak ada vektor angin satelit dalam {int(min(nearest))} km dari kawah; ini aliran REGIONAL, bukan pengukuran di kawah.",
+                    "en": f"No satellite wind vector within {int(min(nearest))} km of the vent; this is REGIONAL flow, not a crater measurement."})
+            lowR = [l for l in layers_list if l.get("consistency_R") is not None
+                    and l["consistency_R"] < 0.7 and l.get("relevant_today")]
+            if lowR:
+                out.append({
+                    "id": "Vektor satelit pada lapisan relevan tidak saling sepakat (R<0.7); arah lapisan tersebut tidak pasti.",
+                    "en": "Satellite vectors in a relevant layer disagree (R<0.7); that layer's direction is uncertain."})
+            agg = (verdict or {}).get("direction_corroboration", {}).get("agreement")
+            if agg == "divergent":
+                out.append({
+                    "id": "Sumber-sumber berbeda arah 45-90° (divergen): bukan koroborasi, bukan pula konflik tegas.",
+                    "en": "Sources diverge by 45-90 degrees: neither corroborated nor squarely conflicting."})
+            if agg == "single_source":
+                out.append({
+                    "id": "Hanya satu sumber berbicara per lapisan; belum ada koroborasi independen.",
+                    "en": "Only one source speaks per layer; no independent corroboration yet."})
+            spreads = [l.get("ensemble_spread_deg") for l in layers_list
+                       if l.get("ensemble_spread_deg") and l["ensemble_spread_deg"] > 30]
+            if spreads:
+                out.append({
+                    "id": f"Model cuaca (ECMWF/GFS/ICON) saling berbeda hingga {int(max(spreads))}° pada sebagian lapisan.",
+                    "en": f"NWP models (ECMWF/GFS/ICON) disagree by up to {int(max(spreads))} degrees on some layers."})
+            if vaac.get("state") != "advisory":
+                if plume_top and "VONA" in (plume_top.get("source") or ""):
+                    out.append({
+                        "id": "Darwin VAAC nihil/kedaluwarsa; tinggi puncak memakai estimasi VONA/MAGMA.",
+                        "en": "Darwin VAAC nil/stale; cloud-top height uses the VONA/MAGMA estimate."})
+                else:
+                    out.append({
+                        "id": "Tidak ada tinggi puncak awan abu resmi hari ini; relevansi lapisan tidak ditandai.",
+                        "en": "No official ash-cloud top today; layer relevance is unflagged."})
+            if not (cand or {}).get("firms"):
+                out.append({
+                    "id": "Tanpa kunci FIRMS: tidak ada uji-silak hotspot independen untuk 'erupsi berlangsung'.",
+                    "en": "No FIRMS key set: no independent hotspot cross-check for 'eruption ongoing'."})
+            out.append({
+                "id": "Lintasan memakai angin prakiraan per jam + pengendapan 3 kelas abu + difusi; varian angin-tetap ikut disertakan.",
+                "en": "Trajectories use hourly-evolving forecast wind + 3 settling classes + diffusion; a steady-wind variant ships alongside."})
+            return out
+
+        def _plume_vector(layers_list, h_target):
+            pts = sorted(((l["alt_km"], l["blended_u_ms"], l["blended_v_ms"],
+                           l.get("uncertainty_deg") or 30)
+                          for l in layers_list
+                          if l.get("blended_u_ms") is not None and l.get("alt_km")))
+            if not pts or h_target is None:
+                return None
+            if h_target <= pts[0][0]:
+                u, v, unc = pts[0][1], pts[0][2], pts[0][3]
+            elif h_target >= pts[-1][0]:
+                u, v, unc = pts[-1][1], pts[-1][2], pts[-1][3]
+            else:
+                for a, b in zip(pts, pts[1:]):
+                    if a[0] <= h_target <= b[0]:
+                        w = (h_target - a[0]) / ((b[0] - a[0]) or 1)
+                        u = a[1] * (1 - w) + b[1] * w
+                        v = a[2] * (1 - w) + b[2] * w
+                        unc = max(a[3], b[3])
+                        break
+                else:
+                    u, v, unc = pts[-1][1], pts[-1][2], pts[-1][3]
+            return {"toward_deg": round(float(math.degrees(math.atan2(u, v)) % 360), 1),
+                    "speed_ms": round(float(math.hypot(u, v)), 1),
+                    "uncertainty_deg": round(float(unc), 1),
+                    "at_km": h_target}
 
         layers = []
         for row in cand.get("observed_wind_profile", []):
@@ -654,9 +745,20 @@ def build(args) -> int:
                 "confidence": row.get("confidence"),
                 # displayed path = hourly-evolving forecast wind when available;
                 # steady-wind variant kept for transparency and fallback
+                "uncertainty_deg": row.get("uncertainty_deg"),
+                "ensemble_spread_deg": row.get("ensemble_spread_deg"),
+                "n_eff": row.get("n_eff"),
+                "blended_toward_deg": row.get("blended_toward_deg"),
+                "blended_u_ms": row.get("blended_u_ms"),
+                "blended_v_ms": row.get("blended_v_ms"),
                 "trajectory": [[p["lat"], p["lon"], p["hours"]] for p in (tr_fc or tr_steady)],
                 "trajectory_kind": "forecast-evolving" if tr_fc else "steady-wind",
                 "trajectory_steady": [[p["lat"], p["lon"], p["hours"]] for p in tr_steady],
+                "settling_classes": {c: [[q["lat"], q["lon"], q["hours"], q["alt_km"]]
+                                         for q in pts]
+                                     for c, pts in ((cand.get("trajectories_settling") or {})
+                                                    .get(row["layer"], {}) or {}).items()},
+                "envelope": (cand.get("envelopes") or {}).get(row["layer"]),
                 "relevant_today": bool(plume_top and
                                        row["mean_altitude_km"] <= plume_top["km"] + 0.5),
             })
@@ -667,9 +769,13 @@ def build(args) -> int:
             "computed_wib": wib_human(cand.get("analysis_utc")),
             "validation": {"hard_failures": len(verdict["hard_failures"]),
                            "direction_agreement": verdict["direction_corroboration"].get("agreement"),
+                           "worst_disagreement_deg": verdict["direction_corroboration"].get("worst_disagreement_deg"),
                            "occurrence_sources": verdict["occurrence_corroboration"]["sources"],
                            "content_hash": verdict["content_hash"]},
             "layers": layers,
+            "caveats": _caveats(layers, plume_top, vaac, cand, verdict),
+            "plume_vector": _plume_vector(layers, plume_top["km"] if plume_top else None),
+            "backtest": None,
             "plume_top": plume_top,
             "sources": ["Himawari-9 AMV (NOAA S3, JMA product)", "open-meteo pressure-level winds"],
         }
@@ -692,6 +798,53 @@ def build(args) -> int:
             print(f"[build] MODEL PUBLISHED by {model['approved_by']} -> {mp}")
     else:
         print("[build] no model computed")
+
+    # ---- backtest ledger: model direction vs VAAC observed motion, per build ----
+    bt_path = os.path.join(SITE, "data", "backtest.jsonl")
+    rows = []
+    if os.path.exists(bt_path):
+        for line in open(bt_path, encoding="utf-8"):
+            try:
+                rows.append(json.loads(line))
+            except Exception:
+                pass
+    vaac_motion = None
+    if vaac.get("state") == "advisory":
+        ols = (vaac.get("advisory") or {}).get("observed_layers") or []
+        if ols:
+            comp = {"N": 0, "NE": 45, "E": 90, "SE": 135, "S": 180,
+                    "SW": 225, "W": 270, "NW": 315}
+            vaac_motion = comp.get(ols[0].get("move_toward"))
+    model_vec = None
+    try:
+        model_vec = (json.load(open(os.path.join(SITE, "data", "forecast_candidate.json"),
+                                    encoding="utf-8")) or {}).get("plume_vector")
+    except Exception:
+        model_vec = None
+    stamp_now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:00Z")
+    if model_vec and not any(r.get("t") == stamp_now for r in rows):
+        rows.append({"t": stamp_now,
+                     "model_toward": model_vec.get("toward_deg"),
+                     "model_unc": model_vec.get("uncertainty_deg"),
+                     "vaac_toward": vaac_motion})
+        with open(bt_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(rows[-1]) + "\n")
+    pairs = [r for r in rows if r.get("model_toward") is not None
+             and r.get("vaac_toward") is not None]
+    bt_stats = None
+    if pairs:
+        errs = [abs((r["model_toward"] - r["vaac_toward"] + 180) % 360 - 180) for r in pairs]
+        bt_stats = {"n": len(pairs), "mean_abs_deg": round(sum(errs) / len(errs), 1),
+                    "median_abs_deg": round(sorted(errs)[len(errs) // 2], 1)}
+    embed["backtest"] = bt_stats
+    mp = os.path.join(SITE, "data", "forecast_model.json")
+    if bt_stats and os.path.exists(mp):
+        try:
+            mj = json.load(open(mp, encoding="utf-8"))
+            mj["backtest"] = bt_stats
+            json.dump(mj, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        except Exception:
+            pass
 
     embed_into_index(embed)
     if source_errors and len(source_errors) >= 2:

@@ -79,6 +79,11 @@ const I18N = {
     verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan — termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
+    plume_vec: "Vektor abu pada puncak resmi ({h}): menuju {t}° ±{u} · {s} m/s (blend AMV+NWP)",
+    backtest_line: "Uji silak historis vs Darwin VAAC: rerata selisih sudut {m}° (n={n}).",
+    corr_line: "Koroborasi arah antar-sumber: {state} (selisih terburuk {w}°).",
+    caveats_title: "Catatan kejujuran:",
+    blend_caption: "Baris lapisan di bawah adalah INPUT; vektor campuran pada puncak resmi ditampilkan di atas.",
     src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
     magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
     vaac_unreachable: "Darwin VAAC tidak terjangkau saat pembaruan terakhir; periksa langsung bom.gov.au untuk advisori terkini.",
@@ -175,6 +180,11 @@ const I18N = {
     verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited — including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
+    plume_vec: "Ash vector at the official cloud top ({h}): toward {t}° ±{u} · {s} m/s (AMV+NWP blend)",
+    backtest_line: "Historical cross-check vs Darwin VAAC: mean angular difference {m}° (n={n}).",
+    corr_line: "Cross-source direction corroboration: {state} (worst disagreement {w}°).",
+    caveats_title: "Honesty notes:",
+    blend_caption: "The layer rows below are INPUTS; the blended vector at the official cloud top is shown above.",
     src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
     magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
     vaac_unreachable: "Darwin VAAC was unreachable at the last rebuild; check bom.gov.au directly for the current advisory.",
@@ -260,6 +270,8 @@ function applyI18n() {
   document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = T(el.dataset.i18nHtml); });
   const fl = $("#flag-icon");
   if (fl) fl.innerHTML = `<use href="#${LANG === "id" ? "f-en" : "f-id"}"/>`;
+  const lt = $("#btn-lang-txt");
+  if (lt) lt.textContent = LANG === "id" ? "EN" : "ID";
   document.title = LANG === "id"
     ? "Pantau Gunung Anak Krakatau — Dasbor Komunitas"
     : "Anak Krakatau Watch — Community Dashboard";
@@ -402,7 +414,7 @@ function renderModel() {
     <tr><td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${BAND_COLORS[i % 6]};margin-right:7px"></span>${esc(l.layer)}
       ${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
       <td>${esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)}</td>
-      <td><b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°) · ${l.speed_ms.toFixed(1)} m/s</td>
+      <td><b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}) · ${l.speed_ms.toFixed(1)} m/s</td>
       <td class="stamp">R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}</td></tr>`).join("");
   const pt = MODEL.plume_top;
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
@@ -413,6 +425,19 @@ function renderModel() {
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
       hard_failures=${MODEL.validation.hard_failures} · agreement=${esc(MODEL.validation.direction_agreement)} ·
       occurrence=[${(MODEL.validation.occurrence_sources || []).map(esc).join(", ")}]</span></div>
+    ${MODEL.plume_vector ? `<div class="callout">${T("plume_vec")
+      .replace("{h}", esc(LANG === "id" ? (pt && pt.human_id) || "?" : (pt && pt.human_en) || "?"))
+      .replace("{t}", MODEL.plume_vector.toward_deg)
+      .replace("{u}", MODEL.plume_vector.uncertainty_deg)
+      .replace("{s}", MODEL.plume_vector.speed_ms)}</div>` : ""}
+    ${MODEL.validation ? `<p class="stamp">${T("corr_line")
+      .replace("{state}", esc(MODEL.validation.direction_agreement || "?"))
+      .replace("{w}", MODEL.validation.worst_disagreement_deg != null ? MODEL.validation.worst_disagreement_deg : "?")}</p>` : ""}
+    ${MODEL.caveats && MODEL.caveats.length ? `<div class="stamp"><b>${T("caveats_title")}</b><ul style="margin:4px 0 0 18px;padding:0">` +
+      MODEL.caveats.map((c) => `<li>${esc(LANG === "id" ? c.id : c.en)}</li>`).join("") + `</ul></div>` : ""}
+    ${MODEL.plume_vector ? `<p class="stamp">${T("blend_caption")}</p>` : ""}
+    ${MODEL.backtest ? `<p class="stamp">${T("backtest_line")
+      .replace("{m}", MODEL.backtest.mean_abs_deg).replace("{n}", MODEL.backtest.n)}</p>` : ""}
     ${pt ? `<div class="callout"><b>${T("model_plume_top")}:</b>
       ${esc(LANG === "id" ? pt.human_id : pt.human_en)} — ${esc(pt.source)}</div>`
       : `<p class="stamp">${T("model_no_top")}</p>`}
@@ -421,7 +446,6 @@ function renderModel() {
     <tbody>${rows}</tbody></table>
     <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")} · ${T("star_note")}</p>
 `;
-  $("#model-on-map").checked = !!MAP.on.model;
 }
 
 /* ------------------------------------------------------- himawari loop ---- */
@@ -631,16 +655,44 @@ function rebuildMapLayers() {
   if (MODEL && MODEL.status === "approved") {
     const ls = (MODEL.layers || []).filter((l) => l.trajectory && l.trajectory.length > 1);
     if (ls.length) {
-      const g = L.layerGroup(ls.map((l, i) => {
+      const parts = [];
+      const pv = MODEL.plume_vector;
+      if (pv && pv.uncertainty_deg) {
+        // direction wedge: the honest shape of an uncertain forecast
+        const R = 1.2;
+        const a0 = (pv.toward_deg - pv.uncertainty_deg - 90) * Math.PI / 180;
+        const a1 = (pv.toward_deg + pv.uncertainty_deg - 90) * Math.PI / 180;
+        const pts2 = [[VENT[0], VENT[1]]];
+        for (let k = 0; k <= 12; k++) {
+          const a = a0 + ((a1 - a0) * k) / 12;
+          const east = Math.sin(a) * R, north = Math.cos(a) * R;
+          pts2.push([VENT[0] + north, VENT[1] + east]);
+        }
+        parts.push(L.polygon(pts2, { color: "#9B2B1A", weight: 1, fillColor: "#9B2B1A",
+          fillOpacity: 0.10, dashArray: "3 3" })
+          .bindTooltip(`${T("plume_vec").split(":")[0]}: ${pv.toward_deg}° ±${pv.uncertainty_deg}°`));
+      }
+      ls.forEach((l, i) => {
         const c = BAND_COLORS[i % 6];
         const e = l.trajectory[l.trajectory.length - 1];
-        return L.layerGroup([
-          L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]), { color: c, weight: 2.6, opacity: 0.9 })
-            .bindTooltip(`${l.layer} → ${l.toward_compass} ${l.toward_deg.toFixed(0)}°`),
-          L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
-            .bindTooltip(`+${e[2]}h · ${l.layer}`),
-        ]);
-      }));
+        parts.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
+          { color: c, weight: 2.6, opacity: 0.9 })
+          .bindTooltip(`${l.layer} → ${l.toward_compass} ${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}`));
+        parts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
+          .bindTooltip(`+${e[2]}h · ${l.layer}`));
+        if (l.envelope && l.envelope.length > 2) {
+          parts.push(L.polygon(l.envelope, { color: c, weight: 0.8, fillColor: c,
+            fillOpacity: 0.07, dashArray: "2 4" })
+            .bindTooltip(`${l.layer}: diffusion envelope (K=5×10³ m²/s)`));
+        }
+        Object.entries(l.settling_classes || {}).forEach(([cn, pts]) => {
+          const ce = pts[pts.length - 1];
+          parts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
+            fillColor: "#fff", fillOpacity: 0.9 })
+            .bindTooltip(`${cn} ash settles here (+${ce[2]}h, ${ce[3]} km)`));
+        });
+      });
+      const g = L.layerGroup(parts);
       g._krkKey = "model";
       MAP.groups.model = g;
       named[T("map_model")] = g;
@@ -657,8 +709,6 @@ function mapFallback() {
 
 function ensureMap() {
   if (MAP.el) rebuildMapLayers(); else initMap();
-  const note = $("#map-note");
-  if (note) note.textContent = T("map_note");
 }
 
 /* ------------------------------------------------------------ lightbox ---- */
@@ -710,11 +760,6 @@ document.addEventListener("click", (e) => {
 /* ------------------------------------------------------------ boot -------- */
 function stamp() {
   if (!SNAP) return;
-  const ageH = (Date.now() - new Date(SNAP.generated_utc).getTime()) / 3600e3;
-  $("#chip-updated-txt").textContent = `${T("fetched")} ${relWib(SNAP.generated_utc)}`;
-  $("#chip-updated-txt").title = `${T("fetched")}: ${fmtWib(SNAP.generated_utc)}`;
-  const dot = $("#upd-dot");
-  if (dot) dot.classList.toggle("stale", ageH > 1.5);
   $("#foot-stamp").textContent = `${T("updated")}: ${fmtWib(SNAP.generated_utc)} · schema v${SNAP.schema_version} · WIB = UTC+7`;
 }
 

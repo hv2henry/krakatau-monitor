@@ -208,6 +208,18 @@ def gate_sanity_monitor(data: dict) -> list[Check]:
 
 def gate_sanity_amv(profile: list[dict]) -> list[Check]:
     out = []
+    data_rows = [r for r in profile if r.get("data")]
+    # transparent physical outlier rule (no black-box detectors): a band whose
+    # mean speed exceeds 2x both neighbours, or the 60 m/s physical bound, is
+    # flagged warn so a human eye lands on it before publication.
+    for i, r in enumerate(data_rows):
+        nb = [data_rows[j]["speed_ms"] for j in (i - 1, i + 1) if 0 <= j < len(data_rows)]
+        if nb and r["speed_ms"] > 2 * max(nb) and r["speed_ms"] > 15:
+            out.append(Check("sanity", f"amv:{r['layer']}:band_outlier", False,
+                             f"speed {r['speed_ms']} m/s > 2x neighbours {nb}", "warn"))
+        if r["speed_ms"] > 60:
+            out.append(Check("sanity", f"amv:{r['layer']}:physical_bound", False,
+                             f"speed {r['speed_ms']} m/s exceeds 60 m/s bound", "fail"))
     for r in profile:
         if not r.get("data"):
             continue
@@ -307,10 +319,15 @@ def corroborate_direction(bands: dict, near_band: tuple[float, float] = (0.5, 4.
         })
     crit = [b for b in report["bands"] if b["in_ash_window"]]
     if crit:
+        report["worst_disagreement_deg"] = max(b["worst_disagreement_deg"] for b in crit)
         if any(b["conflicting"] for b in crit):
             report["agreement"] = "conflicting"
         elif any(b["corroborated"] for b in crit):
             report["agreement"] = "corroborated"
+        elif report["worst_disagreement_deg"] > CORR_ANGLE_OK:
+            # 45-89 degrees: two sources spoke and mildly disagreed. Calling this
+            # "single_source" would misdescribe it; hence the fourth state.
+            report["agreement"] = "divergent"
         else:
             report["agreement"] = "single_source"
     return report

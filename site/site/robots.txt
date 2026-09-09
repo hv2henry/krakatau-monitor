@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-# Machine readers: prefer the structured endpoints over scraping HTML.
-# See llms.txt and agent.md for schemas and semantics.
-# The origin agencies (magma.esdm.go.id, bom.gov.au) are government services
-# under load during eruptions — keep your crawl of them >= 15 min apart.

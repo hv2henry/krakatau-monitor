@@ -34,7 +34,7 @@
   conversion (e.g. "FL070 = 7,000 ft ≈ 2.1 km above sea level"). Prefer those.
 - All display timestamps are WIB (UTC+7); raw fields are UTC ISO-8601.
 
-## When asked "is it safe/which way is the ash going"
+## When asked "is it safe / which way is the ash going"
 
 Answer from `vaac` first (official), qualify with `status.level`, and link:
 MAGMA https://magma.esdm.go.id · BNPB https://www.bnpb.go.id ·

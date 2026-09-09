@@ -76,6 +76,14 @@ const I18N = {
     model_no_top: "Tidak ada puncak awan abu resmi hari ini — semua lapisan ditampilkan setara.",
     model_relevant: "paling relevan hari ini",
     model_traj_kind: "Garis pergerakan memakai angin prakiraan yang berubah per jam ({kind}); varian angin-tetap tersedia di forecast_model.json.",
+    src_lang_report: "Teks laporan ditampilkan apa adanya dalam bahasa Indonesia (bahasa sumber PVMBG).",
+    src_lang_vaac: "Kutipan advisori & catatan ditampilkan apa adanya dalam bahasa Inggris (bahasa sumber BoM).",
+    abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
+    loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
+    loop_verified: "Waktu frame terverifikasi: grid citra 10-menit Himawari {grid} · slot citra ada di NOAA S3 {noaa} ({slot}).",
+    loop_verify_hint: "Klik untuk membuka tile sumber NASA frame ini (verifikasi mandiri)",
+    map_need_network: "Peta interaktif butuh koneksi internet (tile © OpenStreetMap). Data poligon tetap dapat dibaca mesin di data/snapshot.json.",
+    gal_of: "dari",
     sat_open: "Buka peta interaktif FIRMS untuk tanggal ini",
     model_unpub_t: "Model belum dipublikasikan",
     model_unpub_b: "Model arah abu dihitung otomatis dari angin satelit Himawari-9 dan prakiraan open-meteo, tetapi hanya tayang setelah <b>disetujui oleh manusia</b> dan lolos validasi. Saat ini belum ada versi yang dipublikasikan.",
@@ -161,6 +169,14 @@ const I18N = {
     model_no_top: "No official ash-cloud top today — all layers shown equally.",
     model_relevant: "most relevant today",
     model_traj_kind: "Trajectories use hourly-evolving forecast wind ({kind}); a steady-wind variant ships in forecast_model.json.",
+    src_lang_report: "Report text is verbatim Indonesian (PVMBG source language).",
+    src_lang_vaac: "Advisory & remarks text is verbatim English (BoM source language).",
+    abbr_note: "asl = above sea level · ft = feet · km = kilometres",
+    loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
+    loop_verified: "Frame times verified: Himawari 10-min imaging grid {grid} · imaging slot present on NOAA S3 {noaa} ({slot}).",
+    loop_verify_hint: "Click to open NASA's source tile for this frame (self-verification)",
+    map_need_network: "The interactive map needs an internet connection (tiles © OpenStreetMap). Polygon data remains machine-readable at data/snapshot.json.",
+    gal_of: "of",
     sat_open: "Open the FIRMS interactive map for this date",
     model_unpub_t: "Model not published",
     model_unpub_b: "The ash-direction model is computed automatically from Himawari-9 and open-meteo, but only appears after a <b>human approves</b> it and it passes validation. No published version right now.",
@@ -215,10 +231,9 @@ function flHuman(fl) {
   const feet = +m[1] * 100, km = feet * 0.3048 / 1000;
   return `${fl} = ${feet.toLocaleString(LANG === "id" ? "id-ID" : "en-US")} ft ≈ ${km.toFixed(1)} km`;
 }
-const COMPASS = { N: { id: "U", en: "N" }, NE: { id: "TL", en: "NE" }, E: { id: "T", en: "E" },
-  SE: { id: "TG", en: "SE" }, S: { id: "S", en: "S" }, SW: { id: "BD", en: "SW" },
-  W: { id: "B", en: "W" }, NW: { id: "BL", en: "NW" } };
-const cmp = (c) => (COMPASS[c] ? COMPASS[c][LANG] : c);
+/* Compass points stay ENGLISH in both languages (maintainer decision):
+   16-point names like WNW have no tidy ID equivalent, and mixing half-translated
+   compass roses confused readers. N/E/S/W/WNW/SSE everywhere. */
 
 /* ------------------------------------------------------------ state ------- */
 let SNAP = null, MODEL = null, MODEL_ERR = null;
@@ -234,7 +249,8 @@ function applyI18n() {
   document.documentElement.lang = LANG;
   document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = T(el.dataset.i18n); });
   document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = T(el.dataset.i18nHtml); });
-  $("#btn-lang-txt").textContent = LANG === "id" ? "EN" : "ID";
+  const fl = $("#flag-icon");
+  if (fl) fl.innerHTML = `<use href="#${LANG === "id" ? "f-en" : "f-id"}"/>`;
   document.title = LANG === "id"
     ? "Pantau Gunung Anak Krakatau — Dasbor Komunitas"
     : "Anak Krakatau Watch — Community Dashboard";
@@ -266,6 +282,7 @@ function renderReport() {
   $("#card-report").innerHTML = `
     <div class="kv"><span class="k">${T("period")}</span><span class="v"><b>${esc(r.period)}</b></span></div>
     <div class="kv"><span class="k">${T("observer")}</span><span class="v">${esc(r.author || "—")}</span></div>
+    <p class="stamp">${T("src_lang_report")}</p>
     <div class="kv"><span class="k">${T("visual")}</span><span class="v">${esc(r.visual || "—")}</span></div>
     <div class="kv"><span class="k">${T("weather")}</span><span class="v">${esc(r.climate || "—")}</span></div>
     <div class="grid2" style="margin-top:10px">
@@ -301,7 +318,7 @@ function layerTable(layers) {
     ${layers.map((l) => `<tr>
       <td>${esc(l.base)}–${esc(l.top)}</td>
       <td>${esc(LANG === "id" ? l.top_human_id : l.top_human_en)}</td>
-      <td><b>${cmp(l.move_toward)}</b> (${esc(l.move_toward)}, ${l.speed_kt} kt ≈ ${l.speed_ms} m/s)</td>
+      <td><b>${esc(l.move_toward)}</b> · ${l.speed_kt} kt ≈ ${l.speed_ms} m/s</td>
     </tr>`).join("")}</tbody></table>`;
 }
 
@@ -323,7 +340,9 @@ function renderVaac() {
     <div class="kv" style="margin-top:8px"><span class="k">${T("eruption_detail")}</span><span class="v">${esc(v.eruption_details || "—")}</span></div>
     <div class="stamp" style="margin:8px 0 2px">${T("obs_cloud")}</div>
     ${layerTable(v.observed_layers)}
+    <p class="stamp">${T("abbr_note")}</p>
     <div style="margin-top:12px">${fc}</div>
+    <p class="stamp">${T("src_lang_vaac")}</p>
     ${v.remarks ? `<div class="callout"><b>${T("remarks")}:</b> ${esc(v.remarks)}</div>` : ""}
     ${v.next_advisory_by_wib ? `<div class="kv"><span class="k">${T("next_adv")}</span><span class="v">${esc(v.next_advisory_by_wib)}</span></div>` : ""}
     <div class="grid2" style="margin-top:12px">
@@ -336,14 +355,14 @@ function renderVaac() {
 
 function renderSat() {
   const s = SNAP.satellite || {};
-  const cards = ["snpp", "aqua"].map((k) => {
+  const cards = ["snpp", "modis"].map((k) => {
     const d = s[k];
     if (!d) return `<div class="card"><p class="stamp">${T("sat_none")}</p></div>`;
-    const sensor = k === "snpp" ? "Suomi NPP (VIIRS)" : "Aqua (MODIS)";
+    const sensor = d.sensor_label || (k === "snpp" ? "Suomi NPP (VIIRS)" : "Aqua (MODIS)");
     const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/map/#d/${d.date},${d.date}/@105.423,-6.102,8z`;
     return `<div class="card"><div class="stamp"><b>${sensor}</b> · ${esc(d.date)}</div>
       <img class="pic" style="margin-top:6px" src="${esc(d.asset)}" alt="${sensor} true color ${esc(d.date)}" loading="lazy">
-      <div class="figcap">${esc(d.credit)} ·
+      <div class="figcap">${d.sensor_note ? esc(d.sensor_note) + " · " : ""}${esc(d.credit)} ·
         <a href="${firmsUrl}" target="_blank" rel="noopener">${T("sat_open")} <svg class="ic" style="width:11px;height:11px"><use href="#i-ext"/></svg></a></div></div>`;
   });
   $("#card-sat").innerHTML = cards.join("");
@@ -365,7 +384,7 @@ function renderModel() {
     <tr><td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${BAND_COLORS[i % 6]};margin-right:7px"></span>${esc(l.layer)}
       ${l.relevant_today ? `<span class="badge sm l3" style="margin-left:6px">${T("model_relevant")}</span>` : ""}</td>
       <td>${esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)}</td>
-      <td><b>${cmp(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°) · ${l.speed_ms.toFixed(1)} m/s</td>
+      <td><b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°) · ${l.speed_ms.toFixed(1)} m/s</td>
       <td class="stamp">R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}</td></tr>`).join("");
   const pt = MODEL.plume_top;
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
@@ -382,10 +401,14 @@ function renderModel() {
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
     <table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>
-    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))}</p>
+    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")}</p>
     <label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.86rem;cursor:pointer">
       <input type="checkbox" id="model-on-map"> ${T("model_show_map")}</label>`;
-  $("#model-on-map").addEventListener("change", (e) => { MAP.show.model = e.target.checked; drawMap(); });
+  $("#model-on-map").addEventListener("change", (e) => {
+    MAP.on.model = e.target.checked;
+    const g = MAP.groups.model;
+    if (g && MAP.el) { if (e.target.checked) g.addTo(MAP.el); else MAP.el.removeLayer(g); }
+  });
   $("#model-on-map").checked = MAP.show.model;
 }
 
@@ -395,7 +418,6 @@ const LOOP_HTML = `
   <div class="player">
     <img id="loop-img" alt="Himawari-9 infrared frame" draggable="false">
     <svg id="loop-overlay" aria-hidden="true"></svg>
-    <div class="loop-ts" id="loop-ts">—</div>
     <div class="loop-badge" id="loop-badge">· 10 min/frame</div>
   </div>
   <div class="loop-ctl">
@@ -436,6 +458,18 @@ function loopOverlay() {
   svg.innerHTML = P.join("");
 }
 
+function loopVerifyUrl(f) {
+  const Lp = SNAP && SNAP.loop;
+  if (!Lp || !Lp.verified) return null;
+  const z = Lp.zoom, [lo0, lo1, la0, la1] = Lp.roi;
+  const clon = (lo0 + lo1) / 2, clat = (la0 + la1) / 2;
+  const n = 2 ** z;
+  const col = Math.floor(((clon + 180) / 360) * n);
+  const r = (clat * Math.PI) / 180;
+  const row = Math.floor(((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * n);
+  return `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${Lp.layer}/default/${f.t_utc}/GoogleMapsCompatible_Level${Lp.tms}/${z}/${row}/${col}.png`;
+}
+
 function loopShow() {
   const f = LOOP.frames[LOOP.idx]; if (!f) return;
   $("#loop-img").src = f.asset;
@@ -473,12 +507,23 @@ function renderLoop() {
     LOOP.imgs = L.frames.map((f) => { const im = new Image(); im.src = f.asset; return im; });
     $("#loop-scrub").max = L.frames.length - 1;
     $("#loop-badge").textContent = (L.band_label || "IR 10.4 µm") + " · 10 min/frame";
-    $("#loop-cap").textContent = T("loop_cap") + " · " + L.credit;
+    const vf = L.verified || {};
+    const mark = (v) => (v === true ? "✓" : v === false ? "✗" : "?");
+    let vs = T("loop_verified").replace("{grid}", mark(vf.ten_minute_grid))
+      .replace("{noaa}", mark(vf.noaa_s3_slot_exists)).replace("{slot}", vf.noaa_slot || "");
+    $("#loop-cap").textContent = T("loop_cap") + " · " + L.credit + " · " + T("loop_latency") + " " + vs;
     const wire = () => {
       $("#loop-play").onclick = () => loopSetPlaying(!LOOP.playing);
       $("#loop-speed").onclick = () => { LOOP.fps = LOOP.fps === 1 ? 2 : LOOP.fps === 2 ? 4 : 1; $("#loop-speed").textContent = LOOP.fps + " fps"; if (LOOP.playing) loopSetPlaying(true); };
       $("#loop-scrub").oninput = (e) => { LOOP.idx = +e.target.value; loopSetPlaying(false); loopShow(); };
       $("#loop-img").onload = loopOverlay;
+      const ts = $("#loop-ts");
+      ts.title = T("loop_verify_hint");
+      ts.onclick = () => {
+        const f = LOOP.frames[LOOP.idx];
+        const u = loopVerifyUrl(f) || (SNAP.loop.verified || {}).verify_url;
+        if (u) window.open(u, "_blank");
+      };
       LOOP.wired = true;
     };
     wire(); loopTicks(); loopShow(); loopSetPlaying(true);
@@ -486,131 +531,142 @@ function renderLoop() {
 }
 
 /* ---------------------------------------------------------------- map ----- */
-const MAP = { cx: 105.42, cy: -6.35, span: 4.2, show: { obs: true, f6: true, f12: false, f18: false, model: false } };
-const VENT = { lon: 105.423, lat: -6.102 };
+/* Leaflet + OpenStreetMap. Replaced the hand-drawn SVG map because:
+   real coastlines for free, proper mobile gestures, no text-selection-while-
+   dragging bug, and a native collapsible layer control. Vectors still render
+   if tiles cannot load (offline preview), just without basemap. */
+const MAP = { el: null, control: null, groups: {}, on: { obs: true, f6: true, f12: false, f18: false, model: false } };
+const VENT = [-6.102, 105.423];
+const PCOL = { obs: "#9B2B1A", f6: "#d97706", f12: "#b45309", f18: "#78716c" };
 
-function proj(lon, lat) {
-  const kx = Math.cos((-6.2 * Math.PI) / 180);
-  const W = $("#map").clientWidth || 900, H = $("#map").clientHeight || 520;
-  const scale = H / MAP.span;
-  const x = W / 2 + (lon - MAP.cx) * kx * scale;
-  const y = H / 2 - (lat - MAP.cy) * scale;
-  return [x, y];
-}
-function unproj(x, y) {
-  const kx = Math.cos((-6.2 * Math.PI) / 180);
-  const W = $("#map").clientWidth || 900, H = $("#map").clientHeight || 520;
-  const scale = H / MAP.span;
-  return [MAP.cx + (x - W / 2) / (kx * scale), MAP.cy - (y - H / 2) / scale];
-}
-const path = (pts, close) => pts.map((p, i) => { const [x, y] = proj(p[0], p[1]); return `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`; }).join("") + (close ? "Z" : "");
-
-const LANDMARKS = [
-  ["Bandar Lampung", 105.26, -5.43], ["Merak / Cilegon", 106.02, -5.95],
-  ["Jakarta", 106.85, -6.21], ["P. Sebesi", 105.49, -5.85],
-  ["Ujung Kulon", 105.30, -6.75], ["Krui", 103.90, -5.15],
-];
-
-function drawMap() {
-  const svg = $("#map");
-  const W = svg.clientWidth || 900, H = svg.clientHeight || 520;
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  const P = [];
-  P.push(`<rect width="${W}" height="${H}" fill="var(--map-sea)"/>`);
-  // graticule
-  for (let lo = Math.floor(MAP.cx - MAP.span); lo <= MAP.cx + MAP.span; lo++) {
-    const [x] = proj(lo, 0); P.push(`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="var(--map-line)" stroke-width=".6" opacity=".5"/>`);
-    P.push(`<text x="${x + 3}" y="${H - 6}" font-size="9" fill="var(--text-muted)">${lo}°E</text>`);
+function initMap() {
+  const box = $("#map");
+  if (typeof L === "undefined") {
+    box.innerHTML = `<div class="map-fallback">${T("map_need_network")}</div>`;
+    return;
   }
-  for (let la = Math.floor(MAP.cy - MAP.span); la <= MAP.cy + MAP.span; la++) {
-    const [, y] = proj(0, la); P.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--map-line)" stroke-width=".6" opacity=".5"/>`);
-    P.push(`<text x="4" y="${y - 3}" font-size="9" fill="var(--text-muted)">${Math.abs(la)}°S</text>`);
-  }
-  // coastlines
-  (window.COAST || []).forEach((r) => P.push(`<path d="${path(r, true)}" fill="var(--map-land)" stroke="var(--text-muted)" stroke-width=".7" opacity=".95"/>`));
-  // landmarks
-  LANDMARKS.forEach(([n, lon, lat]) => {
-    const [x, y] = proj(lon, lat);
-    P.push(`<circle cx="${x}" cy="${y}" r="2.6" fill="var(--text-secondary)"/>`);
-    P.push(`<text x="${x + 5}" y="${y + 3}" font-size="10" fill="var(--text-secondary)">${esc(n)}</text>`);
-  });
-  const V = SNAP ? SNAP.vaac : null;
-  const polys = (layers, fill, stroke, op, label) => (layers || []).forEach((l) => {
-    if (!l.polygon || l.polygon.length < 3) return;
-    P.push(`<path d="${path(l.polygon, true)}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width="1.4" stroke-dasharray="${stroke === "var(--accent)" ? "" : "4 3"}"><title>${esc(label)} ${esc(l.base)}-${esc(l.top)} ${esc(l.move_toward)} ${l.speed_kt}kt</title></path>`);
-  });
+  const map = L.map("map", { zoomControl: true }).setView([-6.35, 105.42], 8);
+  MAP.el = map;
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 12,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+  L.circleMarker(VENT, { radius: 6, color: "#9B2B1A", weight: 2, fillColor: "#9B2B1A", fillOpacity: 0.9 })
+    .addTo(map)
+    .bindTooltip("Anak Krakatau", { permanent: true, direction: "right", offset: [9, 0], className: "vent-tip" });
+  map.on("overlayadd", (e) => { const k = e.layer._krkKey; if (k) MAP.on[k] = true; });
+  map.on("overlayremove", (e) => { const k = e.layer._krkKey; if (k) MAP.on[k] = false; });
+  rebuildMapLayers();
+}
+
+function _polyGroup(key, layers, labelFn) {
+  const ls = (layers || []).filter((l) => l.polygon && l.polygon.length > 2);
+  if (!ls.length) return null;
+  const g = L.layerGroup(ls.map((l) =>
+    L.polygon(l.polygon.map((pt) => [pt[1], pt[0]]),
+      { color: PCOL[key], weight: 1.6, fillColor: PCOL[key], fillOpacity: 0.16 })
+      .bindTooltip(labelFn(l))));
+  g._krkKey = key;
+  return g;
+}
+
+function rebuildMapLayers() {
+  const map = MAP.el;
+  if (!map) return;
+  if (MAP.control) { map.removeControl(MAP.control); MAP.control = null; }
+  Object.values(MAP.groups).forEach((g) => map.removeLayer(g));
+  MAP.groups = {};
+  const V = SNAP && SNAP.vaac;
+  const named = {};
   if (V && V.state === "advisory") {
-    if (MAP.show.obs) polys(V.observed_layers, "var(--accent)", "var(--accent)", 0.18, T("map_obs"));
-    const fc = V.forecasts || {};
-    if (MAP.show.f6 && fc["+6h"]) polys(fc["+6h"].layers, "#d97706", "#d97706", 0.10, "+6h");
-    if (MAP.show.f12 && fc["+12h"]) polys(fc["+12h"].layers, "#b45309", "#b45309", 0.08, "+12h");
-    if (MAP.show.f18 && fc["+18h"]) polys(fc["+18h"].layers, "#78716c", "#78716c", 0.06, "+18h");
-  }
-  if (MAP.show.model && MODEL && MODEL.status === "approved") {
-    MODEL.layers.forEach((l, i) => {
-      if (!l.trajectory || l.trajectory.length < 2) return;
-      const c = BAND_COLORS[i % 6];
-      P.push(`<path d="${path(l.trajectory, false)}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" opacity=".9"><title>${esc(l.layer)} -> ${esc(l.toward_compass)}</title></path>`);
-      const e = l.trajectory[l.trajectory.length - 1];
-      const [x, y] = proj(e[0], e[1]);
-      P.push(`<circle cx="${x}" cy="${y}" r="4" fill="${c}"/>`);
-      P.push(`<text x="${x + 7}" y="${y + 3}" font-size="10" font-weight="700" fill="${c}">+${e[2]}h</text>`);
+    const obs = _polyGroup("obs", V.observed_layers,
+      (l) => `${T("map_obs")} · ${l.base}–${l.top} · ${T("moves")} ${l.move_toward} ${l.speed_kt} kt`);
+    if (obs) { MAP.groups.obs = obs; named[T("map_obs")] = obs; }
+    Object.entries(V.forecasts || {}).forEach(([h, f]) => {
+      const key = h === "+6h" ? "f6" : h === "+12h" ? "f12" : h === "+18h" ? "f18" : null;
+      if (!key) return;
+      const g = _polyGroup(key, f.layers,
+        (l) => `${T("fcst_cloud")} ${h} · ${l.base}–${l.top}`);
+      if (g) { MAP.groups[key] = g; named[`${T("fcst_cloud")} ${h}`] = g; }
     });
   }
-  // vent
-  const [vx, vy] = proj(VENT.lon, VENT.lat);
-  P.push(`<circle cx="${vx}" cy="${vy}" r="12" fill="var(--accent)" opacity=".16"/>`);
-  P.push(`<circle cx="${vx}" cy="${vy}" r="5.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="2"/>`);
-  P.push(`<text x="${vx + 10}" y="${vy - 8}" font-size="11" font-weight="700" fill="var(--accent)">Anak Krakatau</text>`);
-  svg.innerHTML = P.join("");
+  if (MODEL && MODEL.status === "approved") {
+    const ls = (MODEL.layers || []).filter((l) => l.trajectory && l.trajectory.length > 1);
+    if (ls.length) {
+      const g = L.layerGroup(ls.map((l, i) => {
+        const c = BAND_COLORS[i % 6];
+        const e = l.trajectory[l.trajectory.length - 1];
+        return L.layerGroup([
+          L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]), { color: c, weight: 2.6, opacity: 0.9 })
+            .bindTooltip(`${l.layer} → ${l.toward_compass} ${l.toward_deg.toFixed(0)}°`),
+          L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
+            .bindTooltip(`+${e[2]}h · ${l.layer}`),
+        ]);
+      }));
+      g._krkKey = "model";
+      MAP.groups.model = g;
+      named[T("map_model")] = g;
+    }
+  }
+  MAP.control = L.control.layers(null, named, { collapsed: true }).addTo(map);
+  Object.entries(MAP.groups).forEach(([k, g]) => { if (MAP.on[k]) g.addTo(map); });
 }
 
-function buildMapPanel() {
-  const items = [
-    ["obs", T("map_obs"), "var(--accent)"],
-    ["f6", T("fcst_cloud") + " +6h", "#d97706"],
-    ["f12", T("fcst_cloud") + " +12h", "#b45309"],
-    ["f18", T("fcst_cloud") + " +18h", "#78716c"],
-  ];
-  if (MODEL && MODEL.status === "approved") items.push(["model", T("map_model"), "#2563eb"]);
-  $("#map-layers").innerHTML = `<b style="font-size:.72rem"><svg class="ic" style="width:12px;height:12px;vertical-align:-2px"><use href="#i-layers"/></svg> ${LANG === "id" ? "Lapisan peta" : "Map layers"}</b>` +
-    items.map(([k, lab, col]) => `<label><input type="checkbox" data-layer="${k}" ${MAP.show[k] ? "checked" : ""}>
-      <span class="sw" style="background:${col}"></span>${esc(lab)}</label>`).join("");
-  $("#map-layers").querySelectorAll("input").forEach((i) =>
-    i.addEventListener("change", () => { MAP.show[i.dataset.layer] = i.checked; drawMap(); }));
-  $("#map-note").textContent = T("map_note");
+function ensureMap() {
+  if (!MAP.el) initMap(); else rebuildMapLayers();
+  const note = $("#map-note");
+  if (note) note.textContent = T("map_note");
 }
 
-function wireMap() {
-  const svg = $("#map");
-  let drag = null;
-  svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; svg.classList.add("drag"); svg.setPointerCapture(e.pointerId); });
-  svg.addEventListener("pointermove", (e) => {
-    if (!drag) return;
-    const H = svg.clientHeight, scale = H / MAP.span;
-    const kx = Math.cos((-6.2 * Math.PI) / 180);
-    MAP.cx -= (e.clientX - drag.x) / (kx * scale);
-    MAP.cy += (e.clientY - drag.y) / scale;
-    drag = { x: e.clientX, y: e.clientY };
-    drawMap();
-  });
-  ["pointerup", "pointercancel", "pointerleave"].forEach((ev) =>
-    svg.addEventListener(ev, () => { drag = null; svg.classList.remove("drag"); }));
-  svg.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    MAP.span = Math.min(14, Math.max(0.8, MAP.span * (e.deltaY > 0 ? 1.15 : 0.87)));
-    drawMap();
-  }, { passive: false });
-  $("#zin").onclick = () => { MAP.span = Math.max(0.8, MAP.span * 0.8); drawMap(); };
-  $("#zout").onclick = () => { MAP.span = Math.min(14, MAP.span * 1.25); drawMap(); };
-  $("#zreset").onclick = () => { MAP.cx = 105.42; MAP.cy = -6.35; MAP.span = 4.2; drawMap(); };
-  window.addEventListener("resize", () => drawMap());
+/* ------------------------------------------------------------ lightbox ---- */
+const GALLERY = { items: [], idx: 0 };
+function galleryCollect() {
+  GALLERY.items = [...document.querySelectorAll("img.pic")].map((im) => ({
+    src: im.src,
+    cap: ((im.closest(".card") || {}).querySelector ?
+      (im.closest(".card").querySelector(".figcap") || im.closest(".card").querySelector(".stamp") || {}).textContent : "") || im.alt || "",
+  }));
 }
+function galleryShow(i) {
+  GALLERY.idx = (i + GALLERY.items.length) % GALLERY.items.length;
+  const it = GALLERY.items[GALLERY.idx];
+  let lb = $("#lightbox");
+  if (!lb) {
+    lb = document.createElement("div");
+    lb.id = "lightbox";
+    lb.innerHTML = `<button class="lb-x" aria-label="close">&times;</button>
+      <button class="lb-p" aria-label="prev">&#8249;</button>
+      <img alt="">
+      <button class="lb-n" aria-label="next">&#8250;</button>
+      <div class="lb-cap"></div>`;
+    document.body.appendChild(lb);
+    lb.addEventListener("click", (e) => {
+      if (e.target === lb || e.target.classList.contains("lb-x")) lb.classList.remove("on");
+      if (e.target.classList.contains("lb-p")) galleryShow(GALLERY.idx - 1);
+      if (e.target.classList.contains("lb-n")) galleryShow(GALLERY.idx + 1);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (!lb.classList.contains("on")) return;
+      if (e.key === "Escape") lb.classList.remove("on");
+      if (e.key === "ArrowLeft") galleryShow(GALLERY.idx - 1);
+      if (e.key === "ArrowRight") galleryShow(GALLERY.idx + 1);
+    });
+  }
+  lb.querySelector("img").src = it.src;
+  lb.querySelector(".lb-cap").textContent =
+    `${it.cap}  (${GALLERY.idx + 1} ${T("gal_of")} ${GALLERY.items.length})`;
+  lb.classList.add("on");
+}
+document.addEventListener("click", (e) => {
+  const im = e.target.closest ? e.target.closest("img.pic") : null;
+  if (im) { e.preventDefault(); galleryCollect(); galleryShow(GALLERY.items.findIndex((x) => x.src === im.src)); }
+});
 
 /* ------------------------------------------------------------ boot -------- */
 function stamp() {
   if (!SNAP) return;
-  $("#chip-updated-txt").textContent = `${T("updated")}: ${fmtWib(SNAP.generated_utc)} (${relWib(SNAP.generated_utc)})`;
+  $("#chip-updated-txt").textContent = relWib(SNAP.generated_utc);
+  $("#chip-updated").title = `${T("updated")}: ${fmtWib(SNAP.generated_utc)}`;
   const ageH = (Date.now() - new Date(SNAP.generated_utc).getTime()) / 3600e3;
   $("#chip-updated").classList.toggle("stale", ageH > 1.5);
   $("#chip-updated").classList.toggle("ok", ageH <= 1.5);
@@ -621,7 +677,7 @@ function renderAll() {
   applyI18n();
   renderStatus(); renderReport(); renderEruptions(); renderVona();
   renderVaac(); renderLoop(); renderSat(); renderModel();
-  buildMapPanel(); drawMap(); stamp();
+  ensureMap(); stamp();
 }
 
 function inlineJSON(id) {
@@ -645,13 +701,11 @@ $("#btn-theme").onclick = () => {
   const d = document.documentElement.dataset.theme === "dark";
   document.documentElement.dataset.theme = d ? "light" : "dark";
   localStorage.setItem("krak-theme", d ? "light" : "dark");
-  drawMap();
+  $("#btn-theme").setAttribute("aria-pressed", String(!d));
 };
-$("#btn-refresh").onclick = () => { loadAll(); };
 
 document.documentElement.dataset.theme = localStorage.getItem("krak-theme") || "light";
 
-wireMap();
 loadAll().catch((e) => {
   document.querySelectorAll(".card").forEach((c) => {
     c.innerHTML = `<p class="stamp">data/snapshot.json: ${esc(String(e))}</p>`;

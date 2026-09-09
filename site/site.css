@@ -116,19 +116,49 @@ ul.feed .t { color: var(--text-muted); font-size: .76rem; display: block; margin
 .map-note { position: absolute; right: 10px; bottom: 8px; font-size: .66rem; color: var(--text-muted); z-index: 5;
   background: color-mix(in srgb, var(--bg-card) 80%, transparent); padding: 2px 8px; border-radius: 4px; }
 
+/* ---------- leaflet map ---------- */
+#map { height: 480px; border-radius: var(--radius-lg); background: var(--map-sea); }
+.map-fallback { padding: 40px 20px; text-align: center; color: var(--text-secondary); font-size: .88rem; }
+.vent-tip { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent);
+  font: 700 .78rem var(--font-ui); border-radius: 6px; padding: 2px 8px; }
+.leaflet-container { font: 400 .72rem var(--font-ui); }
+.map-note { position: absolute; right: 10px; bottom: 6px; z-index: 500; font-size: .66rem;
+  color: var(--text-muted); background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+  padding: 2px 8px; border-radius: 4px; pointer-events: none; }
+
+/* ---------- lightbox gallery ---------- */
+img.pic { cursor: zoom-in; }
+#lightbox { position: fixed; inset: 0; z-index: 90; display: none;
+  background: rgba(8, 8, 6, .88); align-items: center; justify-content: center; flex-direction: column; }
+#lightbox.on { display: flex; }
+#lightbox img { max-width: 92vw; max-height: 78vh; border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); background: #000; }
+#lightbox .lb-cap { color: #eee; font: 500 .8rem var(--font-ui); margin-top: 10px;
+  max-width: 90vw; text-align: center; }
+#lightbox button { position: absolute; background: rgba(255,255,255,.12); color: #fff;
+  border: 0; border-radius: 50%; width: 44px; height: 44px; font-size: 26px; cursor: pointer; }
+#lightbox .lb-x { top: 14px; right: 14px; }
+#lightbox .lb-p { left: 12px; top: 50%; transform: translateY(-50%); }
+#lightbox .lb-n { right: 12px; top: 50%; transform: translateY(-50%); }
+
+/* ---------- navbar bits ---------- */
+.btn .flag { width: 20px; height: 14px; display: block; border-radius: 2px; }
+.theme-icon-btn .icon-sun { display: none; }
+.theme-icon-btn .icon-moon { display: block; }
+[data-theme="dark"] .theme-icon-btn .icon-sun { display: block; }
+[data-theme="dark"] .theme-icon-btn .icon-moon { display: none; }
+
 /* ---------- himawari loop player ---------- */
 .player { position: relative; background: #000; border-radius: var(--radius);
   overflow: hidden; line-height: 0; }
 .player img { width: 100%; display: block; image-rendering: auto; }
 #loop-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.loop-ts { position: absolute; left: 10px; top: 8px; z-index: 3;
-  background: rgba(0,0,0,.62); color: #fff; font: 700 .82rem var(--font-ui);
-  padding: 4px 10px; border-radius: 6px; letter-spacing: .02em; }
 .loop-badge { position: absolute; right: 10px; top: 8px; z-index: 3;
   background: rgba(0,0,0,.62); color: #ffd9a0; font: 600 .7rem var(--font-ui);
   padding: 4px 9px; border-radius: 6px; }
 .loop-ctl { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .loop-ctl input[type=range] { flex: 1; accent-color: var(--accent); }
+#loop-ts { cursor: pointer; text-decoration: underline dotted; }
 .loop-ticks { position: relative; height: 10px; margin: 2px 2px 0; }
 .loop-ticks i { position: absolute; top: 0; width: 3px; height: 9px; background: var(--vona-red);
   border-radius: 1px; transform: translateX(-1px); }

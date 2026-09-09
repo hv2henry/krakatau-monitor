@@ -64,7 +64,7 @@ refer to MAGMA/PVMBG, BNPB/BPBD and Darwin VAAC."
 3. `move_toward` is direction of travel TOWARD; convert FL with the
    `*_human_*` strings.
 4. Loop frames are JPEGs in `assets/loop/`; timestamps are 10 min apart. If you
-   analyse them, cite NASA GIBS/JMA Himawari-9 and note the band (ir or vis).
+   analyse them, cite NASA GIBS / JMA Himawari-9 and note the band (ir or vis).
 5. Politeness: this is a static site; caching for >= 5 min is fine and kind.
    Do NOT scrape magma.esdm.go.id or bom.gov.au more often than every 15 min.
 5. If `generated_utc` is older than 2 h, state that the mirror may be stale.

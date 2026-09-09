@@ -51,7 +51,8 @@ _ctx.verify_mode = ssl.CERT_NONE
 GIBS = ("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{layer}/default/"
         "{date}/GoogleMapsCompatible_Level9/{z}/{row}/{col}.jpg")
 GIBS_LAYERS = {"snpp": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-               "aqua": "MODIS_Aqua_CorrectedReflectance_TrueColor"}
+               "aqua": "MODIS_Aqua_CorrectedReflectance_TrueColor",
+               "terra": "MODIS_Terra_CorrectedReflectance_TrueColor"}
 # region of interest for the daily picture
 SAT_BOX = (100.0, 112.0, -12.0, -1.0)   # lon0 lon1 lat0 lat1
 SAT_Z = 7
@@ -120,9 +121,11 @@ def fl_human(fl: str | None, lang: str = "id") -> str | None:
         return fl
     feet = int(m.group(1)) * 100
     km = feet * 0.3048 / 1000
+    # Short forms by maintainer decision; the abbreviation is explained in the
+    # page caption (dpl = di atas permukaan laut / asl = above sea level).
     if lang == "id":
-        return f"FL{m.group(1)} = {feet:,} ft ≈ {km:.1f} km di atas permukaan laut".replace(",", ".")
-    return f"FL{m.group(1)} = {feet:,} ft ≈ {km:.1f} km above sea level"
+        return f"FL{m.group(1)} = {feet:,} ft ≈ {km:.1f} km dpl".replace(",", ".")
+    return f"FL{m.group(1)} = {feet:,} ft ≈ {km:.1f} km asl"
 
 
 # ------------------------------------------------------------------ tiles
@@ -131,6 +134,20 @@ def _tile_idx(lon: float, lat: float, z: int):
     x = int((lon + 180.0) / 360.0 * n)
     y = int((1 - math.log(math.tan(math.radians(lat)) + 1 / math.cos(math.radians(lat))) / math.pi) / 2 * n)
     return x, y
+
+
+def _trim_black(im, thresh: int = 8):
+    """Cut empty swath-edge columns/rows (the black wedge MODIS leaves)."""
+    try:
+        import numpy as np
+        a = np.asarray(im.convert("L"))
+        xs = np.where(a.mean(axis=0) > thresh)[0]
+        ys = np.where(a.mean(axis=1) > thresh)[0]
+        if len(xs) > 10 and len(ys) > 10:
+            return im.crop((int(xs[0]), int(ys[0]), int(xs[-1]) + 1, int(ys[-1]) + 1))
+    except Exception:
+        pass
+    return im
 
 
 def stitch_gibs(sensor: str, date: str, out_path: str) -> dict | None:
@@ -166,7 +183,9 @@ def stitch_gibs(sensor: str, date: str, out_path: str) -> dict | None:
             "asset": os.path.relpath(out_path, SITE),
             "bbox": list(SAT_BOX), "zoom": SAT_Z,
             "missing_tiles": missing,
-            "credit": CREDIT_GIBS.format(sensor={"snpp": "Suomi NPP VIIRS", "aqua": "Aqua MODIS"}[sensor], date=date)}
+            "credit": CREDIT_GIBS.format(
+                sensor={"snpp": "Suomi NPP VIIRS", "aqua": "Aqua MODIS",
+                        "terra": "Terra MODIS"}[sensor], date=date)}
 
 
 def latest_gibs_date() -> str:
@@ -304,6 +323,7 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
         cx0, cx1 = gx(LOOP_CROP[0]) - x0 * 256, gx(LOOP_CROP[1]) - x0 * 256
         cy0, cy1 = gy(LOOP_CROP[3]) - y0 * 256, gy(LOOP_CROP[2]) - y0 * 256
         crop = canvas.crop((max(0, int(cx0)), max(0, int(cy0)), min(W, int(cx1)), min(H, int(cy1))))
+        crop = _trim_black(crop)
         crop = ImageOps.autocontrast(crop, cutoff=1)
         if B["upscale"] > 1:
             crop = crop.resize((crop.width * B["upscale"], crop.height * B["upscale"]),
@@ -313,10 +333,40 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
         frames.append({"t_utc": tstr, "t_wib": wib_human(tstr), "asset": f"assets/loop/{fname}"})
     if len(frames) < 4:
         return None
+
+    # ---- verification, so the timestamps are not just our word for it ----
+    # 1) every frame time must sit on Himawari's published 10-minute imaging grid
+    grid_ok = all(
+        (datetime.strptime(f["t_utc"], "%Y-%m-%dT%H:%M:%SZ").minute % 10 == 0)
+        and datetime.strptime(f["t_utc"], "%Y-%m-%dT%H:%M:%SZ").second == 0
+        for f in frames)
+    # 2) independent confirmation that the satellite really imaged that slot:
+    #    NOAA's S3 bucket holds Himawari-9 products named with the observation
+    #    window (s<start>_e<end>); an existing slot directory proves the image.
+    last = frames[-1]["t_utc"]
+    lt = datetime.strptime(last, "%Y-%m-%dT%H:%M:%SZ")
+    slot = f"AHI-L2-FLDK-Winds%2F{lt:%Y}%2F{lt:%m}%2F{lt:%d}%2F{lt:%H%M}%2F"
+    noaa_ok = False
+    try:
+        import urllib.parse as _up
+        xml = http(f"https://noaa-himawari9.s3.amazonaws.com/?prefix={slot}&max-keys=1", 25, 2)
+        noaa_ok = bool(xml) and b"<Key>" in (xml.encode() if isinstance(xml, str) else xml)
+    except Exception:
+        noaa_ok = None
+    # 3) a directly openable source tile for the newest frame, so any visitor
+    #    can verify with one click
+    zx, zy = _tile_idx((LOOP_CROP[0] + LOOP_CROP[1]) / 2, (LOOP_CROP[2] + LOOP_CROP[3]) / 2, B["z"])
+    verify_url = (f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{B['layer']}"
+                  f"/default/{last}/GoogleMapsCompatible_Level{B['tms']}/{B['z']}/{zy}/{zx}.png")
+
     return {"source": "NASA GIBS / JMA Himawari-9 AHI", "layer": B["layer"],
             "band": band, "band_label": B["label"],
             "interval_min": 10, "frames": frames, "credit": LOOP_CREDIT,
-            "roi": list(LOOP_CROP),
+            "roi": list(LOOP_CROP), "zoom": B["z"], "tms": B["tms"],
+            "verified": {"ten_minute_grid": grid_ok,
+                         "noaa_s3_slot_exists": noaa_ok,
+                         "noaa_slot": f"{lt:%Y-%m-%d %H:%M}Z",
+                         "verify_url": verify_url},
             "built_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")}
 
 
@@ -406,6 +456,19 @@ def build(args) -> int:
         "warning": vaac.get("warning"),
     }
 
+    def _gap_fraction(path):
+        """Fraction of near-black pixels in the centre: MODIS swath gaps show up
+        as a black blob right where the strait is (Aqua, some days)."""
+        try:
+            from PIL import Image
+            im = Image.open(path).convert("L")
+            w, h = im.size
+            c = im.crop((int(w * .3), int(h * .3), int(w * .7), int(h * .7)))
+            px = list(c.getdata())
+            return sum(1 for v in px if v < 12) / len(px)
+        except Exception:
+            return 0.0
+
     sat = {}
     if args.no_sat:
         old = os.path.join(SITE, "data", "snapshot.json")
@@ -417,12 +480,47 @@ def build(args) -> int:
     if not args.no_sat:
         print("[build] stitching NASA GIBS daily imagery ...")
         date = latest_gibs_date()
-        for sensor in ("snpp", "aqua"):
-            out = os.path.join(SITE, "assets", f"sat_{sensor}.jpg")
-            r = stitch_gibs(sensor, date, out)
-            if r:
-                sat[sensor] = r
-                print(f"  {sensor}: {r['asset']} ({date}, {r['missing_tiles']} missing tiles)")
+        # slot 1: Suomi VIIRS (wide swath, rarely gapped)
+        out = os.path.join(SITE, "assets", "sat_snpp.jpg")
+        r = stitch_gibs("snpp", date, out)
+        if r:
+            sat["snpp"] = r
+            print(f"  snpp: {r['asset']} ({date}, {r['missing_tiles']} missing tiles)")
+        # slot 2: cleanest of Aqua / Terra — MODIS orbits leave black swath
+        # gaps over the strait on some days; measure, and if every pass today
+        # is gapped, look back up to 2 days for a clean one (labelled honestly).
+        chosen = None
+        for doff in (0, 1, 2):
+            d2 = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=doff)).strftime("%Y-%m-%d")
+            cands = []
+            for sensor in ("aqua", "terra"):
+                tmp = os.path.join(SITE, "assets", f"sat_{sensor}.jpg")
+                rr = stitch_gibs(sensor, d2, tmp)
+                if rr:
+                    cands.append((sensor, rr, _gap_fraction(tmp)))
+            if not cands:
+                continue
+            sensor, rr, gap = min(cands, key=lambda t: t[2])
+            if gap <= 0.10 or doff == 2:
+                chosen = (d2, sensor, rr, gap)
+                break
+        if chosen:
+            d2, sensor, rr, gap = chosen
+            final = os.path.join(SITE, "assets", "sat_modis.jpg")
+            os.replace(os.path.join(SITE, "assets", f"sat_{sensor}.jpg"), final)
+            for other in ("aqua", "terra"):
+                pth = os.path.join(SITE, "assets", f"sat_{other}.jpg")
+                if os.path.exists(pth):
+                    os.remove(pth)
+            rr = dict(rr, asset="assets/sat_modis.jpg", date=d2,
+                      sensor_label={"aqua": "Aqua (MODIS)", "terra": "Terra (MODIS)"}[sensor])
+            if gap > 0.02:
+                rr["sensor_note"] = f"Orbit gap visible ({sensor}, {d2}); cleanest available pass shown"
+            if d2 != date:
+                rr["sensor_note"] = (rr.get("sensor_note", "") + " " +
+                                     f"No clean pass on {date}; showing {d2}.").strip()
+            sat["modis"] = rr
+            print(f"  modis: {sensor} {d2} chosen (gap {gap:.1%})")
 
     loop = None
     if not args.no_loop:
@@ -512,8 +610,8 @@ def build(args) -> int:
             layers.append({
                 "layer": row["layer"],
                 "alt_km": row["mean_altitude_km"],
-                "alt_human_id": f"± {row['mean_altitude_km']:.1f} km di atas permukaan laut",
-                "alt_human_en": f"± {row['mean_altitude_km']:.1f} km above sea level",
+                "alt_human_id": f"± {row['mean_altitude_km']:.1f} km dpl",
+                "alt_human_en": f"± {row['mean_altitude_km']:.1f} km asl",
                 "from_deg": row["from_deg"], "from_compass": row["from_compass"],
                 "toward_deg": row["toward_deg"], "toward_compass": row["toward_compass"],
                 "speed_ms": row["speed_ms"],

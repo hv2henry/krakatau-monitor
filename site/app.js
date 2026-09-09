@@ -77,6 +77,8 @@ const I18N = {
     model_relevant: "paling relevan hari ini",
     model_traj_kind: "Garis pergerakan memakai angin prakiraan yang berubah per jam ({kind}); varian angin-tetap tersedia di forecast_model.json.",
     src_lang_report: "Teks laporan ditampilkan apa adanya dalam bahasa Indonesia (bahasa sumber PVMBG).",
+    src_lang_vona: "Teks VONA apa adanya dari MAGMA. Bila sumber mengulang kalimat (typo upstream), kami tidak mengeditnya.",
+    vona_color_note: "Warna VONA = kode peringatan penerbangan berbasis pengamatan DARAT PVMBG, sehingga bisa berbeda dengan Darwin VAAC yang berbasis satelit. Contoh: 05 Sep 2026 VONA merah tertulis \"abu tidak teramati\" dari tanah, padahal Darwin VAAC kemudian mengidentifikasi kolom abu hingga ±15 km (FL500) melalui Himawari-9 — kedua pernyataan benar dari sudut pengamatannya masing-masing.",
     src_lang_vaac: "Kutipan advisori & catatan ditampilkan apa adanya dalam bahasa Inggris (bahasa sumber BoM).",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
@@ -170,6 +172,8 @@ const I18N = {
     model_relevant: "most relevant today",
     model_traj_kind: "Trajectories use hourly-evolving forecast wind ({kind}); a steady-wind variant ships in forecast_model.json.",
     src_lang_report: "Report text is verbatim Indonesian (PVMBG source language).",
+    src_lang_vona: "VONA text is verbatim from MAGMA. If the source repeats a sentence (upstream typo), we do not edit it.",
+    vona_color_note: "VONA colour = PVMBG's aviation code based on GROUND observation, so it can differ from satellite-based Darwin VAAC. Example: on 05 Sep 2026 the RED VONA says ash was \"not observed\" from the ground, while Darwin VAAC later identified an ash column to ~15 km (FL500) via Himawari-9 — both true from their respective vantage points.",
     src_lang_vaac: "Advisory & remarks text is verbatim English (BoM source language).",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
@@ -239,7 +243,10 @@ function flHuman(fl) {
 let SNAP = null, MODEL = null, MODEL_ERR = null;
 
 async function loadJSON(url, opt) {
-  const r = await fetch(url + "?v=" + Date.now(), opt);
+  // No cache-busting query: GitHub Pages' CDN answers repeat visitors fast.
+  // Freshness still lands within ~10 min (CDN TTL) + our 5-min refetch, and the
+  // "updated" chip always shows the true data age, so staleness is visible.
+  const r = await fetch(url, opt);
   if (!r.ok) throw new Error(url + " -> " + r.status);
   return r.json();
 }
@@ -305,11 +312,12 @@ function renderEruptions() {
 
 function renderVona() {
   const list = SNAP.vona || [];
-  $("#card-vona").innerHTML = list.length ? `<ul class="feed">${list.map((v) => `
+  const head = `<p class="stamp">${T("src_lang_vona")}</p><div class="callout">${T("vona_color_note")}</div>`;
+  $("#card-vona").innerHTML = list.length ? head + `<ul class="feed">${list.map((v) => `
     <li><span class="badge sm ${esc(v.code)}">${esc(v.code)}</span>
         <span class="t" style="display:inline;margin-left:8px">${esc(v.wib || fmtWib(v.issued_utc))}</span>
       <div style="margin-top:4px">${esc(v.text || "")}</div></li>`).join("")}</ul>`
-    : `<p class="stamp">${T("no_vona")}</p>`;
+    : head + `<p class="stamp">${T("no_vona")}</p>`;
 }
 
 function layerTable(layers) {
@@ -539,11 +547,34 @@ const MAP = { el: null, control: null, groups: {}, on: { obs: true, f6: true, f1
 const VENT = [-6.102, 105.423];
 const PCOL = { obs: "#9B2B1A", f6: "#d97706", f12: "#b45309", f18: "#78716c" };
 
+let LEAFLET = 0;   // 0 idle, 1 loading, 2 ready, 3 failed
+function loadLeaflet(cb) {
+  if (typeof L !== "undefined" || LEAFLET === 2) return cb(true);
+  if (LEAFLET === 3) return cb(false);
+  if (LEAFLET === 1) return;              // already fetching
+  LEAFLET = 1;
+  const c = document.createElement("link");
+  c.rel = "stylesheet";
+  c.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+  document.head.appendChild(c);
+  const s = document.createElement("script");
+  s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+  s.crossOrigin = "anonymous";
+  s.onload = () => { LEAFLET = 2; cb(true); };
+  s.onerror = () => { LEAFLET = 3; cb(false); };
+  document.head.appendChild(s);
+}
+
 function initMap() {
   const box = $("#map");
   if (typeof L === "undefined") {
-    box.innerHTML = `<div class="map-fallback">${T("map_need_network")}</div>`;
-    return;
+    if (LEAFLET === 0) {
+      box.innerHTML = `<div class="map-fallback"><span class="loading-dots"><span></span><span></span><span></span></span></div>`;
+      loadLeaflet((ok) => { if (ok) initMap(); else mapFallback(); });
+      return;
+    }
+    if (LEAFLET === 1) return;            // script in flight; onload will retry
+    return mapFallback();
   }
   const map = L.map("map", { zoomControl: true }).setView([-6.35, 105.42], 8);
   MAP.el = map;
@@ -612,8 +643,13 @@ function rebuildMapLayers() {
   Object.entries(MAP.groups).forEach(([k, g]) => { if (MAP.on[k]) g.addTo(map); });
 }
 
+function mapFallback() {
+  const box = $("#map");
+  if (box) box.innerHTML = `<div class="map-fallback">${T("map_need_network")}</div>`;
+}
+
 function ensureMap() {
-  if (!MAP.el) initMap(); else rebuildMapLayers();
+  if (MAP.el) rebuildMapLayers(); else initMap();
   const note = $("#map-note");
   if (note) note.textContent = T("map_note");
 }
@@ -673,11 +709,28 @@ function stamp() {
   $("#foot-stamp").textContent = `${T("updated")}: ${fmtWib(SNAP.generated_utc)} · schema v${SNAP.schema_version} · WIB = UTC+7`;
 }
 
+function safeRender(name, fn) {
+  try {
+    fn();
+  } catch (e) {
+    const card = document.querySelector("#card-" + name) || document.querySelector("#" + name);
+    if (card) card.innerHTML = `<p class="stamp">⚠ ${esc(name)}: ${esc(String((e && e.message) || e))}</p>`;
+    if (typeof console !== "undefined") console.error("render failed:", name, e);
+  }
+}
+
 function renderAll() {
   applyI18n();
-  renderStatus(); renderReport(); renderEruptions(); renderVona();
-  renderVaac(); renderLoop(); renderSat(); renderModel();
-  ensureMap(); stamp();
+  safeRender("status", renderStatus);
+  safeRender("report", renderReport);
+  safeRender("eruptions", renderEruptions);
+  safeRender("vona", renderVona);
+  safeRender("vaac", renderVaac);
+  safeRender("loop", renderLoop);
+  safeRender("sat", renderSat);
+  safeRender("model", renderModel);
+  safeRender("map", ensureMap);
+  safeRender("stamp", stamp);
 }
 
 function inlineJSON(id) {

@@ -429,7 +429,8 @@ def build(args) -> int:
                 "base_human_en": fl_human(ly.get("base"), "en"),
                 "move_toward": ly.get("move_toward"),
                 "speed_kt": ly.get("speed_kt"), "speed_ms": ly.get("speed_ms"),
-                "polygon": ly.get("polygon")}
+                "polygon": [[pt["lon"], pt["lat"]] if isinstance(pt, dict) else list(pt)
+                            for pt in (ly.get("polygon") or [])]}
 
     vaac_json = {
         "state": vaac.get("state"),

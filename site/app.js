@@ -77,8 +77,7 @@ const I18N = {
     model_relevant: "paling relevan hari ini",
     model_traj_kind: "Garis pergerakan memakai angin prakiraan yang berubah per jam ({kind}); varian angin-tetap tersedia di forecast_model.json.",
     src_lang_report: "Teks laporan ditampilkan apa adanya dalam bahasa Indonesia (bahasa sumber PVMBG).",
-    src_lang_vona: "Teks VONA apa adanya dari MAGMA. Bila sumber mengulang kalimat (typo upstream), kami tidak mengeditnya.",
-    vona_color_note: "Warna VONA = kode peringatan penerbangan berbasis pengamatan DARAT PVMBG, sehingga bisa berbeda dengan Darwin VAAC yang berbasis satelit. Contoh: 05 Sep 2026 VONA merah tertulis \"abu tidak teramati\" dari tanah, padahal Darwin VAAC kemudian mengidentifikasi kolom abu hingga ±15 km (FL500) melalui Himawari-9 — kedua pernyataan benar dari sudut pengamatannya masing-masing.",
+    src_lang_vona: "Teks VONA apa adanya dari MAGMA.",
     src_lang_vaac: "Kutipan advisori & catatan ditampilkan apa adanya dalam bahasa Inggris (bahasa sumber BoM).",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
@@ -172,8 +171,7 @@ const I18N = {
     model_relevant: "most relevant today",
     model_traj_kind: "Trajectories use hourly-evolving forecast wind ({kind}); a steady-wind variant ships in forecast_model.json.",
     src_lang_report: "Report text is verbatim Indonesian (PVMBG source language).",
-    src_lang_vona: "VONA text is verbatim from MAGMA. If the source repeats a sentence (upstream typo), we do not edit it.",
-    vona_color_note: "VONA colour = PVMBG's aviation code based on GROUND observation, so it can differ from satellite-based Darwin VAAC. Example: on 05 Sep 2026 the RED VONA says ash was \"not observed\" from the ground, while Darwin VAAC later identified an ash column to ~15 km (FL500) via Himawari-9 — both true from their respective vantage points.",
+    src_lang_vona: "VONA text is verbatim from MAGMA.",
     src_lang_vaac: "Advisory & remarks text is verbatim English (BoM source language).",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
@@ -312,7 +310,7 @@ function renderEruptions() {
 
 function renderVona() {
   const list = SNAP.vona || [];
-  const head = `<p class="stamp">${T("src_lang_vona")}</p><div class="callout">${T("vona_color_note")}</div>`;
+  const head = `<p class="stamp">${T("src_lang_vona")}</p>`;
   $("#card-vona").innerHTML = list.length ? head + `<ul class="feed">${list.map((v) => `
     <li><span class="badge sm ${esc(v.code)}">${esc(v.code)}</span>
         <span class="t" style="display:inline;margin-left:8px">${esc(v.wib || fmtWib(v.issued_utc))}</span>
@@ -417,7 +415,7 @@ function renderModel() {
     const g = MAP.groups.model;
     if (g && MAP.el) { if (e.target.checked) g.addTo(MAP.el); else MAP.el.removeLayer(g); }
   });
-  $("#model-on-map").checked = MAP.show.model;
+  $("#model-on-map").checked = !!MAP.on.model;
 }
 
 /* ------------------------------------------------------- himawari loop ---- */
@@ -426,7 +424,7 @@ const LOOP_HTML = `
   <div class="player">
     <img id="loop-img" alt="Himawari-9 infrared frame" draggable="false">
     <svg id="loop-overlay" aria-hidden="true"></svg>
-    <div class="loop-badge" id="loop-badge">· 10 min/frame</div>
+    <div class="loop-ts" id="loop-ts">—</div>
   </div>
   <div class="loop-ctl">
     <button class="btn" id="loop-play" aria-label="play/pause"><svg class="ic"><use href="#i-play"/></svg></button>
@@ -514,18 +512,19 @@ function renderLoop() {
     LOOP.key = key; LOOP.frames = L.frames; LOOP.idx = L.frames.length - 1;
     LOOP.imgs = L.frames.map((f) => { const im = new Image(); im.src = f.asset; return im; });
     $("#loop-scrub").max = L.frames.length - 1;
-    $("#loop-badge").textContent = (L.band_label || "IR 10.4 µm") + " · 10 min/frame";
     const vf = L.verified || {};
     const mark = (v) => (v === true ? "✓" : v === false ? "✗" : "?");
     let vs = T("loop_verified").replace("{grid}", mark(vf.ten_minute_grid))
       .replace("{noaa}", mark(vf.noaa_s3_slot_exists)).replace("{slot}", vf.noaa_slot || "");
-    $("#loop-cap").textContent = T("loop_cap") + " · " + L.credit + " · " + T("loop_latency") + " " + vs;
+    $("#loop-cap").textContent = (L.band_label || "IR 10.4 µm") + " · 10 min/frame · " +
+      T("loop_cap") + " · " + L.credit + " · " + T("loop_latency") + " " + vs;
     const wire = () => {
       $("#loop-play").onclick = () => loopSetPlaying(!LOOP.playing);
       $("#loop-speed").onclick = () => { LOOP.fps = LOOP.fps === 1 ? 2 : LOOP.fps === 2 ? 4 : 1; $("#loop-speed").textContent = LOOP.fps + " fps"; if (LOOP.playing) loopSetPlaying(true); };
       $("#loop-scrub").oninput = (e) => { LOOP.idx = +e.target.value; loopSetPlaying(false); loopShow(); };
       $("#loop-img").onload = loopOverlay;
       const ts = $("#loop-ts");
+      if (!ts) return;
       ts.title = T("loop_verify_hint");
       ts.onclick = () => {
         const f = LOOP.frames[LOOP.idx];
@@ -590,11 +589,13 @@ function initMap() {
   rebuildMapLayers();
 }
 
+const XY = (pt) => (Array.isArray(pt) ? [pt[1], pt[0]] : [pt.lat, pt.lon]);
+
 function _polyGroup(key, layers, labelFn) {
   const ls = (layers || []).filter((l) => l.polygon && l.polygon.length > 2);
   if (!ls.length) return null;
   const g = L.layerGroup(ls.map((l) =>
-    L.polygon(l.polygon.map((pt) => [pt[1], pt[0]]),
+    L.polygon(l.polygon.map((pt) => XY(pt)),
       { color: PCOL[key], weight: 1.6, fillColor: PCOL[key], fillOpacity: 0.16 })
       .bindTooltip(labelFn(l))));
   g._krkKey = key;

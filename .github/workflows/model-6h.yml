@@ -1,0 +1,65 @@
+name: Model 6-hourly (auto-generate + archive)
+
+# ---------------------------------------------------------------------------
+# Maintainer decision (decreasing-activity window, 2026-09): the secondary model
+# is generated EVERY 6 HOURS without a human in the loop, so it can be compared
+# against Darwin VAAC over time. Guardrails kept:
+#   * auto-publish ONLY when validation reports zero hard failures;
+#   * every auto-published model is stamped auto_published + approved_by=auto:6h;
+#   * caveats[] travel with it and render on the page;
+#   * the manual approval button (pages.yml) still overrides at any time;
+#   * set repo variable AUTO_PUBLISH_MODEL=false to fall back to manual-only.
+#
+# This job also ARCHIVES, every 6 hours:
+#   site/data/archive/models/model-<stamp>.json   our full model snapshot
+#   site/data/archive/vaac/vaac-<stamp>.json      Darwin VAAC state at that time
+#   site/data/archive/vaac/graphic-<nr>.png       the OFFICIAL graphical advisory
+#   site/data/archive/index.json                  machine-readable listing
+# Pruned automatically: 60 models / 40 states / 30 graphics.
+# ---------------------------------------------------------------------------
+on:
+  schedule:
+    - cron: '0 */6 * * *'      # 00,06,12,18 UTC = 07,13,19,01 WIB
+  workflow_dispatch: {}
+
+concurrency:
+  group: model6h
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generate model + archive (+ auto-publish if enabled)
+        env:
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+        run: |
+          FLAGS="--archive --no-sat --no-loop"
+          if [ "${{ vars.AUTO_PUBLISH_MODEL }}" != "false" ]; then
+            FLAGS="$FLAGS --auto-publish"
+          fi
+          python3 src/build_site.py $FLAGS
+
+      - name: Commit archive + model + backtest ledger
+        if: always()
+        run: |
+          git config user.name  "krakatau-bot"
+          git config user.email "krakatau-bot@users.noreply.github.com"
+          git add site/data/archive || true
+          git add site/data/forecast_model.json || true
+          git add site/data/backtest.jsonl || true
+          git diff --cached --quiet || { git commit -m "6h model archive ${{ github.run_id }}"; git push; }

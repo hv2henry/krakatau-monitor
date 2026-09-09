@@ -1,0 +1,84 @@
+name: Build & deploy dashboard
+
+# ---------------------------------------------------------------------------
+# THE automation. Free hosting on GitHub Pages (public repo = unlimited builds).
+# This file must live at .github/workflows/pages.yml in the repository.
+#
+#   Automatic : every 15 minutes the job re-collects MAGMA + Darwin VAAC,
+#               re-stitches NASA imagery, and redeploys. Visitors see fresh
+#               data without any server.
+#   Manual    : "Run workflow" button in the Actions tab.
+#               Tick `publish_forecast_model` to push the secondary model to
+#               the site — that checkbox IS the human-in-the-loop approval.
+#               Type your name in `approver_name`; it is stamped on the page.
+# ---------------------------------------------------------------------------
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      publish_forecast_model:
+        description: 'Publish the secondary ash model (human approval)'
+        type: boolean
+        default: false
+      approver_name:
+        description: 'Your name (stamped as approver on the site)'
+        type: string
+        default: ''
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # needed ONLY so an approved model file can be committed back
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pillow
+
+      - name: Build site data + assets
+        run: |
+          if [ "${{ github.event.inputs.publish_forecast_model }}" = "true" ]; then
+            python3 src/build_site.py --approve-forecast --approver "${{ github.event.inputs.approver_name || github.actor }}"
+          else
+            python3 src/build_site.py
+          fi
+
+      - name: Commit the approved model so it survives future rebuilds
+        if: github.event.inputs.publish_forecast_model == 'true'
+        run: |
+          git config user.name  "krakatau-bot"
+          git config user.email "krakatau-bot@users.noreply.github.com"
+          git add site/data/forecast_model.json
+          git diff --cached --quiet || { git commit -m "forecast model approved by ${{ github.event.inputs.approver_name || github.actor }}"; git push; }
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v3

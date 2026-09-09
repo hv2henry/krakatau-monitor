@@ -1,0 +1,137 @@
+/*
+  Blog design tokens — ported 1:1 from henry-beton-template_V2_1.xml
+  (Blogger theme). This is intentionally separate from hv2-site's
+  tokens.css — the blog keeps its own Lora/DM Sans + red/cream identity.
+*/
+
+:root {
+  --accent: #9B2B1A;
+  --accent-light: #c0392b;
+  --accent-muted: rgba(155, 43, 26, 0.12);
+
+  --bg: #FAFAF8;
+  --bg-secondary: #F2F0ED;
+  --bg-card: #FFFFFF;
+  --surface: #EEECEA;
+
+  --text-primary: #1A1A18;
+  --text-secondary: #555550;
+  --text-muted: #888880;
+
+  --border: #E0DDD8;
+  --border-light: #EDEAE5;
+
+  --nav-bg: rgba(250, 250, 248, 0.92);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+
+  --radius: 6px;
+  --radius-lg: 12px;
+
+  --font-body: 'Lora', Georgia, serif;
+  --font-ui: 'DM Sans', system-ui, sans-serif;
+
+  --max-width: 720px;
+  --max-width-wide: 1100px;
+
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --hv2-fill-1: #f4e8d0;
+  --hv2-fill-2: #b2a1a1;
+  --hv2-stroke: #c8a96b;
+  --hv2-fill-4: #9b2b1a;
+}
+
+[data-theme='dark'] {
+  --accent: #E07B5A;
+  --accent-light: #F07060;
+  --accent-muted: rgba(224, 123, 90, 0.15);
+
+  --bg: #141412;
+  --bg-secondary: #1C1C1A;
+  --bg-card: #1E1E1C;
+  --surface: #252523;
+
+  --text-primary: #F0EDE8;
+  --text-secondary: #F5F3F0;
+  --text-muted: #F2F0ED;
+
+  --border: #2E2E2C;
+  --border-light: #252523;
+
+  --nav-bg: rgba(20, 20, 18, 0.94);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 17px;
+}
+html[data-text-size='large'] { font-size: 19px; }
+html[data-text-size='xlarge'] { font-size: 21px; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  transition: background var(--transition), color var(--transition);
+}
+
+a { color: var(--accent); }
+
+/* ---- Loading primitives bersama ----
+   .skeleton  -> shimmer block, dipakai di /akun & NotificationsModal.
+   .loading-dots -> 3 titik bouncing merah, dipakai di AccountModal &
+   ChallengeModal (yang aksinya cuma sebentar, bukan skeleton layout
+   penuh). Ditaruh di sini (bukan per-komponen) karena blog-tokens.css
+   sudah global-loaded di semua halaman/komponen blog — supaya
+   keyframes-nya tidak didefinisikan ulang di tiap file, dan supaya
+   prefers-reduced-motion cukup di-handle SEKALI lewat satu media query
+   di bawah, bukan dicek ulang per komponen. */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--border-light) 37%, var(--surface) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: var(--radius);
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: loading-dot-bounce 1.4s ease-in-out infinite both;
+}
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0s; }
+@keyframes loading-dot-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Satu media query buat dua-duanya — matikan animasi total, bukan
+   dipercepat/disederhanakan, sesuai preferensi reduced-motion.
+   Skeleton jatuh balik ke warna solid diam, dots jatuh balik ke
+   3 titik statis (tetap kelihatan sebagai "loading", cuma tidak gerak). */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; background: var(--surface); }
+  .loading-dots span { animation: none; opacity: 1; transform: none; }
+}

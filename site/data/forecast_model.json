@@ -13080,8 +13080,8 @@
   "deg": 315
  },
  "backtest": {
-  "n": 8,
-  "mean_abs_deg": 81.7,
+  "n": 9,
+  "mean_abs_deg": 85.4,
   "median_abs_deg": 95.3
  },
  "plume_top": {

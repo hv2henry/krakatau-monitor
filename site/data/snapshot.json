@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-10T10:59:29Z",
- "generated_wib": "10 Sep 2026, 17:59 WIB",
+ "generated_utc": "2026-09-10T11:47:08Z",
+ "generated_wib": "10 Sep 2026, 18:47 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-10T10:59:30Z",
-  "fetched_wib": "10 Sep 2026, 17:59 WIB",
+  "fetched_utc": "2026-09-10T11:47:09Z",
+  "fetched_wib": "10 Sep 2026, 18:47 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -25,22 +25,22 @@
   }
  },
  "report": {
-  "period": "Kamis - 10 September 2026 06:00-12:00 WIB",
+  "period": "Kamis - 10 September 2026 12:00-18:00 WIB",
   "author": "Rioboniek Situmorang",
   "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut.",
-  "climate": "Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut. Suhu udara sekitar 25.8-29.7°C. Kelembaban 69-82%.",
+  "climate": "Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut. Suhu udara sekitar 28.6-30.6°C. Kelembaban 65-71%.",
   "seismic_counts": {
-   "Letusan/Erupsi": 1,
-   "Low Frequency": 3,
-   "Hybrid/Fase Banyak": 1,
-   "Vulkanik Dangkal": 5,
+   "Low Frequency": 8,
+   "Hybrid/Fase Banyak": 3,
+   "Vulkanik Dangkal": 9,
+   "Vulkanik Dalam": 7,
    "Tremor Menerus": 1
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Sep 2026, 17:59 WIB"
+  "fetched_wib": "10 Sep 2026, 18:47 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -95,7 +95,7 @@
   "advisory_nr": "2026/209",
   "dtg_utc": "2026-09-10T11:00Z",
   "dtg_wib": "10 Sep 2026, 18:00 WIB",
-  "age_hours": -0.0,
+  "age_hours": 0.8,
   "is_current": true,
   "eruption_details": "VA TO FL050 OBS AT 10/1040Z MOV NW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -303,65 +303,70 @@
  },
  "loop": {
   "source": "NASA GIBS/JMA Himawari-9 AHI",
-  "layer": "Himawari_AHI_Band3_Red_Visible_1km",
-  "band": "vis",
-  "band_label": "Visible 0.64 µm (1 km)",
+  "layer": "Himawari_AHI_Band13_Clean_Infrared",
+  "band": "ir",
+  "band_label": "IR 10.4 µm",
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-10T08:00:00Z",
-    "t_wib": "10 Sep 2026, 15:00 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T08:10:00Z",
-    "t_wib": "10 Sep 2026, 15:10 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T08:20:00Z",
-    "t_wib": "10 Sep 2026, 15:20 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T08:40:00Z",
-    "t_wib": "10 Sep 2026, 15:40 WIB",
-    "asset": "assets/loop/f03.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T08:50:00Z",
-    "t_wib": "10 Sep 2026, 15:50 WIB",
-    "asset": "assets/loop/f04.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T09:00:00Z",
-    "t_wib": "10 Sep 2026, 16:00 WIB",
-    "asset": "assets/loop/f05.jpg"
-   },
-   {
     "t_utc": "2026-09-10T09:10:00Z",
     "t_wib": "10 Sep 2026, 16:10 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-10T09:20:00Z",
     "t_wib": "10 Sep 2026, 16:20 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-09-10T09:30:00Z",
     "t_wib": "10 Sep 2026, 16:30 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-10T09:40:00Z",
     "t_wib": "10 Sep 2026, 16:40 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-10T09:50:00Z",
     "t_wib": "10 Sep 2026, 16:50 WIB",
+    "asset": "assets/loop/f04.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:00:00Z",
+    "t_wib": "10 Sep 2026, 17:00 WIB",
+    "asset": "assets/loop/f05.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:10:00Z",
+    "t_wib": "10 Sep 2026, 17:10 WIB",
+    "asset": "assets/loop/f06.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:20:00Z",
+    "t_wib": "10 Sep 2026, 17:20 WIB",
+    "asset": "assets/loop/f07.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:30:00Z",
+    "t_wib": "10 Sep 2026, 17:30 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:40:00Z",
+    "t_wib": "10 Sep 2026, 17:40 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T10:50:00Z",
+    "t_wib": "10 Sep 2026, 17:50 WIB",
     "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T11:00:00Z",
+    "t_wib": "10 Sep 2026, 18:00 WIB",
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -371,15 +376,15 @@
    -10.5,
    -2.5
   ],
-  "zoom": 7,
-  "tms": 7,
+  "zoom": 6,
+  "tms": 6,
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-10 09:50Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-10T09:50:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-10 11:00Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-10T11:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-10T11:04:18Z"
+  "built_utc": "2026-09-10T11:49:50Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

@@ -211,7 +211,7 @@ const I18N = {
     loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
     loop_verified: "Frame times verified: Himawari 10-min imaging grid {grid} · imaging slot present on NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Click to open NASA's source tile for this frame (self-verification)",
-    map_need_network: "The interactive map needs an internet connection (tiles © OpenStreetMap). Polygon data remains machine-readable at data/snapshot.json.",
+    map_need_network: "Map library failed to load: site/vendor/leaflet.js is missing and backup CDNs are unreachable. Check the site/vendor/ upload - the rest of the dashboard works normally.",
     gal_of: "of",
     sat_open: "Open the FIRMS interactive map for this date",
     model_unpub_t: "Model not published",
@@ -631,9 +631,26 @@ function loadLeaflet(cb) {
   if (LEAFLET === 1) return;              // already fetching
   LEAFLET = 1;
   // Leaflet is vendored in site/vendor/ and loaded by index.html before this
-  // file; reaching here means it is genuinely missing (broken upload).
-  LEAFLET = 3;
-  cb(false);
+  // file. If that copy is missing (skipped upload), fall back to CDNs before
+  // giving up - the message must never blame the user's internet wrongly.
+  const sources = [
+    "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+  ];
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css";
+  document.head.appendChild(css);
+  let i = 0;
+  const tryNext = () => {
+    if (i >= sources.length) { LEAFLET = 3; return cb(false); }
+    const sc = document.createElement("script");
+    sc.src = sources[i++];
+    sc.onload = () => { LEAFLET = 2; cb(true); };
+    sc.onerror = tryNext;
+    document.head.appendChild(sc);
+  };
+  tryNext();
 }
 
 function initMap() {

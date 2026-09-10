@@ -142,18 +142,22 @@ def _tile_idx(lon: float, lat: float, z: int):
     return x, y
 
 
-def _trim_black(im, thresh: int = 8):
-    """Cut empty swath-edge columns/rows (the black wedge MODIS leaves)."""
+def _trim_box(im, thresh: int = 8):
+    """Bounding box of non-black content (the swath-edge wedge MODIS leaves)."""
     try:
         import numpy as np
         a = np.asarray(im.convert("L"))
         xs = np.where(a.mean(axis=0) > thresh)[0]
         ys = np.where(a.mean(axis=1) > thresh)[0]
         if len(xs) > 10 and len(ys) > 10:
-            return im.crop((int(xs[0]), int(ys[0]), int(xs[-1]) + 1, int(ys[-1]) + 1))
+            return (int(xs[0]), int(ys[0]), int(xs[-1]) + 1, int(ys[-1]) + 1)
     except Exception:
         pass
-    return im
+    return (0, 0, im.width, im.height)
+
+
+def _trim_black(im, thresh: int = 8):
+    return im.crop(_trim_box(im, thresh))
 
 
 def stitch_gibs(sensor: str, date: str, out_path: str) -> dict | None:
@@ -301,7 +305,11 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
     x0, y1 = _tile_idx(lon0, lat0, z)
     x1, y0 = _tile_idx(lon1, lat1, z)
     frames = []
+    frames_raw = []
     os.makedirs(out_dir, exist_ok=True)
+    for stale in os.listdir(out_dir):            # no cross-vintage frame mixing
+        if stale.startswith("f") and stale.endswith(".jpg"):
+            os.remove(os.path.join(out_dir, stale))
     for tstr in times:
         imgs = {}
         for row in range(y0, y1 + 1):
@@ -329,16 +337,23 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
         cx0, cx1 = gx(LOOP_CROP[0]) - x0 * 256, gx(LOOP_CROP[1]) - x0 * 256
         cy0, cy1 = gy(LOOP_CROP[3]) - y0 * 256, gy(LOOP_CROP[2]) - y0 * 256
         crop = canvas.crop((max(0, int(cx0)), max(0, int(cy0)), min(W, int(cx1)), min(H, int(cy1))))
-        crop = _trim_black(crop)
-        crop = ImageOps.autocontrast(crop, cutoff=1)
-        if B["upscale"] > 1:
-            crop = crop.resize((crop.width * B["upscale"], crop.height * B["upscale"]),
-                               Image.LANCZOS)
-        fname = f"f{len(frames):02d}.jpg"
-        crop.save(os.path.join(out_dir, fname), "JPEG", quality=80, optimize=True)
-        frames.append({"t_utc": tstr, "t_wib": wib_human(tstr), "asset": f"assets/loop/{fname}"})
+        frames_raw.append(crop)
+        frames.append({"t_utc": tstr, "t_wib": wib_human(tstr),
+                       "asset": f"assets/loop/f{len(frames):02d}.jpg"})
     if len(frames) < 4:
         return None
+
+    # NO per-frame trimming in the animation: independent trims gave late-window
+    # frames (orbit swath edge entering the view) a different aspect than early
+    # ones - the "stretched frames 9-12" bug. Fixed grid = constant geometry;
+    # a black swath wedge on some frames is an honest satellite artifact.
+    for im, meta in zip(frames_raw, frames):
+        c = im
+        c = ImageOps.autocontrast(c, cutoff=1)
+        if B["upscale"] > 1:
+            c = c.resize((c.width * B["upscale"], c.height * B["upscale"]), Image.LANCZOS)
+        c.save(os.path.join(out_dir, meta["asset"].split("/")[-1]), "JPEG",
+               quality=80, optimize=True)
 
     # ---- verification, so the timestamps are not just our word for it ----
     # 1) every frame time must sit on Himawari's published 10-minute imaging grid
@@ -387,7 +402,7 @@ def archive_run(embed, vaac) -> None:
     """Six-hourly memory: our model, the VAAC state, and the official chart.
     Pruned so the repo stays light: 60 model snapshots, 40 VAAC states,
     30 graphical advisories (one per advisory number)."""
-    base = os.path.join(SITE, "data", "archive")
+    base = os.path.join(REPO, "archive")   # repo root: archive data, NOT website files
     mdir, vdir = os.path.join(base, "models"), os.path.join(base, "vaac")
     os.makedirs(mdir, exist_ok=True)
     os.makedirs(vdir, exist_ok=True)

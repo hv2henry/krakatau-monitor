@@ -11,10 +11,10 @@ name: Model 6-hourly (auto-generate + archive)
 #   * set repo variable AUTO_PUBLISH_MODEL=false to fall back to manual-only.
 #
 # This job also ARCHIVES, every 6 hours:
-#   site/data/archive/models/model-<stamp>.json   our full model snapshot
-#   site/data/archive/vaac/vaac-<stamp>.json      Darwin VAAC state at that time
-#   site/data/archive/vaac/graphic-<nr>.png       the OFFICIAL graphical advisory
-#   site/data/archive/index.json                  machine-readable listing
+#   archive/models/model-<stamp>.json   our full model snapshot
+#   archive/vaac/vaac-<stamp>.json      Darwin VAAC state at that time
+#   archive/vaac/graphic-<nr>.png       the OFFICIAL graphical advisory
+#   archive/index.json                  machine-readable listing
 # Pruned automatically: 60 models / 40 states / 30 graphics.
 # ---------------------------------------------------------------------------
 on:
@@ -59,7 +59,8 @@ jobs:
         run: |
           git config user.name  "krakatau-bot"
           git config user.email "krakatau-bot@users.noreply.github.com"
-          git add site/data/archive || true
+          git rm -r --ignore-unmatch site/data/archive || true   # legacy path, once
+          git add archive || true
           git add site/data/forecast_model.json || true
           git add site/data/backtest.jsonl || true
           git diff --cached --quiet || { git commit -m "6h model archive ${{ github.run_id }}"; git push; }

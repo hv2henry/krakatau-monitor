@@ -48,7 +48,7 @@ jobs:
         env:
           FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
         run: |
-          FLAGS="--archive --no-sat --no-loop"
+          FLAGS="--archive --no-sat --no-loop --slots 6"
           if [ "${{ vars.AUTO_PUBLISH_MODEL }}" != "false" ]; then
             FLAGS="$FLAGS --auto-publish"
           fi

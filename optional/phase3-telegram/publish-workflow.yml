@@ -1,0 +1,99 @@
+name: Krakatau monitor
+
+# ---------------------------------------------------------------------------
+# PHASE-3 WORKFLOW (Telegram era) — copy to .github/workflows/ when wiring push.
+# Run from a PUBLIC repo: Actions minutes are unlimited there; a private repo's
+# 2000 min/month would not cover a 15-min cadence (~8700 min/month).
+# ---------------------------------------------------------------------------
+on:
+  schedule:
+    - cron: '*/15 * * * *'      # MAGMA + Darwin VAAC (light, HTML only)
+  workflow_dispatch: {}
+
+concurrency:
+  group: monitor                  # never run two polls at once
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # ── PRIMARY sources: MAGMA/PVMBG and Darwin VAAC ─────────────────────
+      - name: MAGMA / PVMBG (primary — eruption status)
+        id: magma
+        continue-on-error: true
+        run: python3 src/volcano_monitor.py --json --state state.json --log history.jsonl > magma.json
+
+      - name: Darwin VAAC (primary — ash cloud)
+        id: vaac
+        continue-on-error: true
+        run: python3 src/darwin_vaac.py --json > vaac.json
+
+      # ── Publish only when something actually changed ─────────────────────
+      - name: Push to Telegram / Supabase
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NTFY_URL:           ${{ secrets.NTFY_URL }}
+          NTFY_TOKEN:         ${{ secrets.NTFY_TOKEN }}
+        run: |
+          python3 src/publish.py \
+            --monitor-json magma.json --vaac-json vaac.json \
+            --telegram --supabase --ntfy-auto
+
+      # ── Heartbeat. Keeps the free Supabase project from pausing after a
+      #    week of inactivity, and records that this run happened. ───────────
+      - name: Heartbeat
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          url, key = os.environ.get("SUPABASE_URL","").rstrip("/"), os.environ.get("SUPABASE_SERVICE_KEY","")
+          if not (url and key): print("supabase not configured; skipping"); raise SystemExit(0)
+          from datetime import datetime, timezone
+          now = datetime.now(timezone.utc).isoformat()
+          body = json.dumps({"last_run_at": now, "last_ok_at": now,
+                             "status": "ok", "detail": "github action", "consecutive_failures": 0}).encode()
+          req = urllib.request.Request(f"{url}/rest/v1/pipeline_heartbeat?id=eq.1", data=body, method="PATCH",
+                                       headers={"apikey": key, "Authorization": f"Bearer {key}",
+                                                "Content-Type": "application/json", "Prefer": "return=minimal"})
+          print(urllib.request.urlopen(req, timeout=30).status)
+          PY
+
+      # ── Static dashboard -> Cloudflare Pages (unmetered bandwidth).
+      #    Supabase free egress is only 5 GB/mo, so never serve readers from it.
+      - name: Build static site
+        run: |
+          mkdir -p site
+          python3 src/volcano_monitor.py --state state.json --html site/index.html >/dev/null
+          cp README.md site/ 2>/dev/null || true
+          echo '<meta http-equiv="refresh" content="300">' >> site/index.html
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=krakatau-monitor
+
+      # ── Persist state so change-detection works across runs ──────────────
+      - name: Commit state
+        run: |
+          git config user.name  "krakatau-bot"
+          git config user.email "krakatau-bot@users.noreply.github.com"
+          git add state.json history.jsonl || true
+          git diff --cached --quiet || { git commit -m "state $(date -u +%FT%TZ)"; git push; }

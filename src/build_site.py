@@ -360,7 +360,7 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
     verify_url = (f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{B['layer']}"
                   f"/default/{last}/GoogleMapsCompatible_Level{B['tms']}/{B['z']}/{zy}/{zx}.png")
 
-    return {"source": "NASA GIBS / JMA Himawari-9 AHI", "layer": B["layer"],
+    return {"source": "NASA GIBS/JMA Himawari-9 AHI", "layer": B["layer"],
             "band": band, "band_label": B["label"],
             "interval_min": 10, "frames": frames, "credit": LOOP_CREDIT,
             "roi": list(LOOP_CROP), "zoom": B["z"], "tms": B["tms"],
@@ -627,7 +627,7 @@ def build(args) -> int:
         "volcano": {"name": mon.get("volcano"), "code": mon.get("code"),
                     "province": mon.get("province"), "lat": args.lat, "lon": args.lon},
         "status": {"level": mon.get("level"), "level_name": mon.get("level_name"),
-                   "source": "MAGMA Indonesia / PVMBG",
+                   "source": "MAGMA Indonesia/PVMBG",
                    "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
                    "fetched_utc": mon.get("generated_utc"),
                    "fetched_wib": wib_human(mon.get("generated_utc")),
@@ -637,7 +637,7 @@ def build(args) -> int:
                    "seismic_counts": rep.get("seismic_counts"),
                    "recommendation": rep.get("recommendation"),
                    "seismogram_asset": seismo_asset,
-                   "source": "MAGMA Indonesia / PVMBG",
+                   "source": "MAGMA Indonesia/PVMBG",
                    "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
                    "fetched_wib": wib_human(mon.get("generated_utc"))},
         "eruptions": eruptions,
@@ -703,6 +703,19 @@ def build(args) -> int:
                                  "source": "VONA/MAGMA ash-top estimate",
                                  "issued_wib": v.get("wib")}
                     break
+        if plume_top is None:
+            # last resort, clearly labelled: the highest well-consistent AMV
+            # cloud band near the vent. Cloud top, NOT confirmed ash — the label
+            # says so, and a caveat repeats it in plain language.
+            cands = [l for l in layers if l.get("data") and l.get("consistency_R")
+                     and l["consistency_R"] >= 0.7 and (l.get("n_eff") or 0) >= 5
+                     and (l.get("nearest_vector_km") or 999) <= 250]
+            if cands:
+                top = max(cands, key=lambda l: l["alt_km"])
+                plume_top = {"km": top["alt_km"], "fl": None,
+                             "human_id": f"≈ {top['alt_km']:.1f} km dpl (estimasi awan)",
+                             "human_en": f"≈ {top['alt_km']:.1f} km asl (cloud estimate)",
+                             "source": "AMV cloud-top estimate (speculative, not confirmed ash)"}
 
         def _caveats(layers_list, plume_top, vaac, cand, verdict):
             """The human report's honesty, mirrored for machine consumers."""
@@ -712,57 +725,87 @@ def build(args) -> int:
             if nearest and min(nearest) > 150:
                 out.append({
                     "id": f"Tidak ada vektor angin satelit dalam {int(min(nearest))} km dari kawah; ini aliran REGIONAL, bukan pengukuran di kawah.",
-                    "en": f"No satellite wind vector within {int(min(nearest))} km of the vent; this is REGIONAL flow, not a crater measurement."})
+                    "en": f"No satellite wind vector within {int(min(nearest))} km of the vent; this is REGIONAL flow, not a crater measurement.",
+                    "plain_id": "Angin satelit terdekat berjarak ratusan kilometer dari kawah — ini gambaran wilayah luas, bukan titik persis.",
+                    "plain_en": "The nearest satellite winds are hundreds of kilometres from the crater — a wide-area picture, not a pinpoint."})
             lowR = [l for l in layers_list if l.get("consistency_R") is not None
                     and l["consistency_R"] < 0.7 and l.get("relevant_today")]
             if lowR:
                 out.append({
                     "id": "Vektor satelit pada lapisan relevan tidak saling sepakat (R<0.7); arah lapisan tersebut tidak pasti.",
-                    "en": "Satellite vectors in a relevant layer disagree (R<0.7); that layer's direction is uncertain."})
+                    "en": "Satellite vectors in a relevant layer disagree (R<0.7); that layer's direction is uncertain.",
+                    "plain_id": "Untuk lapisan ini pengukuran satelit saling bertentangan — arahnya belum pasti.",
+                    "plain_en": "For this layer the satellite measurements disagree — its direction is not yet certain."})
             agg = (verdict or {}).get("direction_corroboration", {}).get("agreement")
             if agg == "divergent":
                 out.append({
                     "id": "Sumber-sumber berbeda arah 45-90° (divergen): bukan koroborasi, bukan pula konflik tegas.",
-                    "en": "Sources diverge by 45-90 degrees: neither corroborated nor squarely conflicting."})
+                    "en": "Sources diverge by 45-90 degrees: neither corroborated nor squarely conflicting.",
+                    "plain_id": "Sumber resmi dan perhitungan satelit tidak sepenuhnya sepakat hari ini.",
+                    "plain_en": "Official and satellite sources do not fully agree today."})
             if agg == "single_source":
                 out.append({
                     "id": "Hanya satu sumber berbicara per lapisan; belum ada koroborasi independen.",
-                    "en": "Only one source speaks per layer; no independent corroboration yet."})
+                    "en": "Only one source speaks per layer; no independent corroboration yet.",
+                    "plain_id": "Baru satu sumber yang berbicara untuk lapisan ini.",
+                    "plain_en": "Only one source speaks for this layer."})
             wet = [l for l in layers_list if any(
                 (v.get("wet_points") or [])
                 for v in (l.get("settling_classes") or {}).values())]
             if wet:
                 out.append({
                     "id": "Sebagian lintasan melewati sel hujan (open-meteo): deposisi basah diterapkan (Λ=1e-4/s per mm/h); titik biru = perpotongan hujan → interpretasi risiko ashfall.",
-                    "en": "Part of the trajectory crosses rain cells (open-meteo): wet deposition applied (Λ=1e-4/s per mm/h); blue dots = rain crossings → ashfall-risk interpretation."})
+                    "en": "Part of the trajectory crosses rain cells (open-meteo): wet deposition applied (Λ=1e-4/s per mm/h); blue dots = rain crossings → ashfall-risk interpretation.",
+                    "plain_id": "Sebagian lintasan melewati hujan — sebagian abu bisa jatuh lebih dulu di sana.",
+                    "plain_en": "Part of the path crosses rain — some ash may fall out there first."})
             out.append({
                 "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); difusi memakai σ(t)=√(2K0t)+g·t (K tumbuh bersama plume); geser dalam lapisan ditambahkan ke ±derajat.",
-                "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); diffusion uses σ(t)=√(2K0t)+g·t (K grows with plume size); within-band shear added into ±degrees."})
+                "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); diffusion uses σ(t)=√(2K0t)+g·t (K grows with plume size); within-band shear added into ±degrees.",
+                    "plain_id": "Perhitungan memakai abu yang jatuh perlahan, menyebar, dan angin yang berubah theo ketinggian — dengan ketidakpastian yang jujur.",
+                    "plain_en": "The calculation accounts for ash settling slowly, spreading, and wind changing with height — with honest uncertainty."})
             out.append({
                 "id": "ECMWF/GFS/ICON beresolusi ~9-25 km: sirkulasi lokal mesoscale (angin laut/darat, topografi) tidak tertangkap.",
-                "en": "ECMWF/GFS/ICON run at ~9-25 km grids: local mesoscale circulations (sea/land breeze, terrain flows) are not resolved."})
+                "en": "ECMWF/GFS/ICON run at ~9-25 km grids: local mesoscale circulations (sea/land breeze, terrain flows) are not resolved.",
+                    "plain_id": "Angin lokal (pantai, lembah, gunung) terlalu kecil untuk terlihat model cuaca global.",
+                    "plain_en": "Local winds (coastal, valley, mountain) are too small for global weather models to see."})
             spreads = [l.get("ensemble_spread_deg") for l in layers_list
                        if l.get("ensemble_spread_deg") and l["ensemble_spread_deg"] > 30]
             if spreads:
                 out.append({
                     "id": f"Model cuaca (ECMWF/GFS/ICON) saling berbeda hingga {int(max(spreads))}° pada sebagian lapisan.",
-                    "en": f"NWP models (ECMWF/GFS/ICON) disagree by up to {int(max(spreads))} degrees on some layers."})
+                    "en": f"NWP models (ECMWF/GFS/ICON) disagree by up to {int(max(spreads))} degrees on some layers.",
+                    "plain_id": "Model cuaca saling berbeda cukup jauh di sebagian ketinggian.",
+                    "plain_en": "The weather models differ noticeably at some heights."})
             if vaac.get("state") != "advisory":
                 if plume_top and "VONA" in (plume_top.get("source") or ""):
                     out.append({
                         "id": "Darwin VAAC nihil/kedaluwarsa; tinggi puncak memakai estimasi VONA/MAGMA.",
-                        "en": "Darwin VAAC nil/stale; cloud-top height uses the VONA/MAGMA estimate."})
+                        "en": "Darwin VAAC nil/stale; cloud-top height uses the VONA/MAGMA estimate.",
+                    "plain_id": "Tanpa advisori Darwin hari ini, tinggi awan memakai laporan MAGMA.",
+                    "plain_en": "With no Darwin advisory today, cloud height uses MAGMA's report."})
                 else:
                     out.append({
                         "id": "Tidak ada tinggi puncak awan abu resmi hari ini; relevansi lapisan tidak ditandai.",
-                        "en": "No official ash-cloud top today; layer relevance is unflagged."})
+                        "en": "No official ash-cloud top today; layer relevance is unflagged.",
+                    "plain_id": "Tidak ada tinggi awan abu resmi hari ini.",
+                    "plain_en": "There is no official ash-cloud height today."})
+            if plume_top and "speculative" in (plume_top.get("source") or ""):
+                out.append({
+                    "id": "Tinggi puncak hari ini adalah ESTIMASI awan dari satelit angin, bukan abu terkonfirmasi.",
+                    "en": "Today's cloud top is a speculative estimate from wind-satellite clouds, not confirmed ash.",
+                    "plain_id": "Tinggi awan hari ini perkiraan dari satelit, bukan abu yang dipastikan.",
+                    "plain_en": "Today's cloud height is a satellite estimate, not confirmed ash."})
             if not (cand or {}).get("firms"):
                 out.append({
                     "id": "Tanpa kunci FIRMS: tidak ada uji-silak hotspot independen untuk 'erupsi berlangsung'.",
-                    "en": "No FIRMS key set: no independent hotspot cross-check for 'eruption ongoing'."})
+                    "en": "No FIRMS key set: no independent hotspot cross-check for 'eruption ongoing'.",
+                    "plain_id": "Belum ada pemeriksaan silang hotspot NASA hari ini.",
+                    "plain_en": "No NASA hotspot cross-check today."})
             out.append({
                 "id": "Lintasan memakai angin prakiraan per jam + pengendapan 3 kelas abu + difusi; varian angin-tetap ikut disertakan.",
-                "en": "Trajectories use hourly-evolving forecast wind + 3 settling classes + diffusion; a steady-wind variant ships alongside."})
+                "en": "Trajectories use hourly-evolving forecast wind + 3 settling classes + diffusion; a steady-wind variant ships alongside.",
+                    "plain_id": "Garis pergerakan adalah prakiraan, bukan jaminan.",
+                    "plain_en": "The tracks are a forecast, not a promise."})
             return out
 
         def _plume_vector(layers_list, h_target):
@@ -794,11 +837,29 @@ def build(args) -> int:
         layers = []
         for row in cand.get("observed_wind_profile", []):
             if not row.get("data"):
+                # show the gap instead of hiding it: visitors see WHICH layers
+                # had no satellite coverage this run, not a silently shorter table
+                tr_fc = (cand.get("trajectories_forecast") or {}).get(row["layer"], [])
+                layers.append({"layer": row["layer"], "data": False,
+                               "n": row.get("n", 0),
+                               "note_id": "tidak ada vektor satelit pada slot ini; garis = model cuaca saja",
+                               "note_en": "no satellite vectors this slot; line = weather model only",
+                               "trajectory_kind": "nwp-only" if tr_fc else None,
+                               "trajectory": [[q["lat"], q["lon"], q["hours"]] for q in tr_fc],
+                               "envelope": (cand.get("envelopes") or {}).get(row["layer"]),
+                               "settling_classes": {
+                                   c: {"pts": [[q["lat"], q["lon"], q["hours"], q["alt_km"]] for q in v["pts"]],
+                                       "mass_remaining": v.get("mass_remaining"),
+                                       "wet_points": v.get("wet_points", [])}
+                                   for c, v in ((cand.get("trajectories_settling") or {})
+                                                .get(row["layer"], {}) or {}).items()
+                                   if isinstance(v, dict) and "pts" in v}})
                 continue
             tr_steady = (cand.get("trajectories_observed") or {}).get(row["layer"], [])
             tr_fc = (cand.get("trajectories_forecast") or {}).get(row["layer"], [])
             layers.append({
                 "layer": row["layer"],
+                "data": True,
                 "alt_km": row["mean_altitude_km"],
                 "alt_human_id": f"± {row['mean_altitude_km']:.1f} km dpl",
                 "alt_human_en": f"± {row['mean_altitude_km']:.1f} km asl",

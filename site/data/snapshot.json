@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-10T07:10:43Z",
- "generated_wib": "10 Sep 2026, 14:10 WIB",
+ "generated_utc": "2026-09-10T08:50:48Z",
+ "generated_wib": "10 Sep 2026, 15:50 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -13,10 +13,10 @@
  "status": {
   "level": 3,
   "level_name": "Level III (Siaga)",
-  "source": "MAGMA Indonesia / PVMBG",
+  "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-10T07:10:44Z",
-  "fetched_wib": "10 Sep 2026, 14:10 WIB",
+  "fetched_utc": "2026-09-10T08:50:50Z",
+  "fetched_wib": "10 Sep 2026, 15:50 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -38,9 +38,9 @@
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
-  "source": "MAGMA Indonesia / PVMBG",
+  "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Sep 2026, 14:10 WIB"
+  "fetched_wib": "10 Sep 2026, 15:50 WIB"
  },
  "eruptions": [
   {
@@ -103,7 +103,7 @@
   "advisory_nr": "2026/208",
   "dtg_utc": "2026-09-10T05:00Z",
   "dtg_wib": "10 Sep 2026, 12:00 WIB",
-  "age_hours": 2.2,
+  "age_hours": 3.8,
   "is_current": true,
   "eruption_details": "VA TO FL050 OBS AT 10/0440Z MOV NW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -310,66 +310,71 @@
   }
  },
  "loop": {
-  "source": "NASA GIBS / JMA Himawari-9 AHI",
+  "source": "NASA GIBS/JMA Himawari-9 AHI",
   "layer": "Himawari_AHI_Band3_Red_Visible_1km",
   "band": "vis",
   "band_label": "Visible 0.64 µm (1 km)",
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-10T04:40:00Z",
-    "t_wib": "10 Sep 2026, 11:40 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T04:50:00Z",
-    "t_wib": "10 Sep 2026, 11:50 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:00:00Z",
-    "t_wib": "10 Sep 2026, 12:00 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:10:00Z",
-    "t_wib": "10 Sep 2026, 12:10 WIB",
-    "asset": "assets/loop/f03.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:20:00Z",
-    "t_wib": "10 Sep 2026, 12:20 WIB",
-    "asset": "assets/loop/f04.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:30:00Z",
-    "t_wib": "10 Sep 2026, 12:30 WIB",
-    "asset": "assets/loop/f05.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:40:00Z",
-    "t_wib": "10 Sep 2026, 12:40 WIB",
-    "asset": "assets/loop/f06.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T05:50:00Z",
-    "t_wib": "10 Sep 2026, 12:50 WIB",
-    "asset": "assets/loop/f07.jpg"
-   },
-   {
-    "t_utc": "2026-09-10T06:00:00Z",
-    "t_wib": "10 Sep 2026, 13:00 WIB",
-    "asset": "assets/loop/f08.jpg"
-   },
-   {
     "t_utc": "2026-09-10T06:10:00Z",
     "t_wib": "10 Sep 2026, 13:10 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-10T06:20:00Z",
     "t_wib": "10 Sep 2026, 13:20 WIB",
+    "asset": "assets/loop/f01.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T06:30:00Z",
+    "t_wib": "10 Sep 2026, 13:30 WIB",
+    "asset": "assets/loop/f02.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T06:40:00Z",
+    "t_wib": "10 Sep 2026, 13:40 WIB",
+    "asset": "assets/loop/f03.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T06:50:00Z",
+    "t_wib": "10 Sep 2026, 13:50 WIB",
+    "asset": "assets/loop/f04.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:00:00Z",
+    "t_wib": "10 Sep 2026, 14:00 WIB",
+    "asset": "assets/loop/f05.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:10:00Z",
+    "t_wib": "10 Sep 2026, 14:10 WIB",
+    "asset": "assets/loop/f06.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:20:00Z",
+    "t_wib": "10 Sep 2026, 14:20 WIB",
+    "asset": "assets/loop/f07.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:30:00Z",
+    "t_wib": "10 Sep 2026, 14:30 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:40:00Z",
+    "t_wib": "10 Sep 2026, 14:40 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T07:50:00Z",
+    "t_wib": "10 Sep 2026, 14:50 WIB",
     "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-09-10T08:00:00Z",
+    "t_wib": "10 Sep 2026, 15:00 WIB",
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -384,10 +389,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-10 06:20Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-10T06:20:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-10 08:00Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-10T08:00:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-10T07:15:53Z"
+  "built_utc": "2026-09-10T08:55:43Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

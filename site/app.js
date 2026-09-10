@@ -18,14 +18,14 @@ const I18N = {
     sec_sat: "Citra Satelit Harian",
     sec_model: "Model Arah Abu (Sekunder)",
     src_model: "Himawari-9 + open-meteo — bukan data resmi",
-    src_magma: 'Sumber: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia / PVMBG</a>',
-    src_magma2: 'Sumber: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia / PVMBG</a>',
+    src_magma: 'Sumber: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
+    src_magma2: 'Sumber: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_vaac: 'Sumber: <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Bureau of Meteorology (Australia), ICAO VAAC</a>',
-    src_firms: 'Sumber: <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">NASA FIRMS / GIBS</a> (Suomi NPP VIIRS &amp; Aqua MODIS)',
+    src_firms: 'Sumber: <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">NASA FIRMS/GIBS</a> (Suomi NPP VIIRS &amp; Aqua MODIS)',
     foot_official: "Sumber resmi",
     foot_disclaim_t: "Penyangkalan",
     foot_disclaim: 'Situs komunitas <b>tidak resmi</b>. Bukan sistem peringatan dini. Selalu ikuti arahan PVMBG, BNPB/BPBD, dan otoritas penerbangan. Data © lembaga masing-masing.',
-    foot_agents: "Untuk mesin / AI agents",
+    foot_agents: "Untuk mesin/AI agents",
     foot_agents1: "data terstruktur, skema v1",
     foot_agents2: "model (bila dipublikasikan)",
     level: "Tingkat aktivitas",
@@ -120,14 +120,14 @@ const I18N = {
     sec_sat: "Daily Satellite Imagery",
     sec_model: "Ash Direction Model (Secondary)",
     src_model: "Himawari-9 + open-meteo — not official data",
-    src_magma: 'Source: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia / PVMBG</a>',
-    src_magma2: 'Source: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia / PVMBG</a>',
+    src_magma: 'Source: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
+    src_magma2: 'Source: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_vaac: 'Source: <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Bureau of Meteorology (Australia), ICAO VAAC</a>',
-    src_firms: 'Source: <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">NASA FIRMS / GIBS</a> (Suomi NPP VIIRS &amp; Aqua MODIS)',
+    src_firms: 'Source: <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">NASA FIRMS/GIBS</a> (Suomi NPP VIIRS &amp; Aqua MODIS)',
     foot_official: "Official sources",
     foot_disclaim_t: "Disclaimer",
     foot_disclaim: 'An <b>unofficial</b> community site. Not an early-warning system. Always follow PVMBG, BNPB/BPBD and aviation authority guidance. Data © respective agencies.',
-    foot_agents: "For machines / AI agents",
+    foot_agents: "For machines/AI agents",
     foot_agents1: "structured data, schema v1",
     foot_agents2: "model (when published)",
     level: "Alert level",
@@ -412,7 +412,8 @@ function renderModel() {
       <p class="stamp" style="max-width:520px;margin:0 auto">${T("model_unpub_b")}</p></div>`;
     return;
   }
-  const rows = MODEL.layers.map((l, i) => `
+  const rows = MODEL.layers.map((l, i) => !l.data ? `
+    <tr class="nodata"><td>${esc(l.layer)}</td><td colspan="3" class="stamp">${esc(LANG === "id" ? (l.note_id || "") : (l.note_en || ""))}</td></tr>` : `
     <tr><td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${BAND_COLORS[i % 6]};margin-right:7px"></span>${esc(l.layer)}
       ${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
       <td>${esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)}</td>
@@ -437,7 +438,7 @@ function renderModel() {
       .replace("{state}", esc(MODEL.validation.direction_agreement || "?"))
       .replace("{w}", MODEL.validation.worst_disagreement_deg != null ? MODEL.validation.worst_disagreement_deg : "?")}</p>` : ""}
     ${MODEL.caveats && MODEL.caveats.length ? `<div class="stamp"><b>${T("caveats_title")}</b><ul style="margin:4px 0 0 18px;padding:0">` +
-      MODEL.caveats.map((c) => `<li>${esc(LANG === "id" ? c.id : c.en)}</li>`).join("") + `</ul></div>` : ""}
+      MODEL.caveats.map((c) => `<li>${esc(LANG === "id" ? (c.plain_id || c.id) : (c.plain_en || c.en))}</li>`).join("") + `</ul></div>` : ""}
     ${MODEL.plume_vector ? `<p class="stamp">${T("blend_caption")}</p>` : ""}
     ${MODEL.backtest ? `<p class="stamp">${T("backtest_line")
       .replace("{m}", MODEL.backtest.mean_abs_deg).replace("{n}", MODEL.backtest.n)}</p>` : ""}

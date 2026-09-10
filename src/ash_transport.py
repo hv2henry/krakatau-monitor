@@ -1016,6 +1016,23 @@ def main() -> int:
                                                 "mass_remaining": cls["fine"]["mass_remaining"]}
             env[r["layer"]] = envelope_polygon(cls["fine"]["pts"])
 
+    for r in amv_rows:
+        if r.get("data") or not nwp:
+            continue
+        p_mid = (r["pressure_range"][0] + r["pressure_range"][1]) / 2
+        near_p = min(heights, key=lambda p: abs(p - p_mid)) if heights else None
+        h0 = heights[near_p] if near_p else 1.5
+        cls = trajectory_settling(args.lat, args.lon, h0, nwp, heights,
+                                  start, hours=args.hours, precip_grid=precip)
+        traj_fc[r["layer"]] = cls["fine"]["pts"]
+        traj_cls[r["layer"]] = {k: {"pts": v["pts"], "wet_points": v["wet_points"],
+                                    "mass_remaining": v["mass_remaining"]}
+                                for k, v in cls.items() if k != "fine"}
+        traj_cls[r["layer"]]["fine_wet"] = {"wet_points": cls["fine"]["wet_points"],
+                                            "mass_remaining": cls["fine"]["mass_remaining"]}
+        env[r["layer"]] = envelope_polygon(cls["fine"]["pts"])
+        r["nwp_only_trajectory"] = True
+
     exp = exposure(args.lat, args.lon, traj_fc or traj, start, skip_km=args.skip_km)
     firms = firms_hotspots(args.firms_key, args.lat, args.lon, args.pad, args.days) if args.firms_key else {}
 

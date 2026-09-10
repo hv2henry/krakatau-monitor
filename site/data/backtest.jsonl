@@ -9,3 +9,4 @@
 {"t": "2026-09-10T13:00Z", "model_toward": 200.2, "model_unc": 60.0, "vaac_toward": 315}
 {"t": "2026-09-10T15:00Z", "model_toward": 215.5, "model_unc": 60.0, "vaac_toward": 315}
 {"t": "2026-09-10T17:00Z", "model_toward": 193.2, "model_unc": 60.0, "vaac_toward": 270}
+{"t": "2026-09-10T19:00Z", "model_toward": 180.9, "model_unc": 60.0, "vaac_toward": 270}

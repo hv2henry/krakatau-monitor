@@ -630,16 +630,10 @@ function loadLeaflet(cb) {
   if (LEAFLET === 3) return cb(false);
   if (LEAFLET === 1) return;              // already fetching
   LEAFLET = 1;
-  const c = document.createElement("link");
-  c.rel = "stylesheet";
-  c.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-  document.head.appendChild(c);
-  const s = document.createElement("script");
-  s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-  s.crossOrigin = "anonymous";
-  s.onload = () => { LEAFLET = 2; cb(true); };
-  s.onerror = () => { LEAFLET = 3; cb(false); };
-  document.head.appendChild(s);
+  // Leaflet is vendored in site/vendor/ and loaded by index.html before this
+  // file; reaching here means it is genuinely missing (broken upload).
+  LEAFLET = 3;
+  cb(false);
 }
 
 function initMap() {

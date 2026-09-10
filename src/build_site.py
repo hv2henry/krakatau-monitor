@@ -246,7 +246,7 @@ LOOP_BANDS = {
 }
 LOOP_Z = 6
 LOOP_BOX = (100.0, 111.0, -11.0, 0.0)      # lon0 lon1 lat0 lat1 (tiles to fetch)
-LOOP_CROP = (101.5, 109.5, -9.5, -3.0)     # lon0 lon1 lat0 lat1 (pixel crop after stitch)
+LOOP_CROP = (100.4, 110.4, -10.5, -2.5)   # ~910x736 native at z7: full-width AND sharp     # lon0 lon1 lat0 lat1 (pixel crop after stitch)
 LOOP_FRAMES = 12                            # 12 x 10 min = 2 h of motion
 LOOP_CREDIT = ("Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via "
                "NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.")

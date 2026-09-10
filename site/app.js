@@ -734,9 +734,11 @@ function rebuildMapLayers() {
       ls.forEach((l, i) => {
         const c = BAND_COLORS[i % 6];
         const e = l.trajectory[l.trajectory.length - 1];
+        const lab = l.toward_deg != null
+          ? `${l.layer} → ${esc(l.toward_compass)} ${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}`
+          : `${l.layer} → ${LANG === "id" ? "model cuaca saja" : "weather model only"}`;
         parts.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
-          { color: c, weight: 2.6, opacity: 0.9 })
-          .bindTooltip(`${l.layer} → ${l.toward_compass} ${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}`));
+          { color: c, weight: 2.6, opacity: 0.9 }).bindTooltip(lab));
         parts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
           .bindTooltip(`+${e[2]}h · ${l.layer}`));
         if (l.envelope && l.envelope.length > 2) {
@@ -747,6 +749,7 @@ function rebuildMapLayers() {
         Object.entries(l.settling_classes || {}).forEach(([cn, obj]) => {
           const pts = obj.pts || obj;
           const ce = pts[pts.length - 1];
+          if (!ce || ce[0] == null) return;
           parts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
             fillColor: "#fff", fillOpacity: 0.9 })
             .bindTooltip(`${cn} ash: +${ce[2]}h, alt ${ce[3]} km` +

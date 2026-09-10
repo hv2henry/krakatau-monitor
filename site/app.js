@@ -457,13 +457,13 @@ const LOOP_HTML = `
   <div class="player">
     <img id="loop-img" alt="Himawari-9 infrared frame" draggable="false">
     <svg id="loop-overlay" aria-hidden="true"></svg>
-    <div class="loop-ts" id="loop-ts">—</div>
   </div>
   <div class="loop-ctl">
     <button class="btn" id="loop-play" aria-label="play/pause"><svg class="ic"><use href="#i-play"/></svg></button>
     <button class="btn" id="loop-speed" aria-label="speed">2 fps</button>
     <input type="range" id="loop-scrub" min="0" max="0" value="0" step="1" aria-label="frame">
     <span class="stamp" id="loop-count">0/0</span>
+    <span class="stamp" id="loop-ts" style="font-weight:700">—</span>
   </div>
   <div class="loop-ticks" id="loop-ticks" aria-hidden="true"></div>
   <p class="figcap" id="loop-cap"></p>
@@ -688,11 +688,18 @@ function rebuildMapLayers() {
             fillOpacity: 0.07, dashArray: "2 4" })
             .bindTooltip(`${l.layer}: diffusion envelope (K=5×10³ m²/s)`));
         }
-        Object.entries(l.settling_classes || {}).forEach(([cn, pts]) => {
+        Object.entries(l.settling_classes || {}).forEach(([cn, obj]) => {
+          const pts = obj.pts || obj;
           const ce = pts[pts.length - 1];
           parts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
             fillColor: "#fff", fillOpacity: 0.9 })
-            .bindTooltip(`${cn} ash settles here (+${ce[2]}h, ${ce[3]} km)`));
+            .bindTooltip(`${cn} ash: +${ce[2]}h, alt ${ce[3]} km` +
+              (obj.mass_remaining != null ? `, mass left ${(obj.mass_remaining * 100).toFixed(0)}%` : "")));
+          (obj.wet_points || []).forEach((w) => {
+            parts.push(L.circleMarker([w.lat, w.lon], { radius: 3.4, color: "#2563eb",
+              weight: 1.2, fillColor: "#2563eb", fillOpacity: 0.55 })
+              .bindTooltip(`rain cell ${w.rate_mm_h} mm/h at +${w.hours}h (wet deposition)`));
+          });
         });
       });
       const g = L.layerGroup(parts);

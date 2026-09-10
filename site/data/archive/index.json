@@ -1,23 +1,16 @@
 {
- "updated": "20260910T0256Z",
+ "updated": "20260909T1801Z",
  "models": [
   "models/model-20260909T1758Z.json",
   "models/model-20260909T1759Z.json",
-  "models/model-20260909T1801Z.json",
-  "models/model-20260909T1821Z.json",
-  "models/model-20260910T0125Z.json",
-  "models/model-20260910T0256Z.json"
+  "models/model-20260909T1801Z.json"
  ],
  "vaac_states": [
   "vaac/vaac-20260909T1758Z.json",
   "vaac/vaac-20260909T1759Z.json",
-  "vaac/vaac-20260909T1801Z.json",
-  "vaac/vaac-20260909T1821Z.json",
-  "vaac/vaac-20260910T0125Z.json",
-  "vaac/vaac-20260910T0256Z.json"
+  "vaac/vaac-20260909T1801Z.json"
  ],
  "vaac_graphics": [
-  "vaac/graphic-2026-206.png",
-  "vaac/graphic-2026-207.png"
+  "vaac/graphic-2026-206.png"
  ]
 }

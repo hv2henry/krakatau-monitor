@@ -427,6 +427,18 @@ def amv_profile(observations, lat, lon, radius, qmin, nwp=None, heights=None):
         if nwp:
             near_p = min(nwp["levels"], key=lambda p: abs(p - p_mid))
             espread = ensemble_spread_deg(nwp, near_p)
+        # within-band shear: wind at the band's edge pressures; the angle between
+        # them is extra horizontal spread the mean vector cannot show
+        shear = 0.0
+        if nwp:
+            lo_p = min(nwp["levels"], key=lambda p: abs(p - plo))
+            hi_p = min(nwp["levels"], key=lambda p: abs(p - phi))
+            rl, rh = nwp["levels"][lo_p], nwp["levels"][hi_p]
+            if rl and rh:
+                a0 = rl[0]["from_deg"]
+                a1 = rh[0]["from_deg"]
+                shear = abs((a0 - a1 + 180) % 360 - 180)
+                unc = float(min(60.0, np.hypot(unc, shear)))
         rows.append({
             "layer": lab, "data": True, "n": len(agg), "n_eff": round(n_eff, 1),
             "pressure_range": [plo, phi],
@@ -443,6 +455,7 @@ def amv_profile(observations, lat, lon, radius, qmin, nwp=None, heights=None):
             "blend_weights": {"amv": round(w_amv, 2), "nwp": w_nwp},
             "consistency_R": round(R, 3),
             "uncertainty_deg": round(unc, 1),
+            "shear_spread_deg": round(shear, 1),
             "ensemble_spread_deg": round(espread, 1) if espread is not None else None,
             "mean_qi": round(qi_mean, 1),
             "nearest_vector_km": round(float(min(a[1] for a in agg)), 1),
@@ -477,16 +490,71 @@ def integrate(lat0: float, lon0: float, u_of_t, v_of_t, start: datetime,
     return out
 
 
+def rho_at(nwp, heights, h_km):
+    """Air density at height h from the model's own p/T profile (kg/m3)."""
+    pts = []
+    for p, recs in (nwp or {}).get("levels", {}).items():
+        if recs and recs[0].get("temp_c") is not None:
+            t_k = recs[0]["temp_c"] + 273.15
+            pts.append((heights[p], p * 100.0 / (287.05 * t_k)))
+    if not pts:
+        return 1.225 * np.exp(-h_km / 8.5)
+    pts.sort()
+    if h_km <= pts[0][0]:
+        return pts[0][1]
+    if h_km >= pts[-1][0]:
+        return pts[-1][1]
+    for (z0, r0), (z1, r1) in zip(pts, pts[1:]):
+        if z0 <= h_km <= z1:
+            w = (h_km - z0) / ((z1 - z0) or 1)
+            return r0 * (1 - w) + r1 * w
+    return pts[-1][1]
+
+
+G_PLUME_GROWTH = 0.8     # m/s linear half-width growth: approximates scale-dependent K
+SCAV_COEF = 1e-4         # 1/s below-cloud scavenging per mm/h of rain (order-level)
+RAIN_MIN_MM_H = 0.5
+
+
+def precip_at(grid, lat, lon, t_idx):
+    """Bilinear sample of the open-meteo precip grid at (lat, lon, time)."""
+    if not grid:
+        return 0.0
+    lats, lons, cols = grid["lats"], grid["lons"], grid["series"]
+    if not (min(lats) <= lat <= max(lats) and min(lons) <= lon <= max(lons)):
+        return 0.0
+    la = sorted(lats); lo = sorted(lons)
+    i0 = max(i for i in range(len(la)) if la[i] <= lat) if lat >= la[0] else 0
+    i1 = min(i0 + 1, len(la) - 1)
+    j0 = max(j for j in range(len(lo)) if lo[j] <= lon) if lon >= lo[0] else 0
+    j1 = min(j0 + 1, len(lo) - 1)
+    wa = 0.0 if i1 == i0 else (lat - la[i0]) / (la[i1] - la[i0])
+    wl = 0.0 if j1 == j0 else (lon - lo[j0]) / (lo[j1] - lo[j0])
+    def val(i, j):
+        ser = cols.get((la[i], lo[j])) or []
+        return ser[t_idx] if t_idx < len(ser) else (ser[-1] if ser else 0.0)
+    return ((val(i0, j0) * (1 - wa) + val(i1, j0) * wa) * (1 - wl) +
+            (val(i0, j1) * (1 - wa) + val(i1, j1) * wa) * wl)
+
+
 def trajectory_settling(lat0, lon0, h0_km, nwp, heights, start, hours=12,
-                        dt_min=10):
-    """Advect parcels for three settling classes through the time-evolving,
-    height-interpolated NWP wind field, plus a horizontal diffusion envelope
-    sigma(t) = sqrt(2 K t). A pure advection line oversells precision; this
-    turns it into an honest envelope with only stdlib+numpy."""
+                        dt_min=10, precip_grid=None):
+    """Advect three settling classes through the evolving, height-interpolated
+    NWP wind field. Physics added beyond pure advection:
+      * settling velocity corrected for air density: v(h) = v0*sqrt(rho0/rho(h))
+        (terminal velocity in the turbulent regime rises as air thins);
+      * diffusion envelope with scale-growing spread:
+        sigma(t) = sqrt(2*K0*t) + g*t  (K grows as the plume enlarges);
+      * below-cloud wet deposition: where sampled rain >= 0.5 mm/h, mass is
+        scavenged at Lambda = 1e-4 * rate  per second, and the crossing is kept
+        so ashfall risk can be read off the trajectory."""
     out = {}
     steps = int(hours * 60 / dt_min)
+    rho0 = rho_at(nwp, heights, h0_km)
     for cname, vs in SETTLE_CLASSES.items():
         lat, lon, h = lat0, lon0, h0_km
+        mass = 1.0
+        wet = []
         pts = [{"lat": round(lat, 4), "lon": round(lon, 4), "hours": 0.0,
                 "alt_km": round(h, 2), "sigma_km": 0.0}]
         for i in range(steps):
@@ -495,13 +563,22 @@ def trajectory_settling(lat0, lon0, h0_km, nwp, heights, start, hours=12,
             dt = dt_min * 60.0
             lat += (v * dt) / 111320.0
             lon += (u * dt) / (111320.0 * max(np.cos(np.radians(lat)), 1e-6))
-            h = max(0.05, h - vs * dt / 1000.0)
+            rho_h = rho_at(nwp, heights, max(h, 0.05))
+            v_eff = vs * np.sqrt(rho0 / max(rho_h, 1e-6))
+            h = max(0.05, h - v_eff * dt / 1000.0)
             t_sec = (i + 1) * dt
-            sigma = np.sqrt(2.0 * K_DIFFUSIVITY * t_sec) / 1000.0
+            sigma = (np.sqrt(2.0 * K_DIFFUSIVITY * t_sec) + G_PLUME_GROWTH * t_sec) / 1000.0
+            rate = precip_at(precip_grid, lat, lon, t_idx) if precip_grid else 0.0
+            if rate >= RAIN_MIN_MM_H:
+                mass *= np.exp(-SCAV_COEF * min(rate, 5.0) * dt)
+                wet.append({"hours": round((i + 1) * dt_min / 60.0, 2),
+                            "lat": round(lat, 4), "lon": round(lon, 4),
+                            "rate_mm_h": round(rate, 1)})
             pts.append({"lat": round(lat, 4), "lon": round(lon, 4),
                         "hours": round((i + 1) * dt_min / 60.0, 2),
                         "alt_km": round(h, 2), "sigma_km": round(sigma, 1)})
-        out[cname] = pts
+        out[cname] = {"pts": pts, "wet_points": wet,
+                      "mass_remaining": round(mass, 3)}
     return out
 
 
@@ -887,6 +964,30 @@ def main() -> int:
         print(f"[error] open-meteo: {e}", file=sys.stderr)
     heights = level_heights_km(nwp) if nwp else {}
 
+    precip = None
+    if nwp:
+        try:
+            lats = [-10, -8, -6, -4, -2]
+            lons = [100, 102, 104, 106, 108, 110]
+            url = ("https://api.open-meteo.com/v1/forecast?latitude=" +
+                   ",".join(str(x) for x in lats) + "&longitude=" +
+                   ",".join(str(x) for x in lons) +
+                   f"&timezone=GMT&forecast_hours={int(args.hours)}&hourly=precipitation")
+            d = json.loads(http_get(url).decode("utf-8"))
+            h = d["hourly"]
+            n = len(h["time"])
+            series = {}
+            flat = h.get("precipitation")
+            if isinstance(flat, list) and len(flat) == n * len(lats) * len(lons):
+                k = 0
+                for la in lats:
+                    for lo in lons:
+                        series[(la, lo)] = flat[k:k + n]
+                        k += n
+            precip = {"lats": lats, "lons": lons, "series": series}
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] precip grid: {str(e)[:80]}", file=sys.stderr)
+
     # --- weighted AMV band statistics, blended with the NWP background ---
     amv_rows = amv_profile(observations, args.lat, args.lon, args.radius,
                            args.qmin, nwp=nwp, heights=heights)
@@ -903,12 +1004,19 @@ def main() -> int:
         if nwp:
             h0 = r.get("alt_km") or r.get("mean_altitude_km") or 1.5
             cls = trajectory_settling(args.lat, args.lon, h0, nwp, heights,
-                                      start, hours=args.hours)
-            traj_fc[r["layer"]] = cls["fine"]
-            traj_cls[r["layer"]] = {k: v for k, v in cls.items() if k != "fine"}
-            env[r["layer"]] = envelope_polygon(cls["fine"])
+                                      start, hours=args.hours,
+                                      precip_grid=precip)
+            traj_fc[r["layer"]] = cls["fine"]["pts"]
+            traj_cls[r["layer"]] = {k: {"pts": v["pts"],
+                                        "wet_points": v["wet_points"],
+                                        "mass_remaining": v["mass_remaining"]}
+                                    for k, v in cls.items() if k != "fine"}
+            wet_fine = cls["fine"]["wet_points"]
+            traj_cls[r["layer"]]["fine_wet"] = {"wet_points": wet_fine,
+                                                "mass_remaining": cls["fine"]["mass_remaining"]}
+            env[r["layer"]] = envelope_polygon(cls["fine"]["pts"])
 
-    exp = exposure(args.lat, args.lon, traj, start, skip_km=args.skip_km)
+    exp = exposure(args.lat, args.lon, traj_fc or traj, start, skip_km=args.skip_km)
     firms = firms_hotspots(args.firms_key, args.lat, args.lon, args.pad, args.days) if args.firms_key else {}
 
     if args.json:

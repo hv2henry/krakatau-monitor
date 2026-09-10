@@ -14,7 +14,7 @@ Gunung Anak Krakatau (-6.102, 105.423). Not a warning system.
   "generated_wib": "09 Sep 2026, 00:33 WIB", // pre-formatted, UTC+7
   "volcano":  { "name", "code", "province", "lat", "lon" },
   "status":   { "level": 3, "level_name": "Level III (Siaga)",
-                "source": "MAGMA Indonesia / PVMBG",
+                "source": "MAGMA Indonesia/PVMBG",
                 "source_url": "...", "fetched_utc": "...", "fetched_wib": "...",
                 "indonesia_counts": { "Normal": 42, "Waspada": 22, "Siaga": 5, "Awas": 0 } },
   "report":   { "period", "author", "visual", "climate",
@@ -64,7 +64,7 @@ refer to MAGMA/PVMBG, BNPB/BPBD and Darwin VAAC."
 3. `move_toward` is direction of travel TOWARD; convert FL with the
    `*_human_*` strings.
 4. Loop frames are JPEGs in `assets/loop/`; timestamps are 10 min apart. If you
-   analyse them, cite NASA GIBS / JMA Himawari-9 and note the band (ir or vis).
+   analyse them, cite NASA GIBS/JMA Himawari-9 and note the band (ir or vis).
 5. Politeness: this is a static site; caching for >= 5 min is fine and kind.
    Do NOT scrape magma.esdm.go.id or bom.gov.au more often than every 15 min.
 5. If `generated_utc` is older than 2 h, state that the mirror may be stale.

@@ -16,7 +16,7 @@ function el(id) {
     classList: { toggle() {}, add() {}, remove() {}, contains() { return false; } },
     clientWidth: 900, clientHeight: 520, naturalWidth: 728, naturalHeight: 595,
     setAttribute() {}, getAttribute() { return null; },
-    addEventListener() {}, removeEventListener() {}, setPointerCapture() {},
+    addEventListener() {}, removeEventListener() {}, setPointerCapture() {}, appendChild() {},
     querySelector() { return el(id + "-child"); }, querySelectorAll() { return []; },
   };
 }
@@ -33,6 +33,8 @@ const document = {
     return cache["#" + id];
   },
   addEventListener() {},
+  createElement(tag) { return el("<" + tag + ">"); },
+  head: el("head"),
   documentElement: el("html"),
   title: "",
 };
@@ -70,7 +72,7 @@ setTimeout(() => {
     eruptions: len("#card-eruptions"), vona: len("#card-vona"),
     vaac: len("#card-vaac"), loop: len("#card-loop"),
     sat: len("#card-sat"), model: len("#card-model"),
-    map_paths: (cache["#map"] && (cache["#map"].innerHTML.match(/<path/g) || []).length) || 0,
+    map: len("#map"),
     chip: cache["#chip-updated-txt"] && cache["#chip-updated-txt"].textContent,
   };
   console.log(JSON.stringify(out, null, 1));

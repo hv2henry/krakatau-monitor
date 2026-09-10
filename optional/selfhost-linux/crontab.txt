@@ -1,0 +1,34 @@
+# ── 1. Run the monitor every 15 minutes ──────────────────────────────
+# Edit with:  crontab -e     (then paste the line, save, exit)
+# Paths below assume you put the script in ~/krakatau — adjust if not.
+
+*/15 * * * * cd $HOME/krakatau && /usr/bin/python3 volcano_monitor.py --state $HOME/krakatau/state.json --log $HOME/krakatau/history.jsonl >> $HOME/krakatau/cron.log 2>&1
+
+# ── 1b. Ash direction every 30 minutes (needs: pip install numpy netCDF4) ──
+# Himawari-9 wind vectors refresh every 10 min with ~40 min latency, so 30 min
+# is plenty. Downloads ~30 MB of NetCDF per run; cached in sat_cache/.
+
+*/30 * * * * cd $HOME/krakatau && /usr/bin/python3 ash_transport.py --slots 4 --hours 12 --svg $HOME/krakatau/ash_map.svg --json > $HOME/krakatau/ash_latest.json 2>>$HOME/krakatau/ash.log
+
+# ── 2. Variants ──────────────────────────────────────────────────────
+
+# Every 5 minutes (eruption phase — MAGMA posts laporan 4x/day, eruptions any time)
+*/5 * * * * cd $HOME/krakatau && /usr/bin/python3 volcano_monitor.py --state $HOME/krakatau/state.json >> $HOME/krakatau/cron.log 2>&1
+
+# Aligned to the 6-hourly PVMBG report windows (00/06/12/18 WIB = 17/23/05/11 UTC)
+5 5,11,17,23 * * * cd $HOME/krakatau && /usr/bin/python3 volcano_monitor.py --state $HOME/krakatau/state.json >> $HOME/krakatau/cron.log 2>&1
+
+# Push to your phone via ntfy (free, no account): subscribe to the topic in the ntfy app first
+*/15 * * * * cd $HOME/krakatau && out=$(/usr/bin/python3 volcano_monitor.py --state $HOME/krakatau/state.json); [ $? -eq 2 ] && curl -s -d "$out" -H "Title: Anak Krakatau ALERT" -H "Priority: 5" https://ntfy.sh/YOUR-TOPIC-NAME
+
+# ── cron field reference ─────────────────────────────────────────────
+#  ┌───────── minute        (0-59)
+#  │ ┌─────── hour          (0-23, UTC on most servers!)
+#  │ │ ┌───── day of month  (1-31)
+#  │ │ │ ┌─── month         (1-12)
+#  │ │ │ │ ┌─ day of week   (0-7, 0 and 7 = Sunday)
+#  │ │ │ │ │
+#  * * * * *  command
+#
+#  Server timezone is usually UTC. WIB = UTC+7, so 06:00 WIB = 23:00 UTC.
+#  Check yours with:  timedatectl   or   date

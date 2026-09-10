@@ -728,6 +728,19 @@ def build(args) -> int:
                 out.append({
                     "id": "Hanya satu sumber berbicara per lapisan; belum ada koroborasi independen.",
                     "en": "Only one source speaks per layer; no independent corroboration yet."})
+            wet = [l for l in layers_list if any(
+                (v.get("wet_points") or [])
+                for v in (l.get("settling_classes") or {}).values())]
+            if wet:
+                out.append({
+                    "id": "Sebagian lintasan melewati sel hujan (open-meteo): deposisi basah diterapkan (Λ=1e-4/s per mm/h); titik biru = perpotongan hujan → interpretasi risiko ashfall.",
+                    "en": "Part of the trajectory crosses rain cells (open-meteo): wet deposition applied (Λ=1e-4/s per mm/h); blue dots = rain crossings → ashfall-risk interpretation."})
+            out.append({
+                "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); difusi memakai σ(t)=√(2K0t)+g·t (K tumbuh bersama plume); geser dalam lapisan ditambahkan ke ±derajat.",
+                "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); diffusion uses σ(t)=√(2K0t)+g·t (K grows with plume size); within-band shear added into ±degrees."})
+            out.append({
+                "id": "ECMWF/GFS/ICON beresolusi ~9-25 km: sirkulasi lokal mesoscale (angin laut/darat, topografi) tidak tertangkap.",
+                "en": "ECMWF/GFS/ICON run at ~9-25 km grids: local mesoscale circulations (sea/land breeze, terrain flows) are not resolved."})
             spreads = [l.get("ensemble_spread_deg") for l in layers_list
                        if l.get("ensemble_spread_deg") and l["ensemble_spread_deg"] > 30]
             if spreads:
@@ -807,10 +820,13 @@ def build(args) -> int:
                 "trajectory": [[p["lat"], p["lon"], p["hours"]] for p in (tr_fc or tr_steady)],
                 "trajectory_kind": "forecast-evolving" if tr_fc else "steady-wind",
                 "trajectory_steady": [[p["lat"], p["lon"], p["hours"]] for p in tr_steady],
-                "settling_classes": {c: [[q["lat"], q["lon"], q["hours"], q["alt_km"]]
-                                         for q in pts]
-                                     for c, pts in ((cand.get("trajectories_settling") or {})
-                                                    .get(row["layer"], {}) or {}).items()},
+                "settling_classes": {
+                    c: {"pts": [[q["lat"], q["lon"], q["hours"], q["alt_km"]] for q in v["pts"]],
+                        "mass_remaining": v.get("mass_remaining"),
+                        "wet_points": v.get("wet_points", [])}
+                    for c, v in ((cand.get("trajectories_settling") or {})
+                                 .get(row["layer"], {}) or {}).items()
+                    if isinstance(v, dict) and "pts" in v},
                 "envelope": (cand.get("envelopes") or {}).get(row["layer"]),
                 "relevant_today": bool(plume_top and
                                        row["mean_altitude_km"] <= plume_top["km"] + 0.5),

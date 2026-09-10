@@ -430,7 +430,17 @@ function renderModel() {
       <p class="stamp" style="max-width:520px;margin:0 auto">${T("model_unpub_b")}</p></div>`;
     return;
   }
-  const rows = MODEL.layers.map((l, i) => {
+  // Canonical band list: even if an older builder omitted no-data rows entirely,
+  // every layer keeps its place on the table (missing => explicit "no data").
+  const CANON = [
+    ["~0-1 km surface", 0.5], ["~1-2 km ASH-CRITICAL", 1.5], ["~2-4 km ASH-CRITICAL", 3.0],
+    ["~4-6 km", 5.0], ["~6-9 km", 7.5], ["~9-16 km upper", 12.0]];
+  const srcRows = CANON.map(([name, nom]) =>
+    MODEL.layers.find((l) => l.layer === name) ||
+    { layer: name, data: false, nom_alt_km: nom, legacy_missing: true });
+  const rows = srcRows.map((l, i) => {
+    // legacy builders omitted the data flag: infer from presence of a solution
+    l = Object.assign({}, l, { data: l.data !== undefined ? !!l.data : (l.toward_deg != null) });
     const c = BAND_COLORS[i % 6];
     const alt = l.data
       ? esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)

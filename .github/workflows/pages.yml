@@ -26,7 +26,7 @@ on:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true   # newest build wins; no queue piling behind a slow deploy
 
 permissions:
   contents: write   # needed ONLY so an approved model file can be committed back
@@ -76,6 +76,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10   # fail loudly instead of polling forever
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

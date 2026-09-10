@@ -84,6 +84,15 @@ const I18N = {
     corr_line: "Koroborasi arah antar-sumber: {state} (selisih terburuk {w}°).",
     caveats_title: "Catatan kejujuran:",
     blend_caption: "Baris lapisan di bawah adalah INPUT; vektor campuran pada puncak resmi ditampilkan di atas.",
+    no_data: "tidak ada data",
+    corr_line: "Pembanding arah — model kami: {a} · Darwin VAAC: {b} · {state} (selisih {w}°).",
+    corr_no_vaac: "Pembanding arah — model kami: {a} · Darwin VAAC: tidak ada advisori hari ini.",
+    corr_state_corroborated: "sepakat",
+    corr_state_divergent: "tidak sepenuhnya sepakat",
+    corr_state_conflicting: "bertentangan",
+    corr_state_single_source: "baru satu sumber",
+    corr_state_none: "—",
+    ash_vec_expl: "Vektor abu = perkiraan arah & kecepatan angkutan abu pada ketinggian puncak awan resmi, dari gabungan angin satelit (Himawari-9) dan model cuaca.",
     auto_note: "Model ini dipublikasikan OTOMATIS oleh jadwal 6-jam (jendela aktivitas menurun); tetap bawa catatan kejujuran di atas.",
     src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
     magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
@@ -186,6 +195,15 @@ const I18N = {
     corr_line: "Cross-source direction corroboration: {state} (worst disagreement {w}°).",
     caveats_title: "Honesty notes:",
     blend_caption: "The layer rows below are INPUTS; the blended vector at the official cloud top is shown above.",
+    no_data: "no data",
+    corr_line: "Direction cross-check — our model: {a} · Darwin VAAC: {b} · {state} ({w}° apart).",
+    corr_no_vaac: "Direction cross-check — our model: {a} · Darwin VAAC: no advisory today.",
+    corr_state_corroborated: "agree",
+    corr_state_divergent: "not fully agreeing",
+    corr_state_conflicting: "conflicting",
+    corr_state_single_source: "one source only",
+    corr_state_none: "—",
+    ash_vec_expl: "Ash vector = estimated ash transport direction & speed at the official cloud-top height, from blended satellite winds (Himawari-9) and weather models.",
     auto_note: "This model was published AUTOMATICALLY by the 6-hourly schedule (decreasing-activity window); it still carries the honesty notes above.",
     src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
     magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
@@ -412,13 +430,23 @@ function renderModel() {
       <p class="stamp" style="max-width:520px;margin:0 auto">${T("model_unpub_b")}</p></div>`;
     return;
   }
-  const rows = MODEL.layers.map((l, i) => !l.data ? `
-    <tr class="nodata"><td>${esc(l.layer)}</td><td colspan="3" class="stamp">${esc(LANG === "id" ? (l.note_id || "") : (l.note_en || ""))}</td></tr>` : `
-    <tr><td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${BAND_COLORS[i % 6]};margin-right:7px"></span>${esc(l.layer)}
-      ${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
-      <td>${esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)}</td>
-      <td><b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}) · ${l.speed_ms.toFixed(1)} m/s</td>
-      <td class="stamp">R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}</td></tr>`).join("");
+  const rows = MODEL.layers.map((l, i) => {
+    const c = BAND_COLORS[i % 6];
+    const alt = l.data
+      ? esc(LANG === "id" ? l.alt_human_id : l.alt_human_en)
+      : (l.nom_alt_km != null ? `≈ ${l.nom_alt_km} km ${LANG === "id" ? "dpl" : "asl"}` : "—");
+    const motion = l.data
+      ? `<b>${esc(l.toward_compass)}</b> (${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}) · ${l.speed_ms.toFixed(1)} m/s`
+      : `<span class="stamp">${T("no_data")}</span>`;
+    const stats = l.data
+      ? `R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}`
+      : "—";
+    return `<tr${l.data ? "" : ' class="nodata"'}>
+      <td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${c};margin-right:7px"></span>${esc(l.layer)}${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
+      <td>${alt}</td>
+      <td>${motion}</td>
+      <td class="stamp">${stats}</td></tr>`;
+  }).join("");
   const pt = MODEL.plume_top;
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
   box.innerHTML = `
@@ -433,12 +461,18 @@ function renderModel() {
       .replace("{h}", esc(LANG === "id" ? (pt && pt.human_id) || "?" : (pt && pt.human_en) || "?"))
       .replace("{t}", MODEL.plume_vector.toward_deg)
       .replace("{u}", MODEL.plume_vector.uncertainty_deg)
-      .replace("{s}", MODEL.plume_vector.speed_ms)}</div>` : ""}
-    ${MODEL.validation ? `<p class="stamp">${T("corr_line")
-      .replace("{state}", esc(MODEL.validation.direction_agreement || "?"))
-      .replace("{w}", MODEL.validation.worst_disagreement_deg != null ? MODEL.validation.worst_disagreement_deg : "?")}</p>` : ""}
-    ${MODEL.caveats && MODEL.caveats.length ? `<div class="stamp"><b>${T("caveats_title")}</b><ul style="margin:4px 0 0 18px;padding:0">` +
-      MODEL.caveats.map((c) => `<li>${esc(LANG === "id" ? (c.plain_id || c.id) : (c.plain_en || c.en))}</li>`).join("") + `</ul></div>` : ""}
+      .replace("{s}", MODEL.plume_vector.speed_ms)}</div>
+      <p class="stamp">${T("ash_vec_expl")}</p>
+      ${MODEL.plume_vector ? (MODEL.vaac_motion ? `<p class="stamp">${(() => {
+        const diff = Math.abs((MODEL.plume_vector.toward_deg - MODEL.vaac_motion.deg + 540) % 360 - 180);
+        const st = diff <= 45 ? "corroborated" : diff <= 90 ? "divergent" : "conflicting";
+        return T("corr_line")
+          .replace("{a}", `${MODEL.plume_vector.toward_deg.toFixed(0)}° ±${MODEL.plume_vector.uncertainty_deg}°`)
+          .replace("{b}", `${MODEL.vaac_motion.compass} (${MODEL.vaac_motion.deg}°)`)
+          .replace("{state}", T("corr_state_" + st))
+          .replace("{w}", diff.toFixed(0));
+      })()}</p>` : `<p class="stamp">${T("corr_no_vaac")
+        .replace("{a}", `${MODEL.plume_vector.toward_deg.toFixed(0)}° ±${MODEL.plume_vector.uncertainty_deg}°`)}</p>`) : ""}` : ""}
     ${MODEL.plume_vector ? `<p class="stamp">${T("blend_caption")}</p>` : ""}
     ${MODEL.backtest ? `<p class="stamp">${T("backtest_line")
       .replace("{m}", MODEL.backtest.mean_abs_deg).replace("{n}", MODEL.backtest.n)}</p>` : ""}
@@ -458,13 +492,13 @@ const LOOP_HTML = `
   <div class="player">
     <img id="loop-img" alt="Himawari-9 infrared frame" draggable="false">
     <svg id="loop-overlay" aria-hidden="true"></svg>
+    <div class="loop-ts" id="loop-ts">—</div>
   </div>
   <div class="loop-ctl">
     <button class="btn" id="loop-play" aria-label="play/pause"><svg class="ic"><use href="#i-play"/></svg></button>
     <button class="btn" id="loop-speed" aria-label="speed">2 fps</button>
     <input type="range" id="loop-scrub" min="0" max="0" value="0" step="1" aria-label="frame">
     <span class="stamp" id="loop-count">0/0</span>
-    <span class="stamp" id="loop-ts" style="font-weight:700">—</span>
   </div>
   <div class="loop-ticks" id="loop-ticks" aria-hidden="true"></div>
   <p class="figcap" id="loop-cap"></p>

@@ -2,4 +2,5 @@
 {"t": "2026-09-09T18:00Z", "model_toward": 155.1, "model_unc": 5.0, "vaac_toward": 225}
 {"t": "2026-09-10T07:00Z", "model_toward": 220.4, "model_unc": 60.0, "vaac_toward": 315}
 {"t": "2026-09-10T08:00Z", "model_toward": 219.7, "model_unc": 60.0, "vaac_toward": 315}
-{"t": "2026-09-10T09:00Z", "model_toward": 314.8, "model_unc": 43.3, "vaac_toward": 315}
+{"t": "2026-09-10T09:00Z", "model_toward": 208.6, "model_unc": 60.0, "vaac_toward": 315}
+{"t": "2026-09-10T10:00Z", "model_toward": 317.9, "model_unc": 31.4, "vaac_toward": 315}

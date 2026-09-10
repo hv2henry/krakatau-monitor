@@ -113,6 +113,11 @@ def wib_human(iso: str | None) -> str | None:
     return f"{d.day:02d} {MONTHS_ID[d.month-1]} {d.year}, {d.hour:02d}:{d.minute:02d} WIB"
 
 
+COMPASS_DEG = {"N": 0, "NNE": 22.5, "NE": 45, "ENE": 67.5, "E": 90, "ESE": 112.5,
+               "SE": 135, "SSE": 157.5, "S": 180, "SSW": 202.5, "SW": 225,
+               "WSW": 247.5, "W": 270, "WNW": 292.5, "NW": 315, "NNW": 337.5}
+
+
 def fl_human(fl: str | None, lang: str = "id") -> str | None:
     """FL070 -> 'FL070 = 7.000 ft ≈ 2,1 km di atas permukaan laut'."""
     if not fl or fl == "SFC":
@@ -840,8 +845,10 @@ def build(args) -> int:
                 # show the gap instead of hiding it: visitors see WHICH layers
                 # had no satellite coverage this run, not a silently shorter table
                 tr_fc = (cand.get("trajectories_forecast") or {}).get(row["layer"], [])
+                p_mid = (row.get("pressure_range") or [750, 900])[0:2]
+                nom = round(44.3308 * (1 - (((p_mid[0] + p_mid[1]) / 2) / 1013.25) ** 0.190284), 1)
                 layers.append({"layer": row["layer"], "data": False,
-                               "n": row.get("n", 0),
+                               "n": row.get("n", 0), "nom_alt_km": nom,
                                "note_id": "tidak ada vektor satelit pada slot ini; garis = model cuaca saja",
                                "note_en": "no satellite vectors this slot; line = weather model only",
                                "trajectory_kind": "nwp-only" if tr_fc else None,
@@ -905,6 +912,13 @@ def build(args) -> int:
             "layers": layers,
             "caveats": _caveats(layers, plume_top, vaac, cand, verdict),
             "plume_vector": _plume_vector(layers, plume_top["km"] if plume_top else None),
+            "vaac_motion": (lambda mv: {"compass": mv, "deg": COMPASS_DEG.get(mv)}
+                            if (vaac.get("state") == "advisory"
+                                and (vaac.get("advisory") or {}).get("observed_layers")
+                                and (vaac["advisory"]["observed_layers"][0].get("move_toward")))
+                            else None)(
+                (vaac.get("advisory") or {}).get("observed_layers", [{}])[0].get("move_toward")
+                if (vaac.get("advisory") or {}).get("observed_layers") else None),
             "backtest": None,
             "plume_top": plume_top,
             "sources": ["Himawari-9 AMV (NOAA S3, JMA product)", "open-meteo pressure-level winds"],

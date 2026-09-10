@@ -1,0 +1,40 @@
+{
+ "t": "20260910T1032Z",
+ "state": "advisory",
+ "advisory_nr": "2026/208",
+ "dtg_utc": "2026-09-10T05:00Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "NW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1833,
+     "lon": 105.4833
+    },
+    {
+     "lat": -6.2333,
+     "lon": 104.9833
+    },
+    {
+     "lat": -5.9,
+     "lon": 104.8333
+    },
+    {
+     "lat": -5.7333,
+     "lon": 105.1667
+    },
+    {
+     "lat": -5.9333,
+     "lon": 105.5167
+    }
+   ]
+  }
+ ],
+ "remarks": "VA IDENTIFIABLE ON SAT IMAGERY MOVING NW. VA HEIGHT AND FORECAST MOVEMENT BASED ON SATELLITE IMAGERY, MODEL GUIDANCE AND GROUND REPORTS."
+}

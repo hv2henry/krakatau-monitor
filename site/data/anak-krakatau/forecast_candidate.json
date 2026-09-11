@@ -11,7 +11,7 @@
    "magma_vona",
    "darwin_vaac"
   ],
-  "content_hash": "90db21dd514ff7f2"
+  "content_hash": "7ec032bdb180e700"
  },
  "layers": [
   {
@@ -2700,7 +2700,7 @@
    "alt_human_en": "± 1.5 km asl",
    "from_deg": 58.739841723425684,
    "from_compass": "ENE",
-   "toward_deg": 238.73984172342566,
+   "toward_deg": 238.73984172342568,
    "toward_compass": "WSW",
    "speed_ms": 5.0,
    "consistency_R": 0.991,

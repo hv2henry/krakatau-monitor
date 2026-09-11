@@ -16,7 +16,10 @@
 
   --text-primary: #1A1A18;
   --text-secondary: #555550;
-  --text-muted: #888880;
+  /* a11y: was #888880 (3.6:1 on white, sub-AA for the smallest text).
+     #676760 keeps the muted look and clears 4.5:1 on card, page bg,
+     surface and the light map-sea tone behind .map-note. */
+  --text-muted: #676760;
 
   --border: #E0DDD8;
   --border-light: #EDEAE5;

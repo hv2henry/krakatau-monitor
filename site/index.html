@@ -20,6 +20,11 @@
 </head>
 <body>
 
+<!-- a11y: skip link (first focusable) + polite live region for data-load
+     announcements; both keyboard/screen-reader aids, invisible otherwise. -->
+<a class="skip-link" href="#main" data-i18n="skip_main">Lewati ke konten utama</a>
+<p id="live-region" class="sr-only" role="status" aria-live="polite"></p>
+
 <!-- ======================= SVG ICON SPRITE (no emoji) ======================= -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="i-volcano" viewBox="0 0 24 24"><path fill="currentColor" d="M13.6 2.2 12 5l-1.6-2.8-2.1 1.2 2 3.4-6.7 12.4c-.5.9.2 2 1.2 2h14.4c1 0 1.7-1.1 1.2-2L13.7 6.8l2-3.4-2.1-1.2ZM9.4 9.5h5.2l1.1 2H8.3l1.1-2Z"/></symbol>
@@ -60,6 +65,7 @@
 </header>
 
 <div class="wrap">
+<main id="main" tabindex="-1">
 
   <!-- ============ a) STATUS ============ -->
   <section id="sec-status">
@@ -136,8 +142,9 @@
     <div class="callout hard" id="model-disclosure"></div>
     <div class="card" id="card-model"><div class="skeleton skel-line"></div></div>
   </section>
+</main>
 
-  <footer>
+<footer>
     <div class="cols">
       <div>
         <b data-i18n="foot_official">Sumber resmi</b>

@@ -92,6 +92,37 @@ setTimeout(() => {
   if (/terkopel/.test(mh)) { console.error("OLD STIFF WORDING 'terkopel' STILL PRESENT"); process.exit(1); }
   if (/<\/b> — |dpl — Darwin|asl — Darwin/.test(mh)) { console.error("SPACED EM-DASH STILL RENDERED IN TEMPLATE"); process.exit(1); }
   if (/class="nodata"/.test(mh) && !/(nilai vektor angin|wind-vector values)/.test(mh)) { console.error("NEW NO-DATA SENTENCE MISSING"); process.exit(1); }
+  // a11y guards: landmarks + live region must exist in the page source.
+  if (!/<main id="main"/.test(html)) { console.error("MAIN LANDMARK MISSING"); process.exit(1); }
+  if (!/class="skip-link"/.test(html) || !/data-i18n="skip_main"/.test(html)) { console.error("SKIP LINK MISSING"); process.exit(1); }
+  if (!/id="live-region"/.test(html)) { console.error("LIVE REGION MISSING"); process.exit(1); }
+  const live = (cache["#live-region"] || {}).textContent || "";
+  if (!/(Dasbor dimuat|Dashboard loaded)/.test(live)) { console.error("LIVE ANNOUNCEMENT MISSING"); process.exit(1); }
+  // a11y guards: screen-reader aids on the four target sections.
+  const rh = (cache["#card-report"] || {}).innerHTML || "";
+  if (!/scope="row"/.test(rh)) { console.error("REPORT TABLE ROW-SCOPE MISSING"); process.exit(1); }
+  if (!/lang="id"/.test(rh)) { console.error("REPORT VERBATIM LANG ATTR MISSING"); process.exit(1); }
+  if (!/(Seismogram PVMBG untuk periode|PVMBG seismogram for this reporting)/.test(rh)) { console.error("DESCRIPTIVE SEISMOGRAM ALT MISSING"); process.exit(1); }
+  const vh = (cache["#card-vaac"] || {}).innerHTML || "";
+  if (!/(cara membaca|how to read)/.test(vh)) { console.error("VAAC CODE GLOSSARY MISSING"); process.exit(1); }
+  if (!/scope="col"/.test(vh)) { console.error("VAAC TABLE COL-SCOPE MISSING"); process.exit(1); }
+  if (!/aria-label="[^"]*(barat laut|northwest)/.test(vh)) { console.error("COMPASS SR EXPANSION MISSING"); process.exit(1); }
+  if (!/lang="en"/.test(vh)) { console.error("VAAC EN LANG ATTR MISSING"); process.exit(1); }
+  if (!/(Grafik advisori Darwin VAAC|Darwin VAAC advisory chart)/.test(vh)) { console.error("DESCRIPTIVE VAAC GRAPHIC ALT MISSING"); process.exit(1); }
+  const vh2 = (cache["#card-vona"] || {}).innerHTML || "";
+  if (!/lang="en"/.test(vh2)) { console.error("VONA EN LANG ATTR MISSING"); process.exit(1); }
+  // a11y guards: css/contrast decisions (read the stylesheets directly).
+  const css = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
+  if (!/\.badge\.YELLOW[^{]*\{[^}]*color:\s*#1a1a18/.test(css)) { console.error("YELLOW BADGE BLACK TEXT MISSING"); process.exit(1); }
+  if (/\.6[62]rem/.test(css)) { console.error("SUB-12PX FONT STILL PRESENT IN site.css"); process.exit(1); }
+  // layout guard: source line must render below the title (not beside it),
+  // and icon+title must stay on one row (h2 basis-0 trick).
+  if (!/\.sec-head[^{]*\{[^}]*flex-wrap:\s*wrap/.test(css) || !/\.sec-src[^{]*\{[^}]*flex-basis:\s*100%/.test(css) || !/\.sec-head h2[^{]*\{[^}]*flex:\s*1 1 0/.test(css)) { console.error("SECTION SOURCE LINE NOT BELOW TITLE"); process.exit(1); }
+  const toks = fs.readFileSync(path.join(SITE, "tokens.css"), "utf8");
+  if (!/--text-muted:\s*#676760/.test(toks)) { console.error("MUTED GRAY NOT DARKENED (expected #676760)"); process.exit(1); }
+  const appSrc = fs.readFileSync(path.join(SITE, "app.js"), "utf8");
+  if (!/prefers-reduced-motion/.test(appSrc)) { console.error("REDUCED-MOTION GUARD MISSING IN LOOP PLAYER"); process.exit(1); }
+  if (!/T\("ext_link"\)/.test(appSrc)) { console.error("ICON-ONLY LINK NAME (ext_link) MISSING"); process.exit(1); }
   console.log("domtest: all sections rendered");
   process.exit(0);
 }, 700);

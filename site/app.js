@@ -119,6 +119,17 @@ const I18N = {
     min_ago: (n) => `${n} menit lalu`,
     days_ago: (n) => `${n} hari lalu`,
     just_now: "baru saja",
+    /* ---- a11y additions (skip link, live region, SR reading aids) ---- */
+    skip_main: "Lewati ke konten utama",
+    live_loaded: "Dasbor dimuat: status {level}; {erup} kejadian erupsi; {vona} VONA; advisori VAAC {vaac}; data {wib}.",
+    live_no_adv: "tidak ada advisori aktif",
+    live_partial: "Pembaruan sebagian—{list} tidak terjangkau saat pembaruan terakhir; bagian terkait menampilkan data terakhir yang berhasil diambil.",
+    alt_seismo: "Seismogram PVMBG untuk periode laporan ini—nilai numeriknya tersedia di tabel kegempaan di sebelahnya.",
+    alt_vaac_graphic: "Grafik advisori Darwin VAAC—peta poligon awan abu teramati dan prakiraan.",
+    ext_link: "buka laporan asli di MAGMA",
+    vaac_codes_t: "Kode advisori (cara membaca)",
+    vaac_codes: '<dl class="codes"><dt>VA</dt><dd>volcanic ash—abu vulkanik</dd><dt>OBS</dt><dd>observed—teramati (OBS VA DTG = saat awan abu teramati)</dd><dt>DTG</dt><dd>date/time group—waktu advisori diterbitkan (UTC)</dd><dt>FCST</dt><dd>forecast—prakiraan</dd><dt>SFC</dt><dd>surface—permukaan tanah</dd><dt>FL050</dt><dd>flight level 050—ketinggian penerbangan 5.000 kaki ≈ 1,5 km</dd><dt>MOV NW 10KT</dt><dd>bergerak ke barat laut dengan kecepatan 10 knot</dd><dt>RMK</dt><dd>remarks—catatan</dd><dt>NXT ADV</dt><dd>advisori berikutnya</dd><dt>11/0820Z</dt><dd>tanggal 11, pukul 08:20 UTC (Z = UTC)</dd></dl>',
+    vaac_codes_ex: 'Contoh: “VA TO FL050 OBS AT 11/0820Z MOV SW” = abu vulkanik hingga FL050 (5.000 kaki ≈ 1,5 km), teramati 11 September pukul 08:20 UTC, bergerak ke barat daya.',
   },
   en: {
     title: "{volcano} Watch",
@@ -230,6 +241,17 @@ const I18N = {
     min_ago: (n) => `${n} min ago`,
     days_ago: (n) => `${n} d ago`,
     just_now: "just now",
+    /* ---- a11y additions (skip link, live region, SR reading aids) ---- */
+    skip_main: "Skip to main content",
+    live_loaded: "Dashboard loaded: status {level}; {erup} eruption events; {vona} VONA; VAAC advisory {vaac}; data {wib}.",
+    live_no_adv: "no active advisory",
+    live_partial: "Partial update—{list} unreachable at the last rebuild; affected sections show the last successfully fetched data.",
+    alt_seismo: "PVMBG seismogram for this reporting period—its numeric values are in the seismicity table alongside.",
+    alt_vaac_graphic: "Darwin VAAC advisory chart—map of observed and forecast ash-cloud polygons.",
+    ext_link: "open the original report on MAGMA",
+    vaac_codes_t: "Advisory codes (how to read)",
+    vaac_codes: '<dl class="codes"><dt>VA</dt><dd>volcanic ash</dd><dt>OBS</dt><dd>observed (OBS VA DTG = when the ash cloud was observed)</dd><dt>DTG</dt><dd>date/time group—issue time (UTC)</dd><dt>FCST</dt><dd>forecast</dd><dt>SFC</dt><dd>surface (ground level)</dd><dt>FL050</dt><dd>flight level 050—5,000 ft ≈ 1.5 km</dd><dt>MOV NW 10KT</dt><dd>moving northwest at 10 knots</dd><dt>RMK</dt><dd>remarks</dd><dt>NXT ADV</dt><dd>next advisory</dd><dt>11/0820Z</dt><dd>day 11, 08:20 UTC (Z = UTC)</dd></dl>',
+    vaac_codes_ex: 'Example: “VA TO FL050 OBS AT 11/0820Z MOV SW” = volcanic ash up to FL050 (5,000 ft ≈ 1.5 km), last observed 11 September at 08:20 UTC, moving southwest.',
   },
 };
 
@@ -337,28 +359,32 @@ function renderReport() {
   if (!r || !r.period) { $("#card-report").innerHTML = `<p class="stamp">—</p>`; return; }
   const seis = r.seismic_counts || {};
   const rows = Object.entries(seis).sort((a, b) => b[1] - a[1])
-    .map(([k, n]) => `<tr><td>${esc(k)}</td><td class="num"><b>${n}</b></td></tr>`).join("");
+    .map(([k, n]) => `<tr><th scope="row">${esc(k)}</th><td class="num"><b>${n}</b></td></tr>`).join("");
+  /* lang="id": MAGMA report values are verbatim Indonesian even when the
+     UI is English — marking them lets screen readers switch voice. */
   $("#card-report").innerHTML = `
     <p class="stamp" style="margin:0 0 8px">${T("verbatim_note")}</p>
-    <div class="kv"><span class="k">${T("period")}</span><span class="v"><b>${esc(r.period)}</b></span></div>
-    <div class="kv"><span class="k">${T("observer")}</span><span class="v">${esc(r.author || "—")}</span></div>
-    <div class="kv"><span class="k">${T("visual")}</span><span class="v">${esc(r.visual || "—")}</span></div>
-    <div class="kv"><span class="k">${T("weather")}</span><span class="v">${esc(r.climate || "—")}</span></div>
+    <div class="kv"><span class="k">${T("period")}</span><span class="v" lang="id"><b>${esc(r.period)}</b></span></div>
+    <div class="kv"><span class="k">${T("observer")}</span><span class="v" lang="id">${esc(r.author || "—")}</span></div>
+    <div class="kv"><span class="k">${T("visual")}</span><span class="v" lang="id">${esc(r.visual || "—")}</span></div>
+    <div class="kv"><span class="k">${T("weather")}</span><span class="v" lang="id">${esc(r.climate || "—")}</span></div>
     <div class="grid2" style="margin-top:10px">
       <div><div class="stamp" style="margin-bottom:4px">${T("seismic")}</div>
-        <table><thead><tr><th></th><th style="text-align:right">${T("seismic_n")}</th></tr></thead>
+        <table><thead><tr><th></th><th scope="col" style="text-align:right">${T("seismic_n")}</th></tr></thead>
         <tbody>${rows || "<tr><td colspan=2>—</td></tr>"}</tbody></table></div>
       <div>${r.seismogram_asset ? `<div class="stamp" style="margin-bottom:4px">${T("seismogram")}</div>
-        <img class="pic" src="${esc(r.seismogram_asset)}" alt="seismogram PVMBG" loading="lazy">` : ""}</div>
+        <img class="pic" src="${esc(r.seismogram_asset)}" alt="${esc(T("alt_seismo"))}" loading="lazy">` : ""}</div>
     </div>
-    ${r.recommendation ? `<div class="callout warn"><b>${T("recommendation")}:</b> ${esc(r.recommendation)}</div>` : ""}`;
+    ${r.recommendation ? `<div class="callout warn"><b>${T("recommendation")}:</b> <span lang="id">${esc(r.recommendation)}</span></div>` : ""}`;
 }
 
 function renderEruptions() {
   const list = SNAP.eruptions || [];
+  /* Icon-only links carry their name in aria-label (the SVG glyph alone
+     reads as an unnamed "link"); eruption text is verbatim Indonesian. */
   $("#card-eruptions").innerHTML = list.length ? `<ul class="feed">${list.map((e) => `
     <li><span class="t">${esc(e.wib || fmtWib(e.utc))} ${e.utc ? `<span class="stamp">(${relWib(e.utc)})</span>` : ""}</span>
-    ${esc(e.text || "")}${e.url ? ` <a href="${esc(e.url)}" target="_blank" rel="noopener"><svg class="ic" style="width:12px;height:12px"><use href="#i-ext"/></svg></a>` : ""}</li>`).join("")}</ul>`
+    ${e.text ? `<span lang="id">${esc(e.text)}</span>` : ""}${e.url ? ` <a href="${esc(e.url)}" target="_blank" rel="noopener" aria-label="${esc(T("ext_link"))}"><svg class="ic" aria-hidden="true" style="width:12px;height:12px"><use href="#i-ext"/></svg></a>` : ""}</li>`).join("")}</ul>`
     : `<p class="stamp">${T("no_eruption")}</p>`;
 }
 
@@ -367,18 +393,42 @@ function renderVona() {
   $("#card-vona").innerHTML = list.length ? `<ul class="feed">${list.map((v) => `
     <li><span class="badge sm ${esc(v.code)}">${esc(v.code)}</span>
         <span class="t" style="display:inline;margin-left:8px">${esc(v.wib || fmtWib(v.issued_utc))}</span>
-      <div style="margin-top:4px">${esc(v.text || "")}</div></li>`).join("")}</ul>`
+      <div lang="en" style="margin-top:4px">${esc(v.text || "")}</div></li>`).join("")}</ul>`
     : `<p class="stamp">${T("no_vona")}</p>`;
 }
 
+/* Screen-reader aid for the layer tables: compass points stay visually
+   ENGLISH (maintainer decision) but each cell carries a spoken expansion
+   in the UI language, so "NW" is announced as "barat laut" / "northwest",
+   and "SFC–FL050" as the full human-readable base–top pair. */
+const COMPASS_SR = {
+  id: { N: "utara", NNE: "utara–timur laut", NE: "timur laut", ENE: "timur–timur laut", E: "timur",
+        ESE: "timur–tenggara", SE: "tenggara", SSE: "selatan–tenggara", S: "selatan",
+        SSW: "selatan–barat daya", SW: "barat daya", WSW: "barat–barat daya", W: "barat",
+        WNW: "barat–barat laut", NW: "barat laut", NNW: "utara–barat laut" },
+  en: { N: "north", NNE: "north-northeast", NE: "northeast", ENE: "east-northeast", E: "east",
+        ESE: "east-southeast", SE: "southeast", SSE: "south-southeast", S: "south",
+        SSW: "south-southwest", SW: "southwest", WSW: "west-southwest", W: "west",
+        WNW: "west-northwest", NW: "northwest", NNW: "north-northwest" },
+};
+
 function layerTable(layers) {
   if (!layers || !layers.length) return `<p class="stamp">—</p>`;
-  return `<table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th></tr></thead><tbody>
-    ${layers.map((l) => `<tr>
-      <td>${esc(l.base)}–${esc(l.top)}</td>
+  return `<table><thead><tr><th scope="col">${T("layer")}</th><th scope="col">${T("height")}</th><th scope="col">${T("motion")}</th></tr></thead><tbody>
+    ${layers.map((l) => {
+      const baseH = (LANG === "id" ? l.base_human_id : l.base_human_en) || l.base || "";
+      const topH = (LANG === "id" ? l.top_human_id : l.top_human_en) || l.top || "";
+      const layerSr = `${baseH}–${topH}`;
+      const comp = COMPASS_SR[LANG][(l.move_toward || "").trim().toUpperCase()];
+      const motionTxt = `<b>${esc(l.move_toward)}</b> · ${l.speed_kt} kt ≈ ${l.speed_ms} m/s`;
+      const motionSr = comp
+        ? `${comp}, ${l.speed_kt} ${LANG === "id" ? "knot" : "knots"} ≈ ${l.speed_ms} ${LANG === "id" ? "meter per detik" : "metres per second"}`
+        : null;
+      return `<tr>
+      <td><span aria-label="${esc(layerSr)}">${esc(l.base)}–${esc(l.top)}</span></td>
       <td>${esc(LANG === "id" ? l.top_human_id : l.top_human_en)}</td>
-      <td><b>${esc(l.move_toward)}</b> · ${l.speed_kt} kt ≈ ${l.speed_ms} m/s</td>
-    </tr>`).join("")}</tbody></table>`;
+      <td>${motionSr ? `<span aria-label="${esc(motionSr)}">${motionTxt}</span>` : motionTxt}</td>
+    </tr>`; }).join("")}</tbody></table>`;
 }
 
 function renderVaac() {
@@ -401,17 +451,19 @@ function renderVaac() {
       <b style="font-size:1.02rem">${T("vaac_advisory")} ${esc(v.advisory_nr)}</b>
       <span class="stamp">${T("issued")}: <b>${esc(v.dtg_wib || fmtWib(v.dtg_utc))}</b> (${relWib(v.dtg_utc)})</span>
     </div>
-    <div class="kv" style="margin-top:8px"><span class="k">${T("eruption_detail")}</span><span class="v">${esc(v.eruption_details || "—")}</span></div>
+    <div class="kv" style="margin-top:8px"><span class="k">${T("eruption_detail")}</span><span class="v" lang="en">${esc(v.eruption_details || "—")}</span></div>
     <div class="stamp" style="margin:8px 0 2px">${T("obs_cloud")}</div>
     ${layerTable(v.observed_layers)}
     <p class="stamp">${T("abbr_note")}</p>
+    <details class="vaac-codes"><summary>${T("vaac_codes_t")}</summary>
+      ${T("vaac_codes")}<p class="stamp">${T("vaac_codes_ex")}</p></details>
     <div style="margin-top:12px">${fc}</div>
-    ${v.remarks ? `<div class="callout"><b>${T("remarks")}:</b> ${esc(v.remarks)}</div>` : ""}
+    ${v.remarks ? `<div class="callout" lang="en"><b>${T("remarks")}:</b> ${esc(v.remarks)}</div>` : ""}
     ${v.next_advisory_by_wib ? `<div class="kv"><span class="k">${T("next_adv")}</span><span class="v">${esc(v.next_advisory_by_wib)}</span></div>` : ""}
     <div class="grid2" style="margin-top:12px">
       <div>${v.graphic_asset ? `<div class="stamp" style="margin-bottom:4px">${T("graphic")}</div>
-        <img class="pic" src="${esc(v.graphic_asset)}" alt="Darwin VAAC graphical advisory" loading="lazy">` : ""}</div>
-      <div><details><summary>${T("bulletin")}</summary><pre class="bulletin">${esc(v.bulletin_text || "")}</pre></details>
+        <img class="pic" src="${esc(v.graphic_asset)}" alt="${esc(T("alt_vaac_graphic"))}" loading="lazy">` : ""}</div>
+      <div><details><summary>${T("bulletin")}</summary><pre class="bulletin" lang="en">${esc(v.bulletin_text || "")}</pre></details>
         <p class="stamp" style="margin-top:8px"><a href="${esc(v.source_url)}" target="_blank" rel="noopener">${esc(v.source_url)}</a></p></div>
     </div>`;
 }
@@ -617,7 +669,11 @@ function renderLoop() {
       };
       LOOP.wired = true;
     };
-    wire(); loopTicks(); loopShow(); loopSetPlaying(true);
+    wire(); loopTicks(); loopShow();
+    // prefers-reduced-motion: start paused instead of autoplaying; the play
+    // button still works — user-initiated motion is always allowed.
+    const RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    loopSetPlaying(!RM);
   } else { loopTicks(); }
 }
 
@@ -926,6 +982,29 @@ function stamp() {
   $("#foot-stamp").textContent = `${T("updated")}: ${fmtWib(SNAP.generated_utc)} · schema v${SNAP.schema_version} · WIB = UTC+7`;
 }
 
+/* a11y: one polite live-region sentence per data refresh so screen readers
+   hear that the dashboard loaded (and how fresh it is). Identical content
+   is skipped — the 5-min auto-refresh never chatters when nothing changed. */
+let LIVE_LAST = "";
+function liveAnnounce() {
+  const el = $("#live-region");
+  if (!el || !SNAP) return;
+  const errs = SNAP.source_errors || {};
+  const names = Object.keys(errs).map((k) => (k === "magma" ? "MAGMA/PVMBG" : "Darwin VAAC")).join(", ");
+  const v = SNAP.vaac || {};
+  const vaac = v.state === "advisory" && v.advisory_nr ? v.advisory_nr : T("live_no_adv");
+  let msg = T("live_loaded")
+    .replace("{level}", (SNAP.status || {}).level_name || "—")
+    .replace("{erup}", String((SNAP.eruptions || []).length))
+    .replace("{vona}", String((SNAP.vona || []).length))
+    .replace("{vaac}", vaac)
+    .replace("{wib}", SNAP.generated_wib || "");
+  if (names) msg = `${T("live_partial").replace("{list}", names)} ${msg}`;
+  if (msg === LIVE_LAST) return;
+  LIVE_LAST = msg;
+  el.textContent = msg;
+}
+
 function safeRender(name, fn) {
   try {
     fn();
@@ -960,6 +1039,7 @@ function renderAll() {
   safeRender("model", renderModel);
   safeRender("map", ensureMap);
   safeRender("stamp", stamp);
+  safeRender("live-region", liveAnnounce);
 }
 
 function inlineJSON(id) {

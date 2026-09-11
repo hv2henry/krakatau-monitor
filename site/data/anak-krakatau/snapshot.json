@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-11T23:40:54Z",
- "generated_wib": "12 Sep 2026, 06:40 WIB",
+ "generated_utc": "2026-09-11T23:45:13Z",
+ "generated_wib": "12 Sep 2026, 06:45 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-11T23:41:00Z",
-  "fetched_wib": "12 Sep 2026, 06:41 WIB",
+  "fetched_utc": "2026-09-11T23:45:19Z",
+  "fetched_wib": "12 Sep 2026, 06:45 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -39,7 +39,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 06:41 WIB"
+  "fetched_wib": "12 Sep 2026, 06:45 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -94,7 +94,7 @@
   "advisory_nr": "2026/215",
   "dtg_utc": "2026-09-11T23:00Z",
   "dtg_wib": "12 Sep 2026, 06:00 WIB",
-  "age_hours": 0.7,
+  "age_hours": 0.8,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -307,63 +307,63 @@
   "interval_min": 10,
   "frames": [
    {
+    "t_utc": "2026-09-11T20:50:00Z",
+    "t_wib": "12 Sep 2026, 03:50 WIB",
+    "asset": "assets/loop/f00.jpg"
+   },
+   {
+    "t_utc": "2026-09-11T21:00:00Z",
+    "t_wib": "12 Sep 2026, 04:00 WIB",
+    "asset": "assets/loop/f01.jpg"
+   },
+   {
     "t_utc": "2026-09-11T21:10:00Z",
     "t_wib": "12 Sep 2026, 04:10 WIB",
-    "asset": "assets/loop/f00.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-11T21:20:00Z",
     "t_wib": "12 Sep 2026, 04:20 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-11T21:30:00Z",
     "t_wib": "12 Sep 2026, 04:30 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-11T21:40:00Z",
     "t_wib": "12 Sep 2026, 04:40 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-11T21:50:00Z",
     "t_wib": "12 Sep 2026, 04:50 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-11T22:00:00Z",
     "t_wib": "12 Sep 2026, 05:00 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-11T22:10:00Z",
     "t_wib": "12 Sep 2026, 05:10 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-09-11T22:20:00Z",
     "t_wib": "12 Sep 2026, 05:20 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f09.jpg"
    },
    {
     "t_utc": "2026-09-11T22:30:00Z",
     "t_wib": "12 Sep 2026, 05:30 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f10.jpg"
    },
    {
     "t_utc": "2026-09-11T22:40:00Z",
     "t_wib": "12 Sep 2026, 05:40 WIB",
-    "asset": "assets/loop/f09.jpg"
-   },
-   {
-    "t_utc": "2026-09-11T22:50:00Z",
-    "t_wib": "12 Sep 2026, 05:50 WIB",
-    "asset": "assets/loop/f10.jpg"
-   },
-   {
-    "t_utc": "2026-09-11T23:00:00Z",
-    "t_wib": "12 Sep 2026, 06:00 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -379,10 +379,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-11 23:00Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-11T23:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
+   "noaa_slot": "2026-09-11 22:40Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-11T22:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-11T23:41:45Z"
+  "built_utc": "2026-09-11T23:45:58Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

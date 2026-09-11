@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-11T23:00:19Z",
- "generated_wib": "12 Sep 2026, 06:00 WIB",
+ "generated_utc": "2026-09-11T23:15:14Z",
+ "generated_wib": "12 Sep 2026, 06:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-11T23:00:25Z",
-  "fetched_wib": "12 Sep 2026, 06:00 WIB",
+  "fetched_utc": "2026-09-11T23:15:19Z",
+  "fetched_wib": "12 Sep 2026, 06:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -39,7 +39,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 06:00 WIB"
+  "fetched_wib": "12 Sep 2026, 06:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -92,8 +92,8 @@
  "vaac": {
   "state": "advisory",
   "advisory_nr": "2026/215",
-  "dtg_utc": "2026-09-11T22:40Z",
-  "dtg_wib": "12 Sep 2026, 05:40 WIB",
+  "dtg_utc": "2026-09-11T23:00Z",
+  "dtg_wib": "12 Sep 2026, 06:00 WIB",
   "age_hours": 0.3,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
@@ -136,8 +136,8 @@
   ],
   "forecasts": {
    "+6h": {
-    "valid_utc": "2026-09-12T05:00Z",
-    "valid_wib": "12 Sep 2026, 12:00 WIB",
+    "valid_utc": "2026-09-12T04:40Z",
+    "valid_wib": "12 Sep 2026, 11:40 WIB",
     "layers": [
      {
       "base": "SFC",
@@ -176,8 +176,8 @@
     ]
    },
    "+12h": {
-    "valid_utc": "2026-09-12T11:00Z",
-    "valid_wib": "12 Sep 2026, 18:00 WIB",
+    "valid_utc": "2026-09-12T10:40Z",
+    "valid_wib": "12 Sep 2026, 17:40 WIB",
     "layers": [
      {
       "base": "SFC",
@@ -216,8 +216,8 @@
     ]
    },
    "+18h": {
-    "valid_utc": "2026-09-12T17:00Z",
-    "valid_wib": "13 Sep 2026, 00:00 WIB",
+    "valid_utc": "2026-09-12T16:40Z",
+    "valid_wib": "12 Sep 2026, 23:40 WIB",
     "layers": [
      {
       "base": "SFC",
@@ -256,11 +256,11 @@
     ]
    }
   },
-  "remarks": "VA NOT IDENTIFIABLE ON LATEST SAT IMG. ERUPTIONS ARE EXPECTED TO BE ONGOING. VA HEIGHT AND FORECAST MOVEMENT BASED ON RECENT SAT IMG, MODEL GUIDANCE AND GROUND REPORTS.",
-  "next_advisory_by_utc": "2026-09-12T04:40Z",
-  "next_advisory_by_wib": "12 Sep 2026, 11:40 WIB",
+  "remarks": "VA NOT IDENTIFIABLE ON LATEST SAT IMG. ERUPTIONS ARE EXPECTED TO BE ONGOING. VA HEIGHT AND FORECAST MOVEMENT BASED ON RECENT SAT IMG, MODEL GUIDANCE AND GROUND REPORTS. CORRECTED ADVISORY FOR TYPO IN OBS TIME.",
+  "next_advisory_by_utc": "2026-09-12T05:00Z",
+  "next_advisory_by_wib": "12 Sep 2026, 12:00 WIB",
   "graphic_asset": "assets/vaac_graphic.png",
-  "bulletin_text": "FVAU04 ADRM 112240\nVA ADVISORY\nDTG: 20260911/2240Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/215\nINFO SOURCE: HIMAWARI-9, CVGHM\nERUPTION DETAILS: VA TO FL050 LAST OBS AT 11/0820Z MOV SW\nEST VA DTG: 11/2300Z\nEST VA CLD: SFC/FL050 S0607 E10531 - S0643 E10427 - S0622\nE10409 - S0554 E10422 - S0559 E10528 MOV SW 15KT\nFCST VA CLD +6 HR: 12/0500Z SFC/FL050 S0607 E10531 - S0652\nE10432 - S0621 E10407 - S0549 E10425 - S0559 E10528\nFCST VA CLD +12 HR: 12/1100Z SFC/FL050 S0608 E10532 - S0650\nE10430 - S0619 E10405 - S0544 E10427 - S0558 E10530\nFCST VA CLD +18 HR: 12/1700Z SFC/FL050 S0600 E10530 - S0614\nE10530 - S0630 E10427 - S0553 E10410 - S0526 E10440\nRMK: VA NOT IDENTIFIABLE ON LATEST SAT IMG. ERUPTIONS ARE\nEXPECTED TO BE ONGOING. VA HEIGHT AND FORECAST MOVEMENT\nBASED ON RECENT SAT IMG, MODEL GUIDANCE AND GROUND REPORTS.\nNXT ADVISORY: NO LATER THAN 20260912/0440Z=",
+  "bulletin_text": "FVAU04 ADRM 112300\nVA ADVISORY\nDTG: 20260911/2300Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/215\nINFO SOURCE: HIMAWARI-9, CVGHM\nERUPTION DETAILS: VA TO FL050 LAST OBS AT 11/0820Z MOV SW\nEST VA DTG: 11/2240Z\nEST VA CLD: SFC/FL050 S0607 E10531 - S0643 E10427 - S0622\nE10409 - S0554 E10422 - S0559 E10528 MOV SW 15KT\nFCST VA CLD +6 HR: 12/0440Z SFC/FL050 S0607 E10531 - S0652\nE10432 - S0621 E10407 - S0549 E10425 - S0559 E10528\nFCST VA CLD +12 HR: 12/1040Z SFC/FL050 S0608 E10532 - S0650\nE10430 - S0619 E10405 - S0544 E10427 - S0558 E10530\nFCST VA CLD +18 HR: 12/1640Z SFC/FL050 S0600 E10530 - S0614\nE10530 - S0630 E10427 - S0553 E10410 - S0526 E10440\nRMK: VA NOT IDENTIFIABLE ON LATEST SAT IMG. ERUPTIONS ARE\nEXPECTED TO BE ONGOING. VA HEIGHT AND FORECAST MOVEMENT\nBASED ON RECENT SAT IMG, MODEL GUIDANCE AND GROUND REPORTS.\nCORRECTED ADVISORY FOR TYPO IN OBS TIME.\nNXT ADVISORY: NO LATER THAN 20260912/0500Z=",
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
@@ -382,7 +382,7 @@
    "noaa_slot": "2026-09-11 22:30Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-11T22:30:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-11T23:01:49Z"
+  "built_utc": "2026-09-11T23:15:53Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

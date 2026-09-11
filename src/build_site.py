@@ -7,10 +7,13 @@ build_site.py — regenerate the whole static dashboard in one command.
                                              # ALSO publish the model section
                                              # (human-in-the-loop gate)
 
-What it produces under site/:
-    data/snapshot.json          live official data (MAGMA + Darwin VAAC)
-    data/forecast_candidate.json our Himawari/open-meteo model, UNPUBLISHED
-    data/forecast_model.json    the same model, only after a human approves
+What it produces under site/ (namespaced per volcano, <slug> from
+src/volcanoes.py — e.g. anak-krakatau):
+    data/volcanoes.json          the volcano registry, for the frontend boot
+    data/<slug>/snapshot.json          live official data (MAGMA + Darwin VAAC)
+    data/<slug>/forecast_candidate.json our Himawari/open-meteo model, UNPUBLISHED
+    data/<slug>/forecast_model.json    the same model, only after a human approves
+    data/<slug>/backtest.jsonl         model-vs-VAAC performance ledger
     assets/seismogram.png       PVMBG's own seismogram snapshot
     assets/vaac_graphic.png     Darwin VAAC's own advisory chart
     assets/sat_snpp.jpg         Suomi NPP VIIRS true colour (NASA GIBS), stitched
@@ -40,6 +43,7 @@ from datetime import datetime, timedelta, timezone
 import volcano_monitor
 import darwin_vaac
 import validate as V
+import volcanoes
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(REPO, "site")
@@ -134,6 +138,107 @@ def fl_human(fl: str | None, lang: str = "id") -> str | None:
     return f"FL{m.group(1)} = {feet:,} ft ≈ {km:.1f} km asl"
 
 
+# ------------------------------------------------------- v2.1 model wiring
+def obs_polygon_args(vaac: dict | None) -> list[str] | None:
+    """CLI args that hand the Darwin OBS polygon to ash_transport (v2.1).
+
+    The model inverts the OBS polygon's cross-track width into a cloud age,
+    so the initial spread and airborne mass reflect the EMISSION HISTORY
+    instead of silently assuming fresh ash at the analysis time. We use the
+    first observed layer that carries a polygon (VAAC lists layers bottom-up
+    and the lowest polygon usually describes the bulk of the detected
+    cloud); one age is then applied to every band — see ash_transport.py,
+    section "EMISSION HISTORY (v2.1)". Pure on the darwin_vaac JSON so it
+    can be unit-tested offline. Returns None when nothing usable exists
+    (nil/stale advisory, layer without vertices): the model then keeps its
+    fresh-emission t=0 default.
+    """
+    if not vaac or vaac.get("state") != "advisory":
+        return None
+    layers = (vaac.get("advisory") or {}).get("observed_layers") or []
+    ly = next((l for l in layers if len(l.get("polygon") or []) >= 3), None)
+    if not ly or ly.get("top_km") is None:
+        return None
+    parts = []
+    for p in ly["polygon"]:
+        if isinstance(p, dict):
+            lat, lon = p.get("lat"), p.get("lon")
+        else:
+            lon, lat = p[0], p[1]
+        if lat is None or lon is None:
+            return None
+        parts.append(f"{lat},{lon}")
+    base_km = 0.0 if ly.get("base") in (None, "SFC") else (ly.get("base_km") or 0.0)
+    # "=" form: southern-hemisphere latitudes start with "-", which argparse
+    # would otherwise read as an option flag
+    out = ["--obs-polygon=" + ";".join(parts)]
+    if ly.get("move_toward"):
+        out += ["--obs-mov-deg", str(ly["move_toward"])]
+    out += ["--obs-layer-km", f"{base_km},{ly['top_km']}"]
+    return out
+
+
+def width_ledger_entry(vaac: dict | None, cand: dict | None) -> dict:
+    """Width bookkeeping for the backtest ledger (v2.1) — the re-fit loop's food.
+
+    Records, per build: the OBS polygon width the model was seeded with, the
+    emission age it inferred, the VAAC FCST polygon widths at +6/+12/+18 h,
+    and the model's own full widths (2 x detectable half-width, max over the
+    bands whose trajectory altitudes intersect the OBS layer) at the same
+    hours. Rows stay additive: older rows without these keys keep working.
+    Uses ash_transport's pure width helper; if the import fails (numpy or
+    netCDF4 missing in this environment) the width block is simply skipped.
+    """
+    entry: dict = {}
+    em = (cand or {}).get("envelope_emission") or {}
+    if em.get("obs_width_km") is not None:
+        entry["obs_width_km"] = em.get("obs_width_km")
+        entry["emission_age_h"] = em.get("emission_age_h")
+        entry["emission_source"] = em.get("source")
+    if not vaac or vaac.get("state") != "advisory":
+        return entry
+    adv = vaac.get("advisory") or {}
+    ols = adv.get("observed_layers") or []
+    ly = next((l for l in ols if len(l.get("polygon") or []) >= 3), None)
+    if not ly or ly.get("top_km") is None:
+        return entry
+    mov_deg = COMPASS_DEG.get(ly.get("move_toward"))
+    try:
+        import ash_transport as AT                     # noqa: PLC0415
+        width_fn = AT.polygon_cross_track_width_km
+    except Exception:                                   # noqa: BLE001
+        return entry
+    base_km = 0.0 if ly.get("base") in (None, "SFC") else (ly.get("base_km") or 0.0)
+    top_km = ly["top_km"]
+    fcst = []
+    # runtime fetch() shape uses "forecast" (parse_advisory output); the
+    # site snapshot shape uses "forecasts" — accept both
+    fcsts = adv.get("forecast") or adv.get("forecasts") or {}
+    for hkey in ("+6h", "+12h", "+18h"):
+        layers = (fcsts.get(hkey) or {}).get("layers") or []
+        fly = next((l for l in layers if len(l.get("polygon") or []) >= 3), None)
+        if not fly:
+            continue
+        w = width_fn(fly["polygon"], mov_deg)
+        if w is None:
+            continue
+        h = int(hkey[1:-1])
+        row = {"h": h, "vaac_km": round(w, 1), "model_km": None}
+        # model counterpart: full width at the same hour, max over the bands
+        # whose altitude span strictly overlaps the OBS layer
+        for pts in (cand or {}).get("trajectories_forecast", {}).values():
+            alts = [p.get("alt_km") for p in pts if p.get("alt_km") is not None]
+            if not alts or not (min(alts) < top_km and max(alts) > base_km):
+                continue
+            for p in pts:
+                if p.get("hours") == h and p.get("width_km") is not None:
+                    row["model_km"] = round(max(row["model_km"] or 0.0, 2 * p["width_km"]), 1)
+        fcst.append(row)
+    if fcst:
+        entry["fcst_widths"] = fcst
+    return entry
+
+
 # ------------------------------------------------------------------ tiles
 def _tile_idx(lon: float, lat: float, z: int):
     n = 2 ** z
@@ -198,12 +303,12 @@ def stitch_gibs(sensor: str, date: str, out_path: str) -> dict | None:
                         "terra": "Terra MODIS"}[sensor], date=date)}
 
 
-def latest_gibs_date() -> str:
-    """GIBS lags ~1 day; try today then step back."""
+def latest_gibs_date(lat: float, lon: float) -> str:
+    """GIBS lags ~1 day; try today then step back (probing at the vent)."""
     now = datetime.now(timezone.utc)
     for back in range(0, 5):
         d = (now - timedelta(days=back)).strftime("%Y-%m-%d")
-        x, y = _tile_idx(105.42, -6.10, SAT_Z)
+        x, y = _tile_idx(lon, lat, SAT_Z)
         if http(GIBS.format(layer=GIBS_LAYERS["snpp"], date=d, z=SAT_Z, row=y, col=x), 25, 1):
             return d
     return (now - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -212,11 +317,14 @@ def latest_gibs_date() -> str:
 EMBED = {}
 
 
-def embed_into_index(embed: dict) -> None:
+def embed_into_index(embed: dict, slug: str) -> None:
     """Inline the snapshot (+ approved model) into index.html so the page
-    renders with zero network (offline copy / sandboxed preview)."""
+    renders with zero network (offline copy / sandboxed preview). The
+    __SLUG__ placeholder in the template's data references is filled with
+    the active volcano's data folder (idempotent on every rebuild)."""
     ip = os.path.join(SITE, "index.html")
     html = open(ip, encoding="utf-8").read()
+    html = html.replace("__SLUG__", slug)
 
     def payload(obj):
         if not obj:
@@ -225,7 +333,7 @@ def embed_into_index(embed: dict) -> None:
 
     snap = payload(embed.get("snapshot"))
     model = None
-    mp = os.path.join(SITE, "data", "forecast_model.json")
+    mp = os.path.join(SITE, "data", slug, "forecast_model.json")
     if os.path.exists(mp):
         try:
             m = json.load(open(mp, encoding="utf-8"))
@@ -391,6 +499,32 @@ def build_loop(out_dir: str, n: int = LOOP_FRAMES) -> dict | None:
             "built_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")}
 
 
+# ------------------------------------------------------------- registry i/o
+def framing_for(volc: dict) -> tuple:
+    """Per-volcano imagery framing: explicit registry override, else boxes
+    centred on the vent. Registered volcanoes pin their framing explicitly
+    so a rendered page never silently shifts."""
+    lat, lon = volc["lat"], volc["lon"]
+    sat = volc.get("sat_box") or (lon - 6.0, lon + 6.0, lat - 5.5, lat + 5.5)
+    box = volc.get("loop_box") or (lon - 5.5, lon + 5.5, lat - 5.5, lat + 5.5)
+    crop = volc.get("loop_crop") or (lon - 5.1, lon + 5.1, lat - 5.0, lat + 5.0)
+    return sat, box, crop
+
+
+def write_volcanoes_index() -> None:
+    """site/data/volcanoes.json — the boot registry the frontend reads to
+    decide which volcano's data folder to load (URL ?volcano=<slug> picks
+    another entry). Machine consumers get the same list here."""
+    out = {
+        "updated": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "volcanoes": [{"slug": e["slug"], "name": e["name"], "region": e.get("region"),
+                       "lat": e["lat"], "lon": e["lon"]} for e in volcanoes.all_volcanoes()],
+    }
+    p = os.path.join(SITE, "data", "volcanoes.json")
+    json.dump(out, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print(f"[build] {p} ({len(out['volcanoes'])} volcano(s) registered)")
+
+
 # ------------------------------------------------------------------ build
 def verdict_hard_failures(embed) -> bool:
     """The 6h auto-publish gate: refuse unless validation found zero hard fails."""
@@ -398,16 +532,17 @@ def verdict_hard_failures(embed) -> bool:
     return bool(vf) if vf is not None else False
 
 
-def archive_run(embed, vaac) -> None:
+def archive_run(embed, vaac, slug: str) -> None:
     """Six-hourly memory: our model, the VAAC state, and the official chart.
-    Pruned so the repo stays light: 60 model snapshots, 40 VAAC states,
-    30 graphical advisories (one per advisory number)."""
-    base = os.path.join(REPO, "archive")   # repo root: archive data, NOT website files
+    Namespaced per volcano under archive/<slug>/. Pruned so the repo stays
+    light: 60 model snapshots, 40 VAAC states, 30 graphical advisories
+    (one per advisory number)."""
+    base = os.path.join(REPO, "archive", slug)   # repo root: archive data, NOT website files
     mdir, vdir = os.path.join(base, "models"), os.path.join(base, "vaac")
     os.makedirs(mdir, exist_ok=True)
     os.makedirs(vdir, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%MZ")
-    cand = os.path.join(SITE, "data", "forecast_candidate.json")
+    cand = os.path.join(SITE, "data", slug, "forecast_candidate.json")
     if os.path.exists(cand):
         shutil.copy(cand, os.path.join(mdir, f"model-{stamp}.json"))
     vstate = {"t": stamp, "state": vaac.get("state"),
@@ -446,8 +581,21 @@ def archive_run(embed, vaac) -> None:
 
 def build(args) -> int:
     embed = {}
-    os.makedirs(os.path.join(SITE, "data"), exist_ok=True)
+    # ---- resolve the target volcano from the registry (src/volcanoes.py) ----
+    volc = volcanoes.resolve(args.volcano or volcanoes.primary()["name"])
+    args.volcano = volc["name"]
+    if args.lat is None:
+        args.lat = volc["lat"]
+    if args.lon is None:
+        args.lon = volc["lon"]
+    slug = volc["slug"]
+    DD = os.path.join(SITE, "data", slug)      # site/data/<slug>/
+    os.makedirs(DD, exist_ok=True)
     os.makedirs(os.path.join(SITE, "assets"), exist_ok=True)
+    write_volcanoes_index()
+    # per-volcano imagery framing (module-level constants, set per run)
+    global SAT_BOX, LOOP_BOX, LOOP_CROP
+    SAT_BOX, LOOP_BOX, LOOP_CROP = framing_for(volc)
     now = datetime.now(timezone.utc)
 
     print("[build] collecting MAGMA / PVMBG ...")
@@ -466,7 +614,8 @@ def build(args) -> int:
                 print(f"  [warn] {base} failed: {str(e)[:90]}", file=sys.stderr)
     if mon is None:
         print(f"  [degraded] MAGMA unreachable: {str(mon_err)[:90]} — publishing with last-known gaps labelled", file=sys.stderr)
-        mon = {"volcano": args.volcano, "code": "KRA", "province": "Lampung",
+        mon = {"volcano": args.volcano, "code": volc.get("magma_code"),
+               "province": volc.get("region"),
                "level": None, "level_name": None, "generated_utc": None,
                "recent_eruptions": [], "latest_vona": [], "latest_report": {},
                "indonesia_level_counts": None, "error": str(mon_err)[:200]}
@@ -574,7 +723,7 @@ def build(args) -> int:
 
     sat = {}
     if args.no_sat:
-        old = os.path.join(SITE, "data", "snapshot.json")
+        old = os.path.join(DD, "snapshot.json")
         if os.path.exists(old):
             try:
                 sat = (json.load(open(old, encoding="utf-8")) or {}).get("satellite") or {}
@@ -582,7 +731,7 @@ def build(args) -> int:
                 sat = {}
     if not args.no_sat:
         print("[build] stitching NASA GIBS daily imagery ...")
-        date = latest_gibs_date()
+        date = latest_gibs_date(args.lat, args.lon)
         # slot 1: Suomi VIIRS (wide swath, rarely gapped)
         out = os.path.join(SITE, "assets", "sat_snpp.jpg")
         r = stitch_gibs("snpp", date, out)
@@ -669,12 +818,12 @@ def build(args) -> int:
             "magma": "https://magma.esdm.go.id",
             "pvmbg": "https://geologi.esdm.go.id",
             "bnpb": "https://www.bnpb.go.id",
-            "bpbd_lampung": "https://bpbd.lampungprov.go.id",
-            "bpbd_banten": "https://bpbd.bantenprov.go.id",
             "darwin_vaac": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
+            # per-volcano regional links from the registry (BPBD etc.)
+            **(volc.get("links") or {}),
         },
     }
-    sp = os.path.join(SITE, "data", "snapshot.json")
+    sp = os.path.join(DD, "snapshot.json")
     json.dump(snapshot, open(sp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"[build] {sp} ({os.path.getsize(sp)/1024:.0f} KB)")
     embed["snapshot"] = snapshot
@@ -684,9 +833,19 @@ def build(args) -> int:
     import subprocess
     cand = None
     try:
+        # v2.1: seed the model with the advisory's OBS polygon so the cloud
+        # age (emission history) is derived from the observed width instead
+        # of silently assuming fresh ash at the analysis time
+        obs_args = obs_polygon_args(vaac)
+        if obs_args:
+            print("[build] seeding model with Darwin OBS polygon "
+                  "(emission-history inversion enabled)")
         r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "ash_transport.py"),
                             "--json", "--no-svg",
-                            "--slots", str(args.slots), "--hours", "12"],
+                            "--lat", str(args.lat), "--lon", str(args.lon),
+                            "--name", volc["name"],
+                            "--slots", str(args.slots), "--hours", "12"]
+                           + (obs_args or []),
                            capture_output=True, text=True, timeout=args.ash_timeout)
         if r.returncode == 0:
             cand = json.loads(r.stdout)
@@ -697,7 +856,8 @@ def build(args) -> int:
         verdict = V.validate(mon, vaac, cand.get("observed_wind_profile"),
                              {"levels": {int(k): x for k, x in cand.get("forecast_wind", {}).items()},
                               "times": []},
-                             firms=cand.get("firms"), volcano=args.volcano)
+                             firms=cand.get("firms"), volcano=args.volcano,
+                             ash_model=cand)
         # Official plume-top height (Darwin VAAC observed cloud top), if any.
         # This is what decides WHICH model layers matter today: on 2026-09-08 the
         # top was ~2.1 km (low layers steer the ash); on 2026-09-05 it was
@@ -727,14 +887,18 @@ def build(args) -> int:
             # last resort, clearly labelled: the highest well-consistent AMV
             # cloud band near the vent. Cloud top, NOT confirmed ash — the label
             # says so, and a caveat repeats it in plain language.
-            cands = [l for l in layers if l.get("data") and l.get("consistency_R")
-                     and l["consistency_R"] >= 0.7 and (l.get("n_eff") or 0) >= 5
-                     and (l.get("nearest_vector_km") or 999) <= 250]
+            # (reads the model's wind profile directly: the display `layers`
+            # list is only built further down, and this branch must work on
+            # nil-advisory + no-VONA days too — the case that once crashed here)
+            cands = [r for r in cand.get("observed_wind_profile", [])
+                     if r.get("data") and r.get("consistency_R") is not None
+                     and r["consistency_R"] >= 0.7 and (r.get("n_eff") or 0) >= 5
+                     and (r.get("nearest_vector_km") or 999) <= 250]
             if cands:
-                top = max(cands, key=lambda l: l["alt_km"])
-                plume_top = {"km": top["alt_km"], "fl": None,
-                             "human_id": f"≈ {top['alt_km']:.1f} km dpl (estimasi awan)",
-                             "human_en": f"≈ {top['alt_km']:.1f} km asl (cloud estimate)",
+                top = max(cands, key=lambda r: r["mean_altitude_km"])
+                plume_top = {"km": top["mean_altitude_km"], "fl": None,
+                             "human_id": f"≈ {top['mean_altitude_km']:.1f} km dpl (estimasi awan)",
+                             "human_en": f"≈ {top['mean_altitude_km']:.1f} km asl (cloud estimate)",
                              "source": "AMV cloud-top estimate (speculative, not confirmed ash)"}
 
         def _caveats(layers_list, plume_top, vaac, cand, verdict):
@@ -779,8 +943,8 @@ def build(args) -> int:
                     "plain_id": "Sebagian lintasan melewati hujan — sebagian abu bisa jatuh lebih dulu di sana.",
                     "plain_en": "Part of the path crosses rain — some ash may fall out there first."})
             out.append({
-                "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); difusi memakai σ(t)=√(2K0t)+g·t (K tumbuh bersama plume); geser dalam lapisan ditambahkan ke ±derajat.",
-                "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); diffusion uses σ(t)=√(2K0t)+g·t (K grows with plume size); within-band shear added into ±degrees.",
+                "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); sebaran memakai σ²=σ0²+2Kt+(geser·t)² yang terkopel ke massa airborne Φ(t): ambang deteksi ikut menipis saat awan menyebar, sehingga lebar bisa naik lalu turun.",
+                "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); spread uses σ²=σ0²+2Kt+(shear·t)² coupled to the airborne mass Φ(t): the detection threshold dilutes as the cloud spreads, so the width can rise and then fall.",
                     "plain_id": "Perhitungan memakai abu yang jatuh perlahan, menyebar, dan angin yang berubah theo ketinggian — dengan ketidakpastian yang jujur.",
                     "plain_en": "The calculation accounts for ash settling slowly, spreading, and wind changing with height — with honest uncertainty."})
             out.append({
@@ -936,9 +1100,15 @@ def build(args) -> int:
                 if (vaac.get("advisory") or {}).get("observed_layers") else None),
             "backtest": None,
             "plume_top": plume_top,
+            # v2.1 envelope outputs — union hull + emission history, so the
+            # site (and machine consumers) see the same fields the model
+            # reports on its own JSON path
+            "envelope_model": cand.get("envelope_model"),
+            "envelope_emission": cand.get("envelope_emission"),
+            "envelope_union": cand.get("envelope_union"),
             "sources": ["Himawari-9 AMV (NOAA S3, JMA product)", "open-meteo pressure-level winds"],
         }
-        cp = os.path.join(SITE, "data", "forecast_candidate.json")
+        cp = os.path.join(DD, "forecast_candidate.json")
         json.dump(model, open(cp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         print(f"[build] {cp} ({len(layers)} layers)")
 
@@ -952,14 +1122,14 @@ def build(args) -> int:
             model["approved_by"] = args.approver or os.environ.get("USER") or "operator"
             model["approved_utc"] = now.isoformat(timespec="seconds").replace("+00:00", "Z")
             model["approved_wib"] = wib_human(now.isoformat())
-            mp = os.path.join(SITE, "data", "forecast_model.json")
+            mp = os.path.join(DD, "forecast_model.json")
             json.dump(model, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             print(f"[build] MODEL PUBLISHED by {model['approved_by']} -> {mp}")
     else:
         print("[build] no model computed")
 
     # ---- backtest ledger: model direction vs VAAC observed motion, per build ----
-    bt_path = os.path.join(SITE, "data", "backtest.jsonl")
+    bt_path = os.path.join(DD, "backtest.jsonl")
     rows = []
     if os.path.exists(bt_path):
         for line in open(bt_path, encoding="utf-8"):
@@ -976,7 +1146,7 @@ def build(args) -> int:
             vaac_motion = comp.get(ols[0].get("move_toward"))
     model_vec = None
     try:
-        model_vec = (json.load(open(os.path.join(SITE, "data", "forecast_candidate.json"),
+        model_vec = (json.load(open(os.path.join(DD, "forecast_candidate.json"),
                                     encoding="utf-8")) or {}).get("plume_vector")
     except Exception:
         model_vec = None
@@ -985,7 +1155,11 @@ def build(args) -> int:
         rows.append({"t": stamp_now,
                      "model_toward": model_vec.get("toward_deg"),
                      "model_unc": model_vec.get("uncertainty_deg"),
-                     "vaac_toward": vaac_motion})
+                     "vaac_toward": vaac_motion,
+                     # v2.1: width bookkeeping (OBS width, inferred emission
+                     # age, VAAC FCST widths vs model widths) — the dataset
+                     # future envelope re-fits will be driven from
+                     **width_ledger_entry(vaac, cand)})
         with open(bt_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rows[-1]) + "\n")
     pairs = [r for r in rows if r.get("model_toward") is not None
@@ -997,7 +1171,7 @@ def build(args) -> int:
                     "median_abs_deg": round(sorted(errs)[len(errs) // 2], 1)}
     embed["backtest"] = bt_stats
     embed["validation_hard_failures"] = len(verdict["hard_failures"]) if "verdict" in dir() else 0
-    mp = os.path.join(SITE, "data", "forecast_model.json")
+    mp = os.path.join(DD, "forecast_model.json")
     if bt_stats and os.path.exists(mp):
         try:
             mj = json.load(open(mp, encoding="utf-8"))
@@ -1009,9 +1183,9 @@ def build(args) -> int:
     # ---- 6-hourly auto-publish (maintainer decision for the decreasing-activity
     # window): clean validation only, always stamped, always carrying caveats ----
     if args.auto_publish:
-        mp = os.path.join(SITE, "data", "forecast_model.json")
+        mp = os.path.join(DD, "forecast_model.json")
         try:
-            cand_now = json.load(open(os.path.join(SITE, "data", "forecast_candidate.json"),
+            cand_now = json.load(open(os.path.join(DD, "forecast_candidate.json"),
                                       encoding="utf-8"))
         except Exception:
             cand_now = None
@@ -1027,9 +1201,9 @@ def build(args) -> int:
 
     # ---- archive: our finding + Darwin VAAC state + graphical advisory ----
     if args.archive:
-        archive_run(embed, vaac)
+        archive_run(embed, vaac, slug)
 
-    embed_into_index(embed)
+    embed_into_index(embed, slug)
     if source_errors and len(source_errors) >= 2:
         print("[build] ALL primary sources unreachable — keeping the previous site "
               "instead of publishing a hollow one.", file=sys.stderr)
@@ -1043,9 +1217,12 @@ def build(args) -> int:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--volcano", default="Anak Krakatau")
-    ap.add_argument("--lat", type=float, default=-6.102)
-    ap.add_argument("--lon", type=float, default=105.423)
+    ap.add_argument("--volcano", default=None,
+                    help="volcano name/slug from src/volcanoes.py (default: primary registry entry)")
+    ap.add_argument("--lat", type=float, default=None,
+                    help="vent latitude override (default: registry)")
+    ap.add_argument("--lon", type=float, default=None,
+                    help="vent longitude override (default: registry)")
     ap.add_argument("--no-sat", action="store_true")
     ap.add_argument("--no-loop", action="store_true")
     ap.add_argument("--loop-frames", type=int, default=12)

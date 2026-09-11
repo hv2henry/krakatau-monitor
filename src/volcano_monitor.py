@@ -60,6 +60,17 @@ KNOWN_CODES = {
     "banda api": "BAN", "dempo": "DEM", "tambora": "TAM", "rinjani": "RIN",
 }
 
+# Registry volcanoes (src/volcanoes.py) override the generic guesses above;
+# entries with magma_code=None are left to the runtime auto-discovery that
+# reads the real code from the VONA page's volcano list.
+import volcanoes as _volc_registry
+
+for _e in _volc_registry.all_volcanoes():
+    if _e.get("magma_code"):
+        KNOWN_CODES.setdefault(_e["name"].lower(), _e["magma_code"])
+        for _a in _e.get("aliases", []):
+            KNOWN_CODES.setdefault(_a.lower(), _e["magma_code"])
+
 _ctx = ssl.create_default_context()
 _ctx.check_hostname = False
 _ctx.verify_mode = ssl.CERT_NONE  # some ESDM edge nodes serve incomplete chains

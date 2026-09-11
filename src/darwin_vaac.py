@@ -93,6 +93,18 @@ NAME_ALIASES = {
     "sangeangapi": "SANGEANGAPI",
 }
 
+# Registry volcanoes (src/volcanoes.py) take precedence over the generic
+# table above: their VAAC name is maintained per-volcano, not guessed. The
+# generic table still serves any OTHER Indonesian volcano passed via
+# --volcano without a registry entry.
+import volcanoes as _volc_registry
+
+for _e in _volc_registry.all_volcanoes():
+    if _e.get("vaac_name"):
+        NAME_ALIASES.setdefault(_e["name"].lower(), _e["vaac_name"])
+        for _a in _e.get("aliases", []):
+            NAME_ALIASES.setdefault(_a.lower(), _e["vaac_name"])
+
 FL_TO_M = 30.48          # 1 flight level = 100 ft = 30.48 m
 KT_TO_MS = 0.514444
 _ctx = ssl.create_default_context()

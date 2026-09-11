@@ -3,6 +3,7 @@
 operate.py — one command that runs the whole pipeline.
 
     python3 operate.py                 # collect -> validate -> route -> publish
+    python3 operate.py --volcano Sinabung   # any volcano in src/volcanoes.py
     python3 operate.py --dry-run       # show what WOULD happen, send nothing
     python3 operate.py --no-ash        # skip the heavy satellite step
     python3 operate.py --respond       # apply human approve/hold/kill taps
@@ -36,11 +37,14 @@ import volcano_monitor
 import darwin_vaac
 import validate as V
 import publish as P
+import volcanoes
 
 
-def run_ash(args) -> dict | None:
+def run_ash(args, volc: dict) -> dict | None:
     cmd = [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                  "ash_transport.py"), "--json", "--no-svg",
+           "--lat", str(volc["lat"]), "--lon", str(volc["lon"]),
+           "--name", volc["name"],
            "--slots", str(args.slots), "--hours", str(args.hours)]
     if args.offline_ash:
         cmd.append("--offline")
@@ -90,8 +94,9 @@ def build_events(mon: dict, vaac: dict, ash: dict | None) -> list[dict]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Run the whole Krakatau pipeline")
-    ap.add_argument("--volcano", default="Anak Krakatau")
+    ap = argparse.ArgumentParser(description="Run the whole volcano-monitor pipeline")
+    ap.add_argument("--volcano", default=None,
+                    help="volcano name/slug from src/volcanoes.py (default: primary entry)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-ash", action="store_true", help="skip satellite secondary step")
     ap.add_argument("--offline-ash", action="store_true", help="reuse cached AMVs")
@@ -107,6 +112,8 @@ def main() -> int:
     ap.add_argument("--log", default="history.jsonl")
     ap.add_argument("--out-dir", default=".")
     args = ap.parse_args()
+    volc = volcanoes.resolve(args.volcano or volcanoes.primary()["name"])
+    args.volcano = volc["name"]
 
     t0 = time.time()
     tg, ntfy, sb = P.Telegram(), P.Ntfy(), P.Supabase()
@@ -126,7 +133,7 @@ def main() -> int:
           f"nr={(vaac.get('advisory') or {}).get('advisory_nr')}")
 
     # 3. secondary -----------------------------------------------------------
-    ash = None if args.no_ash else run_ash(args)
+    ash = None if args.no_ash else run_ash(args, volc)
     if ash:
         rows = [r for r in ash.get("observed_wind_profile", []) if r.get("data")]
         print(f"[operate] secondary: {len(rows)} wind layers, "

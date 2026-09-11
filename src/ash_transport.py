@@ -19,6 +19,71 @@ during an eruption: which way is the plume moving, and what's downwind?
 Output: a vertical wind profile, forward trajectories per altitude band, and a
 self-contained SVG map of the projected plume.
 
+ENVELOPE PHYSICS (v2, mass-coupled)
+  The detectable-ash envelope is no longer a purely kinematic sqrt(2Kt)+Gt
+  curve. That form is monotonically increasing and cannot reproduce the
+  rise-then-shrink behaviour seen in real VAAC polygons (Darwin advisories
+  2026/174-195: cross-track width grew to ~1,900 km, then decayed as ash
+  settled out). The new model couples the Gaussian spread to the AIRBORNE
+  MASS and to the along-track dilution:
+
+    sigma_y^2(t) = sigma0^2 + 2K t + (s_perp*sigma_h*t)^2   cross-track spread
+    sigma_x^2(t) = sigma0^2 + 2K t + (s_par  *sigma_h*t)^2   along-track spread
+    Phi(t)       = sum_c f_c S_c(t) W_c(t)                   airborne fraction
+    Phi_det_eff(t) = PHI_DET * sigma_x sigma_y / sigma0^2     diluted threshold
+    w(t) = sigma_y * sqrt(2 ln(Phi/Phi_det_eff))              detectable half-width
+
+  where S_c(t) is the settling survival of class c (mass released uniformly
+  over the layer depth, density-corrected Stokes velocities), W_c(t) the
+  below-cloud wet scavenging factor, and s_par/s_perp the wind shear across
+  the layer decomposed along/across the mean motion (from the NWP profile —
+  this replaces the old ad-hoc linear growth constant G).
+
+  CALIBRATION PROVENANCE (be honest, n is tiny):
+    K, PHI_DET, SIGMA0_KM and SHEAR_DAMPING were calibrated on the four
+    polygon widths of Darwin advisory 2026/209 (10 Sep 2026, SFC/FL050 layer)
+    with cloud age t0 free — see calibrate_envelope.py. Fit RMS 1.4 km vs
+    12.2 km for the best physically-admissible (G>=0) OLD-form fit, and the
+    old form only reaches 4.4 km by driving its growth term NEGATIVE
+    (G = -1.02 m/s), which is unphysical. Independent consistency check: the
+    fitted t0 = 8.8 h at the 1040Z observation implies emission ~0210Z —
+    exactly when MAGMA logged the 09:10 WIB eruption that morning. ONE event;
+    treat the numbers as a defensible starting point, not universal truth,
+    and re-fit when the backtest ledger (site/data/backtest.jsonl) grows.
+
+  EMISSION HISTORY (v2.1)
+    The calibration above treats the cloud age t0 as a free parameter, and
+    its optimum "rediscovered" the real eruption time. Production runs used
+    to ignore that entirely: every cloud started at t=0, i.e. assumed the
+    ash was emitted AT the analysis time — silently discarding the emission
+    history the OBS polygon carries. Now the age is DERIVED per run from the
+    advisory's own OBS polygon: invert 2*w(t) = W_obs on the RISING branch
+    (bisection) using the layer's measured shear and survival Phi, then
+    shift the whole envelope time axis to the implied emission. The initial
+    spread becomes emission-history-aware,
+        sigma_eff^2(analysis) = sigma0^2 + 2K t_age + (s_perp t_age)^2,
+    and Phi(analysis) < 1: mass that settled out before the analysis is
+    gone. Caveats, stated plainly: a decaying cloud is age-ambiguous (the
+    width curve rises then falls) so the younger, conservative reading is
+    taken; rain before the analysis time is unknowable from forecast data,
+    so W_c only covers the forecast window; one age is applied to every
+    band (the OBS polygon describes the whole detected cloud). Wiring:
+        --obs-polygon "lat,lon;lat,lon;..."  (Darwin advisory OBS vertices)
+        --obs-mov-deg NW|315                (motion for the width projection)
+        --obs-layer-km "0,1.52"             (OBS layer depth; default: lowest
+                                              AMV band that has data)
+        --emission-age-h 8.8                (manual override, e.g. MAGMA log)
+    build_site.py passes the first three automatically from the fetched
+    advisory; with none of them the model keeps the fresh-emission t=0.
+
+  UNION MULTI-BAND (v2.1)
+    Per-band envelopes answer "where is THIS layer's detectable ash". The
+    polygons Darwin draws, however, are unions across layers — on the 4-6
+    Sep 2026 paroxysm the SFC/FL500 union fan reached ~1,900 km while no
+    single band was wider than ~900 km. envelope_union returns the convex
+    hull of all band envelope polygons (conservative: hull >= true union),
+    as a GeoJSON-ready lon/lat ring plus area, and the SVG map draws it.
+
 Requires:  numpy, netCDF4      (pip install numpy netCDF4)
 Optional:  NASA FIRMS hotspots (needs a free MAP_KEY, see --firms-key)
 
@@ -27,6 +92,7 @@ Usage:
     python3 ash_transport.py --radius 5 --hours 12
     python3 ash_transport.py --json
     python3 ash_transport.py --lat -6.102 --lon 105.423 --name "Anak Krakatau"
+    python3 ash_transport.py --volcano Sinabung   # resolve from src/volcanoes.py
 
 IMPORTANT: this is a diagnostic aid, not an official ash advisory. For aviation
 and safety decisions use the Darwin VAAC and PVMBG. See README.
@@ -50,7 +116,14 @@ import zipfile
 from datetime import datetime, timedelta, timezone
 
 import numpy as np
-import netCDF4
+
+# netCDF4 is only needed when reading Himawari-9 AMV files (read_amv /
+# _read_cached); the pure math helpers (envelope, widths, union) must stay
+# importable without it — build_site.py relies on that for its width ledger.
+try:
+    import netCDF4
+except ImportError:                             # pragma: no cover
+    netCDF4 = None
 
 # ---------------------------------------------------------------- constants
 S3 = "https://noaa-himawari9.s3.amazonaws.com/"
@@ -193,6 +266,9 @@ def pick_amv_files(slot_prefix: str) -> dict[str, str]:
 
 def read_amv(key: str, cache_dir: str, slot_tag: str = "") -> dict:
     """Download + parse one AMV NetCDF into flat arrays."""
+    if netCDF4 is None:
+        raise RuntimeError("netCDF4 not installed — cannot read AMV files "
+                           "(pip install netCDF4)")
     tag = re.search(r"NDMW-AHI-(C\d\d[A-Z]{2})_", key).group(1)
     os.makedirs(cache_dir, exist_ok=True)
     path = os.path.join(cache_dir, (tag + ("_" + slot_tag if slot_tag else "")) + ".nc")
@@ -264,8 +340,51 @@ def circular_mean(deg: np.ndarray) -> tuple[float, float]:
 
 LEVELS_P = [1000, 925, 850, 700, 600, 500, 400, 300]
 ENSEMBLE_MODELS = ["ecmwf_ifs025", "gfs_global", "icon_seamless"]
-K_DIFFUSIVITY = 5e3        # m2/s horizontal eddy diffusivity (ash-plume literature order)
-SETTLE_CLASSES = {"fine": 0.02, "medium": 0.12, "coarse": 0.60}   # m/s Stokes settling
+K_DIFFUSIVITY = 6.82e3    # m2/s cross-track eddy diffusivity. CALIBRATED n=1 on Darwin
+                          # advisory 2026/209 (SFC/FL050, 10 Sep 2026) — see
+                          # calibrate_envelope.py (fit RMS 1.4 km on 4 polygon widths).
+                          # Notably the fit's free cloud-age parameter landed at
+                          # t0 = 8.8 h at the 1040Z observation, i.e. emission at
+                          # ~0210Z — exactly when MAGMA logged the 09:10 WIB eruption
+                          # that morning. One event; re-fit as the ledger grows.
+SETTLE_CLASSES = {"ultrafine": 0.002, "fine": 0.02, "medium": 0.12, "coarse": 0.60}
+                          # m/s Stokes settling. "ultrafine" (~<4 um) is the class that
+                          # satellites track for DAYS — it is what keeps the detectable
+                          # envelope alive long after coarse/medium ash has landed.
+CLASS_MASS_FRACTIONS = {"ultrafine": 0.35, "fine": 0.35, "medium": 0.20, "coarse": 0.10}
+                          # order-level mass split for a vulcanian/strombolian andesitic
+                          # plume; adjustable, sums to 1. Envelope is fairly insensitive
+                          # to +/-0.10 shifts (checked in calibrate_envelope.py).
+SIGMA0_KM = 2.0           # effective initial horizontal spread of the detectable
+                          # cloud (eruption-column radius order; absorbs the pulsed
+                          # emission history). CALIBRATED n=1; insensitive 1-3 km.
+PHI_DET = 5.59e-4         # satellite detection threshold as fraction of the initial
+                          # peak column concentration. CALIBRATED n=1 (see above) —
+                          # IR detection of thin fine-ash clouds really is orders of
+                          # magnitude below a dense fresh column, hence the small value.
+N_SUBPARCELS = 12         # release heights sampled across the layer for S_c(t)
+EMISSION_LAYER_FRACTION = 0.5
+                          # eruption columns emplace fine ash near their top / neutral
+                          # buoyancy level, not uniformly over the full advisory depth.
+                          # Release (and shear) use the UPPER fraction of the layer.
+                          # This matters: low-level directional shear can exceed
+                          # 100 deg across the lowest 1.5 km (measured 10 Sep 2026),
+                          # and full-depth uniform release would smear the cloud into
+                          # an arc the satellite never sees.
+SHEAR_DAMPING = 0.10      # effective-to-instantaneous shear ratio. CALIBRATED n=1
+                          # at the LOWER bound: on this event the data preferred
+                          # near-zero effective shear — the open-meteo low-level
+                          # profile veers >100 deg across 1.4 km and disagrees with
+                          # the VAAC-observed cloud motion (sublayer mean 278 deg vs
+                          # VAAC 315 deg), so the instantaneous measurement carries
+                          # analysis noise the cloud never experiences. Fit is
+                          # insensitive across 0.10-0.25. For DEEP columns with
+                          # well-analyzed upper-level shear this damping should be
+                          # revisited (likely higher) when more events are ledgered.
+MAX_EMISSION_AGE_H = 48.0 # cap for the OBS-polygon-derived cloud age. Beyond this
+                          # the inverse problem saturates (the width curve has
+                          # already peaked) and the honest answer is "older than
+                          # the model can see", reported as the cap with a note.
 
 
 def nwp_profile(lat: float, lon: float, hours: int = 12) -> dict:
@@ -329,6 +448,17 @@ def level_heights_km(nwp: dict) -> dict:
         if p not in heights:
             heights[p] = 44.3308 * (1.0 - (p / 1013.25) ** 0.190284)
     return heights
+
+
+def pressure_to_height(heights: dict, p_hpa: float) -> float:
+    """Interpolate a pressure level onto the hypsometric height grid.
+    Clamps to the outermost levels; falls back to the standard atmosphere.
+    Pairing: ascending pressure <-> descending height, as np.interp needs."""
+    if not heights or p_hpa is None or not np.isfinite(p_hpa):
+        return float(pressure_to_km(p_hpa)) if p_hpa else 1.5
+    ps = sorted(heights)                      # ascending pressure
+    zs = [heights[p] for p in ps]             # descending height (correct pairing)
+    return float(np.interp(p_hpa, ps, zs)) if ps else 1.5
 
 
 def ensemble_spread_deg(nwp: dict, p: int) -> float | None:
@@ -511,7 +641,6 @@ def rho_at(nwp, heights, h_km):
     return pts[-1][1]
 
 
-G_PLUME_GROWTH = 0.8     # m/s linear half-width growth: approximates scale-dependent K
 SCAV_COEF = 1e-4         # 1/s below-cloud scavenging per mm/h of rain (order-level)
 RAIN_MIN_MM_H = 0.5
 
@@ -537,28 +666,426 @@ def precip_at(grid, lat, lon, t_idx):
             (val(i0, j1) * (1 - wa) + val(i1, j1) * wa) * wl)
 
 
+# ------------------------------------------------------- envelope v2 math
+# Pure-math core of the mass-coupled envelope, kept free of I/O so the
+# calibration script and the unit tests can exercise exactly what the
+# production code runs.
+
+def layer_shear_ms(nwp, heights, h_base_km, h_top_km):
+    """Wind shear across the ash layer, decomposed along/across the mean wind.
+
+    Returns (s_par_ms_per_km, s_perp_ms_per_km, mean_u, mean_v). Shear is the
+    difference of the NWP wind at the layer top and base (analysis time). This
+    is the data-driven replacement for the old constant G_PLUME_GROWTH: the
+    advection-diffusion solution with linear shear gives an exact Gaussian
+    whose along-track variance grows as (s_par*sigma_h*t)^2, so the linear
+    growth the old code hacked in IS the shear term — but now it is measured,
+    not guessed, and it dilutes the cloud instead of only widening it.
+    """
+    u_b, v_b = wind_at(nwp, heights, 0, max(h_base_km, 0.05))
+    u_t, v_t = wind_at(nwp, heights, 0, max(h_top_km, 0.05))
+    du, dv = u_t - u_b, v_t - v_b
+    um, vm = (u_t + u_b) / 2.0, (v_t + v_b) / 2.0
+    spd = float(np.hypot(um, vm))
+    H = max(h_top_km - h_base_km, 0.1)
+    if spd < 0.5:                      # calm: direction meaningless, use |shear| both ways
+        s = float(np.hypot(du, dv)) / H
+        return s, s, um, vm
+    ux, uy = um / spd, vm / spd        # along-track unit vector
+    s_par = float(du * ux + dv * uy) / H
+    s_perp = float(-du * uy + dv * ux) / H
+    return s_par, s_perp, um, vm
+
+
+def _emission_sublayer(h_base_km, h_top_km):
+    """Release-height bounds: the UPPER EMISSION_LAYER_FRACTION of the layer.
+    Columns emplace fine ash near neutral buoyancy, near the cloud top."""
+    h_base = max(h_base_km, 0.0)
+    h_top = max(h_top_km, h_base + 0.1)
+    h_lo = h_base + EMISSION_LAYER_FRACTION * (h_top - h_base)
+    return h_lo, h_top
+
+
+def effective_shear_ms(nwp, heights, h_base_km, h_top_km):
+    """(s_par_eff, s_perp_eff) in m/s for envelope_width_series.
+
+    Damped shear measured across the EMISSION SUBLAYER, times the std of the
+    release-height distribution. Single code path shared by the production
+    trajectory_settling, the calibrator and the tests."""
+    e_lo, e_hi = _emission_sublayer(h_base_km, h_top_km)
+    s_par, s_perp, _, _ = layer_shear_ms(nwp, heights, e_lo, e_hi)
+    sigma_h_km = max(e_hi - e_lo, 0.05) / np.sqrt(12.0)
+    return (s_par * SHEAR_DAMPING * sigma_h_km,
+            s_perp * SHEAR_DAMPING * sigma_h_km)
+
+
+def class_landing_times(v_settle, layer_base_km, layer_top_km, nwp=None,
+                        heights=None, dt_min=10, t_max_h=72):
+    """Landing time (hours) of each sub-parcel released uniformly over the
+    EMISSION SUBLAYER (upper part of the given layer), for one settling class.
+    Deterministic descent through the density-corrected Stokes profile
+    v(h) = v0*sqrt(rho0/rho(h)).
+
+    Returns a sorted ndarray of landing times (hours); parcels still aloft at
+    t_max get t_max*10 (i.e. never land inside the horizon).
+    """
+    h_lo, h_hi = _emission_sublayer(layer_base_km, layer_top_km)
+    rho0 = rho_at(nwp, heights, max((h_lo + h_hi) / 2.0, 0.05))
+    h_rels = np.linspace(max(h_lo, 0.05), h_hi, N_SUBPARCELS)
+    dt_h = dt_min / 60.0
+    lands = []
+    for h in h_rels:
+        hh = float(h)
+        t = 0.0
+        for _ in range(int(t_max_h / dt_h)):
+            rho_h = rho_at(nwp, heights, max(hh, 0.05))
+            v_eff = v_settle * np.sqrt(rho0 / max(rho_h, 1e-6))
+            hh -= v_eff * dt_h * 3600.0 / 1000.0
+            t += dt_h
+            if hh <= 0.05:
+                break
+        lands.append(t if hh <= 0.05 else t_max_h * 10.0)
+    return np.sort(np.array(lands))
+
+
+def survival_curve(t_hours, landing_times_h, n_sub=None):
+    """S_c(t): fraction of the class still airborne. Piecewise-linear between
+    sub-parcel landings (heights are uniform, so this approximates the true
+    smooth survival well and stays monotone decreasing)."""
+    n = n_sub or N_SUBPARCELS
+    lt = np.asarray(landing_times_h, dtype=float)
+    xs = np.concatenate(([0.0], lt))
+    ys = np.concatenate(([1.0], [1.0 - (k + 1) / n for k in range(len(lt))]))
+    ys = np.clip(ys, 0.0, 1.0)
+    return np.interp(t_hours, xs, ys)
+
+
+def airborne_fraction(t_hours, layer_base_km, layer_top_km,
+                      wet_factor=None, nwp=None, heights=None):
+    """Phi(t) — total airborne mass fraction = sum_c f_c S_c(t) W_c(t).
+
+    wet_factor: optional array aligned with t_hours (per-step scavenging
+    product). Pure math otherwise; used by trajectory_settling, the
+    calibrator and the tests so all three agree by construction.
+    """
+    t = np.asarray(t_hours, dtype=float)
+    phi = np.zeros_like(t)
+    for cname, vs in SETTLE_CLASSES.items():
+        lands = class_landing_times(vs, layer_base_km, layer_top_km,
+                                    nwp=nwp, heights=heights)
+        s = survival_curve(t, lands)
+        w = wet_factor if wet_factor is not None else 1.0
+        phi += CLASS_MASS_FRACTIONS.get(cname, 0.0) * s * w
+    return np.clip(phi, 0.0, 1.0)
+
+
+def envelope_width_series(t_hours, phi, s_par, s_perp,
+                          k_m2s=K_DIFFUSIVITY, phi_det=PHI_DET,
+                          sigma0_km=SIGMA0_KM):
+    """Detectable cross-track half-width w(t) of the Gaussian cloud.
+
+    sigma_y^2 = sigma0^2 + 2Kt + (s_perp sigma_h t)^2    cross-track spread
+    sigma_x^2 = sigma0^2 + 2Kt + (s_par  sigma_h t)^2    along-track spread
+    phi_det_eff = phi_det * sigma_x sigma_y / sigma0^2    diluted threshold
+    w = sigma_y sqrt(2 ln(phi / phi_det_eff))  (0 once below threshold)
+
+    sigma_h is the std of the release-height distribution across the layer;
+    callers pass s_par/s_perp already multiplied by sigma_h (m/s), which keeps
+    this function ignorant of layer geometry. Returns a dict of series for
+    audit: sigma_x, sigma_y, phi_det_eff, width.
+    """
+    t = np.asarray(t_hours, dtype=float) * 3600.0        # s
+    s0 = sigma0_km * 1000.0
+    sy = np.sqrt(s0 ** 2 + 2.0 * k_m2s * t + (s_perp * t) ** 2) / 1000.0   # km
+    sx = np.sqrt(s0 ** 2 + 2.0 * k_m2s * t + (s_par * t) ** 2) / 1000.0    # km
+    phi = np.asarray(phi, dtype=float)
+    det_eff = phi_det * (sx * sy) / (sigma0_km ** 2)
+    ratio = phi / np.maximum(det_eff, 1e-12)
+    ln = np.where(ratio > 1.0, 2.0 * np.log(np.maximum(ratio, 1.0 + 1e-12)), 0.0)
+    w = sy * np.sqrt(ln)
+    w = np.where(ratio > 1.0, w, 0.0)
+    return {"sigma_x_km": sx, "sigma_y_km": sy,
+            "phi_det_eff": det_eff, "width_km": w}
+
+
+# ------------------------------------------------ emission-history inversion
+# Pure math, shared by the production run, the calibrator and the tests.
+
+def polygon_cross_track_width_km(polygon, motion_deg=None):
+    """Full width (km) of a polygon perpendicular to the cloud motion.
+
+    polygon: vertices as [lon, lat] pairs (GeoJSON order, what
+    envelope_polygon emits) or {"lat","lon"} dicts (what darwin_vaac emits).
+    motion_deg: direction the cloud travels TOWARD (0 = north, clockwise);
+    when None the elongation axis is taken from the vertices' principal
+    components instead. This is the same "width" the manual VAAC analysis
+    used: the extent orthogonal to the track, which the mass-coupled model
+    predicts as 2*w(t).
+    """
+    if not polygon or len(polygon) < 2:
+        return 0.0
+    lons, lats = [], []
+    for p in polygon:
+        if isinstance(p, dict):
+            lons.append(float(p["lon"])); lats.append(float(p["lat"]))
+        else:
+            lons.append(float(p[0])); lats.append(float(p[1]))
+    lons, lats = np.asarray(lons), np.asarray(lats)
+    lat0 = float(np.mean(lats))
+    # local equirectangular plane (km): good to sub-1% over VAAC-polygon sizes
+    x = (lons - lons.mean()) * 111.32 * np.cos(np.radians(lat0))
+    y = (lats - lats.mean()) * 111.32
+    if motion_deg is not None:
+        th = np.radians(float(motion_deg) % 360.0)
+        # unit along-track vector in (east, north); project onto its normal
+        ex, ny = np.sin(th), np.cos(th)
+        s = x * ny - y * ex
+        return float(s.max() - s.min())
+    # PCA: the minor principal axis is the cross-track direction of an
+    # elongated cloud even when no motion vector was parsed
+    pts = np.column_stack([x, y])
+    cov = np.cov(pts.T, bias=True) if len(pts) > 1 else np.zeros((2, 2))
+    evals, evecs = np.linalg.eigh(cov)
+    axis = evecs[:, int(np.argmin(evals))]          # minor axis
+    s = pts @ axis
+    return float(s.max() - s.min())
+
+
+def implied_emission_age_h(obs_width_km, s_par, s_perp, layer_base_km,
+                           layer_top_km, nwp=None, heights=None,
+                           k_m2s=K_DIFFUSIVITY, phi_det=PHI_DET,
+                           sigma0_km=SIGMA0_KM, t_max_h=MAX_EMISSION_AGE_H):
+    """Cloud age (h) implied by the OBS polygon's cross-track width.
+
+    Inverts the mass-coupled envelope: find t such that 2*w(t) = W_obs on
+    the RISING branch (first crossing). Rising branch because a decaying
+    cloud is age-ambiguous — the same width exists once while the envelope
+    grows and once while it shrinks — and the younger reading is the
+    conservative one (more mass still airborne). Phi uses the survival
+    machinery only: rain BEFORE the analysis time is unknowable from
+    forecast data, so no wet factor is applied on the pre-analysis segment.
+
+    Returns (t_age_h, note). t_age = 0.0 when the width is already
+    explainable by a fresh cloud; t_max_h with a note when the width exceeds
+    anything the model produces inside the cap (older than the model can
+    see, or wider than diffusion explains).
+    """
+    W = float(obs_width_km)
+    if W <= 0.0:
+        return 0.0, "no usable OBS width"
+    t = np.linspace(0.0, t_max_h, 241)
+    phi = airborne_fraction(t, layer_base_km, layer_top_km,
+                            nwp=nwp, heights=heights)
+    env = envelope_width_series(t, phi, s_par, s_perp,
+                                k_m2s=k_m2s, phi_det=phi_det, sigma0_km=sigma0_km)
+    full = 2.0 * env["width_km"]
+    if W <= full[0] + 1e-9:
+        return 0.0, "fresh cloud: width explainable at t~0"
+    above = np.where(full >= W)[0]
+    if not len(above):
+        return float(t_max_h), (f"OBS width {W:.0f} km exceeds the model "
+                                f"maximum {full.max():.0f} km within {t_max_h:.0f} h; "
+                                "capped (older than the model can see)")
+    i = int(above[0])
+    lo, hi = t[i - 1], t[i]                        # bracket around the crossing
+    for _ in range(40):                            # bisection refinement
+        mid = 0.5 * (lo + hi)
+        pm = airborne_fraction(np.array([mid]), layer_base_km, layer_top_km,
+                               nwp=nwp, heights=heights)
+        wm = envelope_width_series(np.array([mid]), pm, s_par, s_perp,
+                                   k_m2s=k_m2s, phi_det=phi_det,
+                                   sigma0_km=sigma0_km)["width_km"][0]
+        if 2.0 * wm >= W:
+            hi = mid
+        else:
+            lo = mid
+    return float(hi), "first crossing of 2*w(t)=W_obs on the rising branch"
+
+
+# ------------------------------------------------------ union multi-band
+
+def convex_hull(points):
+    """Andrew's monotone chain. points: iterable of (lon, lat). Returns the
+    hull as a counter-clockwise [lon, lat] ring without repeating the start."""
+    pts = sorted({(float(p[0]), float(p[1])) for p in points})
+    if len(pts) <= 2:
+        return [list(p) for p in pts]
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return [list(p) for p in lower[:-1] + upper[:-1]]
+
+
+def _ring_area_km2(ring):
+    """Shoelace area on a local equirectangular projection (km^2)."""
+    if not ring or len(ring) < 3:
+        return 0.0
+    lats = [p[1] for p in ring]
+    lat0 = float(np.mean(lats))
+    kx = 111.32 * np.cos(np.radians(lat0))
+    a = 0.0
+    for (x0, y0), (x1, y1) in zip(ring, ring[1:] + [ring[0]]):
+        a += (x0 * kx) * (y1 * 111.32) - (x1 * kx) * (y0 * 111.32)
+    return abs(a) / 2.0
+
+
+def _parse_obs_polygon(s):
+    """CLI --obs-polygon value -> [[lon, lat], ...].
+
+    Accepts 'lat,lon;lat,lon;...' (the natural order for VAAC/MAGMA coords)
+    or a JSON array of [lat, lon] pairs / {"lat","lon"} dicts (what
+    darwin_vaac.py emits). Returns [] when nothing usable parses.
+    """
+    if not s:
+        return []
+    s = s.strip()
+    try:                       # JSON form first: dicts are unambiguous
+        j = json.loads(s)
+        if isinstance(j, list) and j:
+            out = []
+            for p in j:
+                if isinstance(p, dict) and "lat" in p and "lon" in p:
+                    out.append([float(p["lon"]), float(p["lat"])])
+                elif isinstance(p, (list, tuple)) and len(p) >= 2:
+                    out.append([float(p[1]), float(p[0])])   # [lat, lon]
+            return out
+    except (ValueError, TypeError):
+        pass
+    out = []
+    for chunk in s.split(";"):
+        parts = [x.strip() for x in chunk.split(",") if x.strip()]
+        if len(parts) == 2:
+            try:
+                out.append([float(parts[1]), float(parts[0])])  # lat, lon
+            except ValueError:
+                continue
+    return out
+
+
+def _parse_mov(s):
+    """--obs-mov-deg value: compass name (NW) or degrees (315) -> float deg."""
+    if not s:
+        return None
+    s = str(s).strip()
+    if s.upper() in COMPASS:
+        return float(COMPASS.index(s.upper()) * 22.5)
+    try:
+        return float(s) % 360.0
+    except ValueError:
+        return None
+
+
+def union_envelope(envelopes):
+    """Combined polygon across bands: convex hull of every band envelope.
+
+    envelopes: {layer_label: [[lon, lat], ...]} (per-band detectable
+    envelopes). The hull is CONSERVATIVE — it contains the true union and
+    fills concavities between separated bands — which is the right bias for
+    a monitoring product, and is the model-side counterpart of the
+    multi-layer polygons Darwin draws (e.g. the SFC/FL500 fan of 4-6 Sep
+    2026). Returns None when no band has a usable polygon; otherwise a dict
+    with the hull ring, band list, area and method provenance.
+    """
+    usable = {k: v for k, v in (envelopes or {}).items()
+              if v and len(v) >= 3}
+    if not usable:
+        return None
+    hull = convex_hull([p for v in usable.values() for p in v])
+    if len(hull) < 3:
+        return None
+    return {
+        "polygon": [[round(p[0], 4), round(p[1], 4)] for p in hull],
+        "bands": sorted(usable.keys()),
+        "n_bands": len(usable),
+        "area_km2": round(_ring_area_km2(hull), 0),
+        "method": "convex hull of per-band detectable envelopes "
+                  "(conservative: contains the true union)",
+    }
+
+
 def trajectory_settling(lat0, lon0, h0_km, nwp, heights, start, hours=12,
-                        dt_min=10, precip_grid=None):
-    """Advect three settling classes through the evolving, height-interpolated
-    NWP wind field. Physics added beyond pure advection:
-      * settling velocity corrected for air density: v(h) = v0*sqrt(rho0/rho(h))
-        (terminal velocity in the turbulent regime rises as air thins);
-      * diffusion envelope with scale-growing spread:
-        sigma(t) = sqrt(2*K0*t) + g*t  (K grows as the plume enlarges);
-      * below-cloud wet deposition: where sampled rain >= 0.5 mm/h, mass is
-        scavenged at Lambda = 1e-4 * rate  per second, and the crossing is kept
-        so ashfall risk can be read off the trajectory."""
+                        dt_min=10, precip_grid=None, layer_km=None,
+                        t_age_h=0.0):
+    """Advect the settling classes through the evolving, height-interpolated
+    NWP wind field, and build the MASS-COUPLED detectable-ash envelope.
+
+    Physics (envelope v2 — see module docstring):
+      * settling velocity corrected for air density: v(h) = v0*sqrt(rho0/rho(h));
+      * per-class AIRBORNE mass: class mass is released uniformly over the
+        layer depth [layer_km[0], layer_km[1]] (default h0 +/- 0.5 km), each
+        sub-parcel lands when its density-corrected descent reaches the
+        surface, so S_c(t) is a true survival curve — mass that has landed is
+        no longer in the cloud, and the envelope shrinks with it;
+      * below-cloud wet deposition where sampled rain >= 0.5 mm/h (unchanged);
+      * cross-track spread sigma_y = sqrt(sigma0^2 + 2Kt + (s_perp sigma_h t)^2)
+        and along-track dilution sigma_x = sqrt(sigma0^2 + 2Kt + (s_par sigma_h t)^2)
+        with the shear measured from the NWP profile across the layer (this
+        replaces the old ad-hoc G*t term);
+      * detectable width w(t) = sigma_y * sqrt(2 ln(Phi/Phi_det_eff)) with
+        Phi_det_eff = PHI_DET * sigma_x sigma_y / sigma0^2 — the threshold a
+        satellite sees RISES as the cloud dilutes, which is what makes the
+        envelope able to grow first and then shrink, matching real VAAC
+        polygon behaviour (advisories 2026/174-195).
+
+    EMISSION HISTORY (v2.1): t_age_h is the cloud age at the analysis time,
+    derived from the advisory's OBS polygon by implied_emission_age_h (or
+    set manually). The envelope time axis is shifted to the implied
+    EMISSION: sigma, Phi and w are all evaluated at t + t_age_h, so the
+    analysis point already carries the accumulated spread
+    sigma0^2 + 2K*t_age (+ shear) and the mass fraction that settled out
+    before the analysis is gone. Wet scavenging only covers the forecast
+    window (rain before the analysis is unknowable from forecast data).
+
+    Returns per class: pts (with sigma_km, width_km, phi), wet_points,
+    mass_remaining (airborne fraction of that class) — plus "envelope"
+    diagnostics for the fine class.
+    """
     out = {}
     steps = int(hours * 60 / dt_min)
     rho0 = rho_at(nwp, heights, h0_km)
+    h_base = (layer_km[0] if layer_km else h0_km - 0.5)
+    h_top = (layer_km[1] if layer_km else h0_km + 0.5)
+    h_base = max(min(h_base, h0_km), 0.0)
+    h_top = max(h_top, h0_km, 0.1)
+
+    # measured shear across the EMISSION SUBLAYER, damped for nonstationarity
+    s_par, s_perp = effective_shear_ms(nwp, heights, h_base, h_top)
+    e_lo, e_hi = _emission_sublayer(h_base, h_top)
+
+    t_hours_arr = np.array([(i + 1) * dt_min / 60.0 for i in range(steps)])
+    # emission-history-aware absolute cloud age: forecast offset + age at
+    # analysis. sigma/Phi/w below are all functions of THIS axis.
+    t_abs = t_hours_arr + float(t_age_h)
+    # wet scavenging is shared geometry (the classes ride nearly the same track);
+    # covers the FORECAST window only — pre-analysis rain is unknowable
+    wet_series = np.ones(steps)
+
     for cname, vs in SETTLE_CLASSES.items():
         lat, lon, h = lat0, lon0, h0_km
-        mass = 1.0
         wet = []
         pts = [{"lat": round(lat, 4), "lon": round(lon, 4), "hours": 0.0,
-                "alt_km": round(h, 2), "sigma_km": 0.0}]
+                "alt_km": round(h, 2), "sigma_km": SIGMA0_KM,
+                "width_km": SIGMA0_KM, "phi": 1.0}]   # patched to analysis values below
+        lands = class_landing_times(vs, h_base, h_top, nwp=nwp, heights=heights)
+        surv = survival_curve(t_abs, lands)      # absolute age: pre-analysis
+                                                # settling is already gone
         for i in range(steps):
-            t_idx = min(i, len(nwp["times"]) - 1)
+            # nwp["times"] is hourly; i is a dt_min-minute substep counter, so
+            # convert elapsed minutes -> hour bucket instead of indexing by i
+            # directly (that made t_idx race through 12h of data in ~2h, then
+            # freeze at the last hourly value for the rest of the run).
+            t_idx = min((i * dt_min) // 60, len(nwp["times"]) - 1)
             u, v = wind_at(nwp, heights, t_idx, max(h, 0.05))
             dt = dt_min * 60.0
             lat += (v * dt) / 111320.0
@@ -566,24 +1093,75 @@ def trajectory_settling(lat0, lon0, h0_km, nwp, heights, start, hours=12,
             rho_h = rho_at(nwp, heights, max(h, 0.05))
             v_eff = vs * np.sqrt(rho0 / max(rho_h, 1e-6))
             h = max(0.05, h - v_eff * dt / 1000.0)
-            t_sec = (i + 1) * dt
-            sigma = (np.sqrt(2.0 * K_DIFFUSIVITY * t_sec) + G_PLUME_GROWTH * t_sec) / 1000.0
             rate = precip_at(precip_grid, lat, lon, t_idx) if precip_grid else 0.0
             if rate >= RAIN_MIN_MM_H:
-                mass *= np.exp(-SCAV_COEF * min(rate, 5.0) * dt)
-                wet.append({"hours": round((i + 1) * dt_min / 60.0, 2),
-                            "lat": round(lat, 4), "lon": round(lon, 4),
-                            "rate_mm_h": round(rate, 1)})
+                wet_series[i] *= np.exp(-SCAV_COEF * min(rate, 5.0) * dt)
+                if cname == "fine":
+                    wet.append({"hours": round((i + 1) * dt_min / 60.0, 2),
+                                "lat": round(lat, 4), "lon": round(lon, 4),
+                                "rate_mm_h": round(rate, 1)})
             pts.append({"lat": round(lat, 4), "lon": round(lon, 4),
                         "hours": round((i + 1) * dt_min / 60.0, 2),
-                        "alt_km": round(h, 2), "sigma_km": round(sigma, 1)})
+                        "alt_km": round(h, 2)})
         out[cname] = {"pts": pts, "wet_points": wet,
-                      "mass_remaining": round(mass, 3)}
+                      "landing_times_h": [round(float(x), 2) for x in lands],
+                      "survival_end": round(float(surv[-1]), 3)}
+
+    # Phi(t): all classes at ABSOLUTE cloud age, shared wet factor along the
+    # forecast track (settling before the analysis is already inside S_c)
+    phi_series = np.zeros(steps)
+    for cname in SETTLE_CLASSES:
+        lands = np.array(out[cname]["landing_times_h"])
+        s = survival_curve(t_abs, lands)
+        phi_series += CLASS_MASS_FRACTIONS.get(cname, 0.0) * s * wet_series
+    env = envelope_width_series(t_abs, phi_series, s_par, s_perp)
+
+    # analysis-time state (cloud age t_age): the emission-history-aware
+    # initial condition the OBS polygon actually saw
+    phi0 = float(airborne_fraction(np.array([max(t_age_h, 0.0)]), h_base, h_top,
+                                    nwp=nwp, heights=heights)[0])
+    env0 = envelope_width_series(np.array([max(t_age_h, 0.0)]), np.array([phi0]),
+                                 s_par, s_perp)
+
+    # attach the envelope to the fine-class points (the tracked centerline)
+    fine_pts = out["fine"]["pts"]
+    fine_pts[0]["sigma_km"] = round(float(env0["sigma_y_km"][0]), 1)
+    fine_pts[0]["width_km"] = round(float(env0["width_km"][0]), 1)
+    fine_pts[0]["phi"] = round(phi0, 3)
+    for i in range(steps):
+        p = fine_pts[i + 1]
+        p["sigma_km"] = round(float(env["sigma_y_km"][i]), 1)
+        p["width_km"] = round(float(env["width_km"][i]), 1)
+        p["phi"] = round(float(phi_series[i]), 3)
+    out["fine"]["envelope"] = {
+        "model": "mass-coupled gaussian v2",
+        "k_m2_s": K_DIFFUSIVITY, "phi_det": PHI_DET, "sigma0_km": SIGMA0_KM,
+        "shear_par_ms": round(float(s_par), 3), "shear_perp_ms": round(float(s_perp), 3),
+        "layer_km": [round(h_base, 2), round(h_top, 2)],
+        "emission_sublayer_km": [round(e_lo, 2), round(e_hi, 2)],
+        "emission_age_h": round(float(t_age_h), 2),
+        "analysis_width_km": round(float(env0["width_km"][0]), 1),
+        "analysis_phi": round(phi0, 3),
+        "class_mass_fractions": dict(CLASS_MASS_FRACTIONS),
+        "width_end_km": round(float(env["width_km"][-1]), 1),
+        "phi_end": round(float(phi_series[-1]), 3),
+    }
+    # airborne mass remaining per class (settling survival x wet), 0..1
+    for cname in SETTLE_CLASSES:
+        s_end = out[cname]["survival_end"]
+        out[cname]["mass_remaining"] = round(
+            float(np.clip(s_end * wet_series[-1], 0.0, 1.0)), 3)
     return out
 
 
 def envelope_polygon(fine_pts):
-    """Cross-track buffer polygon from the diffusion sigma at each point."""
+    """Cross-track buffer polygon from the DETECTABLE width at each point.
+
+    Uses "width_km" (mass-coupled envelope v2) when present, falling back to
+    "sigma_km" so old cached trajectories still render. Widths below the
+    detection threshold collapse to ~0 and the polygon degenerates toward the
+    centerline — that is the intended behaviour: no detectable ash, no
+    envelope."""
     left, right = [], []
     for i, pt in enumerate(fine_pts):
         nxt = fine_pts[min(i + 1, len(fine_pts) - 1)]
@@ -592,11 +1170,11 @@ def envelope_polygon(fine_pts):
         dlat = nxt["lat"] - prv["lat"]
         norm = np.hypot(dlon, dlat) or 1e-9
         px, py = -dlat / norm, dlon / norm
-        sg = pt.get("sigma_km", 0.0)
+        sg = pt.get("width_km", pt.get("sigma_km", 0.0))
         dlat_s = sg / 111.32
         dlon_s = sg / (111.32 * max(np.cos(np.radians(pt["lat"])), 1e-6))
-        left.append([round(pt["lon"] + px * dlon_s, 4), round(pt["lat"] + py * dlat_s, 4)])
-        right.append([round(pt["lon"] - px * dlon_s, 4), round(pt["lat"] - py * dlat_s, 4)])
+        left.append([round(float(pt["lon"] + px * dlon_s), 4), round(float(pt["lat"] + py * dlat_s), 4)])
+        right.append([round(float(pt["lon"] - px * dlon_s), 4), round(float(pt["lat"] - py * dlat_s), 4)])
     return left + right[::-1]
 
 
@@ -676,8 +1254,10 @@ def firms_hotspots(key: str, lat: float, lon: float, pad: float = 1.0, days: int
 
 
 # ---------------------------------------------------------------- SVG map
-def svg_map(lat, lon, traj_by_level, amv_rows, radius=6.0, path="ash_map.svg"):
-    """Self-contained SVG: plume trajectories + observed wind barbs."""
+def svg_map(lat, lon, traj_by_level, amv_rows, radius=6.0, path="ash_map.svg",
+           union_poly=None):
+    """Self-contained SVG: plume trajectories + observed wind barbs + the
+    combined (union) detectable envelope across bands."""
     W, H = 880, 700
     dlat, dlon = radius, radius * (W / H) * abs(np.cos(np.radians(lat)))
     la0, la1 = lat + dlat, lat - dlat
@@ -705,6 +1285,20 @@ def svg_map(lat, lon, traj_by_level, amv_rows, radius=6.0, path="ash_map.svg"):
         if la1 <= llat <= la0 and lo0 <= llon <= lo1:
             p.append(f'<circle cx="{X(llon):.1f}" cy="{Y(llat):.1f}" r="3" fill="#e6edf3" opacity="0.85"/>')
             p.append(f'<text x="{X(llon)+7:.1f}" y="{Y(llat)+4:.1f}" fill="#c9d1d9" font-size="11">{name}</text>')
+    # combined detectable envelope (union across bands), behind everything
+    # else: conservative hull, dashed outline, barely-there fill
+    if union_poly and len(union_poly) >= 3:
+        ring = [(X(p[0]), Y(p[1])) for p in union_poly
+                if lo0 - 3 <= p[0] <= lo1 + 3 and la1 - 3 <= p[1] <= la0 + 3]
+        if len(ring) >= 3:
+            pts_u = " ".join(f"{x:.1f},{y:.1f}" for x, y in ring)
+            p.append(f'<polygon points="{pts_u}" fill="#58a6ff" fill-opacity="0.05" '
+                     f'stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="6 4" '
+                     f'stroke-opacity="0.55"/>')
+            ux, uy = ring[0]
+            p.append(f'<text x="{ux + 6:.1f}" y="{uy - 6:.1f}" fill="#58a6ff" '
+                     f'font-size="10" opacity="0.8">combined detectable envelope '
+                     f'(union of bands)</text>')
     # trajectories
     for lab, tr in traj_by_level.items():
         if len(tr) < 2:
@@ -791,7 +1385,8 @@ def verdict_block(amv_rows, traj):
     return "\n".join(lines)
 
 
-def render(args, amv_rows, om, traj, start, exposure_rows, firms, traj_fc=None):
+def render(args, amv_rows, om, traj, start, exposure_rows, firms, traj_fc=None,
+           emission=None, union_env=None):
     L = []
     L.append("=" * 76)
     L.append(f"  ASH TRANSPORT — {args.name}  ({args.lat}, {args.lon})")
@@ -854,6 +1449,35 @@ def render(args, amv_rows, om, traj, start, exposure_rows, firms, traj_fc=None):
     if traj_fc:
         _traj_block("PROJECTED PLUME — forecast wind evolving hourly (open-meteo; may diverge)", traj_fc)
 
+    if traj_fc:
+        L.append("\n\n  ENVELOPE — detectable-ash width, mass-coupled (v2)")
+        L.append("  (shrinks as mass settles out; 0 = below satellite detection)\n")
+        for lab, tr in traj_fc.items():
+            if len(tr) < 2:
+                continue
+            e = tr[-1]
+            w = e.get("width_km"); ph = e.get("phi")
+            if w is None:
+                continue
+            L.append(f"   {lab:24} width {w:6.1f} km at +{e['hours']:g}h   "
+                     f"airborne mass {ph if ph is not None else float('nan'):.2f}")
+        L.append("\n  width = cross-track extent of ash above the satellite detection")
+        L.append("  threshold, NOT the old kinematic 2*sigma. Grows while the cloud")
+        L.append("  spreads faster than it dilutes, then shrinks as classes settle.")
+        L.append("  Calibrated n=1 (Darwin 2026/209). Re-fit as ledger grows.")
+        if emission:
+            L.append("")
+            L.append(f"  emission history: OBS width {emission.get('obs_width_km', '—')} km"
+                     f"{' at ' + str(emission['motion_deg']) + '°' if emission.get('motion_deg') is not None else ''}")
+            L.append(f"  -> cloud age {emission.get('emission_age_h', 0.0):.1f} h at analysis "
+                     f"({emission.get('source', '')})")
+            L.append(f"  {emission.get('note', '')}")
+        if union_env:
+            L.append("")
+            L.append(f"  combined union envelope: {union_env['n_bands']} band(s), "
+                     f"area {union_env['area_km2']:,.0f} km2 "
+                     f"(convex hull — conservative, contains the true union)")
+
     if exposure_rows:
         L.append("\n\n  DOWNWIND EXPOSURE — how close the modelled plume passes to each place")
         L.append(f"  {'place':30}{'plume passes':>13} {'at':>7}  {'layer':>24}   {'vent dist':>10}")
@@ -890,10 +1514,17 @@ def bearing(la1, lo1, la2, lo2):
 
 # ---------------------------------------------------------------- main
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Ash transport for Anak Krakatau")
-    ap.add_argument("--lat", type=float, default=-6.102)
-    ap.add_argument("--lon", type=float, default=105.423)
-    ap.add_argument("--name", default="Anak Krakatau")
+    ap = argparse.ArgumentParser(description="Ash transport for a volcano "
+                                             "(default: the registry's primary entry)")
+    ap.add_argument("--volcano", default=None,
+                    help="resolve lat/lon/name from src/volcanoes.py (e.g. 'Sinabung'); "
+                         "unknown names fail loudly")
+    ap.add_argument("--lat", type=float, default=None,
+                    help="vent latitude (default: registry / Anak Krakatau)")
+    ap.add_argument("--lon", type=float, default=None,
+                    help="vent longitude (default: registry / Anak Krakatau)")
+    ap.add_argument("--name", default=None,
+                    help="display name (default: registry / Anak Krakatau)")
     ap.add_argument("--radius", type=float, default=4.0,
                     help="degrees around the summit to gather AMVs (default 4)")
     ap.add_argument("--qmin", type=float, default=60, help="min AMV quality indicator (default 60)")
@@ -913,7 +1544,36 @@ def main() -> int:
                     help="how many 10-min AMV slots to pool (more = better coverage in the ash layer)")
     ap.add_argument("--offline", action="store_true",
                     help="reuse cached AMVs, skip S3 slot discovery")
+    ap.add_argument("--obs-polygon", default=None,
+                    help="Darwin advisory OBS polygon: 'lat,lon;lat,lon;...' or a JSON "
+                         "array of {lat,lon} dicts — derives the emission-history-aware "
+                         "cloud age (v2.1). build_site.py passes this automatically")
+    ap.add_argument("--obs-mov-deg", default=None,
+                    help="cloud motion for the width projection: compass (NW) or degrees")
+    ap.add_argument("--obs-layer-km", default=None,
+                    help="OBS layer depth 'base,top' km (e.g. '0,1.52' for SFC/FL050); "
+                         "default: the lowest AMV band that has data")
+    ap.add_argument("--emission-age-h", type=float, default=None,
+                    help="manual cloud age at analysis (h), e.g. from the MAGMA eruption "
+                         "log — overrides the OBS-polygon derivation")
     args = ap.parse_args()
+
+    # --- resolve the vent from the registry (src/volcanoes.py) --------------
+    # Explicit --lat/--lon/--name win; otherwise --volcano (or the registry's
+    # primary entry) fills them. The import is lazy so the pure-math helpers
+    # above stay importable even when this file is vendored alone.
+    if args.lat is None or args.lon is None or args.name is None:
+        try:
+            import volcanoes
+            base = volcanoes.resolve(args.volcano) if args.volcano else volcanoes.primary()
+        except ImportError:
+            base = {"lat": -6.102, "lon": 105.423, "name": "Anak Krakatau"}
+        if args.lat is None:
+            args.lat = base["lat"]
+        if args.lon is None:
+            args.lon = base["lon"]
+        if args.name is None:
+            args.name = base["name"]
 
     start = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
 
@@ -992,8 +1652,70 @@ def main() -> int:
     amv_rows = amv_profile(observations, args.lat, args.lon, args.radius,
                            args.qmin, nwp=nwp, heights=heights)
 
-    # --- trajectories: blended wind held steady, evolving+settling+diffusion ---
+    # --- trajectories: blended wind held steady, evolving+settling+envelope ---
     traj, traj_fc, traj_cls, env = {}, {}, {}, {}
+
+    def _layer_km_from_row(r):
+        """Band pressure edges -> (base_km, top_km) via the hypsometric heights."""
+        if not heights:
+            return None
+        plo, phi = r.get("pressure_range", (None, None))
+        if plo is None or phi is None:
+            return None
+        return (pressure_to_height(heights, phi),      # top of band (lower hPa)
+                pressure_to_height(heights, plo))       # base of band (higher hPa)
+
+    # --- emission history (v2.1): how old was the cloud at analysis time? ---
+    # The calibration's free t0 "rediscovered" the 0210Z eruption; deriving the
+    # age per run from the advisory's own OBS polygon makes the initial spread
+    # emission-history-aware instead of silently assuming a fresh emission.
+    emission = None
+    t_age = 0.0
+    if args.emission_age_h is not None:
+        t_age = float(np.clip(args.emission_age_h, 0.0, MAX_EMISSION_AGE_H))
+        emission = {"source": "manual --emission-age-h",
+                    "emission_age_h": round(t_age, 2),
+                    "note": "operator-supplied age (e.g. from the MAGMA eruption log)"}
+    elif args.obs_polygon:
+        verts = _parse_obs_polygon(args.obs_polygon)
+        mov = _parse_mov(args.obs_mov_deg)
+        W = polygon_cross_track_width_km(verts, mov) if len(verts) >= 3 else 0.0
+        if W <= 0.0:
+            print("[warn] --obs-polygon unparseable; fresh-emission envelope",
+                  file=sys.stderr)
+        else:
+            if args.obs_layer_km:
+                try:
+                    base, top = (float(x) for x in args.obs_layer_km.split(",")[:2])
+                except ValueError:
+                    base = top = None
+            else:
+                lk = None
+                for r in amv_rows:
+                    if r.get("data"):
+                        lk = _layer_km_from_row(r)
+                        break
+                base, top = lk if lk else (None, None)
+            if base is None or top is None or not nwp:
+                emission = {"source": "OBS polygon (Darwin advisory)",
+                            "obs_width_km": round(W, 1), "motion_deg": mov,
+                            "emission_age_h": 0.0,
+                            "note": "no NWP profile / layer depth: age inversion "
+                                    "skipped, fresh-emission envelope"}
+            else:
+                base, top = max(min(base, top), 0.0), max(top, min(base, top) + 0.1)
+                sp, sq = effective_shear_ms(nwp, heights, base, top)
+                t_age, note = implied_emission_age_h(
+                    W, sp, sq, base, top, nwp=nwp, heights=heights)
+                emission = {"source": "OBS polygon (Darwin advisory)",
+                            "obs_width_km": round(W, 1), "motion_deg": mov,
+                            "layer_km": [round(base, 2), round(top, 2)],
+                            "emission_age_h": round(t_age, 2), "note": note}
+    if emission is None:
+        emission = {"source": "default (fresh emission)", "emission_age_h": 0.0,
+                    "note": "no OBS polygon / age given: cloud assumed emitted "
+                            "at the analysis time"}
+
     for r in amv_rows:
         if not r.get("data"):
             continue
@@ -1005,7 +1727,9 @@ def main() -> int:
             h0 = r.get("alt_km") or r.get("mean_altitude_km") or 1.5
             cls = trajectory_settling(args.lat, args.lon, h0, nwp, heights,
                                       start, hours=args.hours,
-                                      precip_grid=precip)
+                                      precip_grid=precip,
+                                      layer_km=_layer_km_from_row(r),
+                                      t_age_h=t_age)
             traj_fc[r["layer"]] = cls["fine"]["pts"]
             traj_cls[r["layer"]] = {k: {"pts": v["pts"],
                                         "wet_points": v["wet_points"],
@@ -1015,6 +1739,7 @@ def main() -> int:
             traj_cls[r["layer"]]["fine_wet"] = {"wet_points": wet_fine,
                                                 "mass_remaining": cls["fine"]["mass_remaining"]}
             env[r["layer"]] = envelope_polygon(cls["fine"]["pts"])
+            traj_cls[r["layer"]]["envelope"] = cls["fine"].get("envelope")
 
     for r in amv_rows:
         if r.get("data") or not nwp:
@@ -1023,18 +1748,24 @@ def main() -> int:
         near_p = min(heights, key=lambda p: abs(p - p_mid)) if heights else None
         h0 = heights[near_p] if near_p else 1.5
         cls = trajectory_settling(args.lat, args.lon, h0, nwp, heights,
-                                  start, hours=args.hours, precip_grid=precip)
+                                  start, hours=args.hours, precip_grid=precip,
+                                  layer_km=_layer_km_from_row(r), t_age_h=t_age)
         traj_fc[r["layer"]] = cls["fine"]["pts"]
         traj_cls[r["layer"]] = {k: {"pts": v["pts"], "wet_points": v["wet_points"],
                                     "mass_remaining": v["mass_remaining"]}
                                 for k, v in cls.items() if k != "fine"}
         traj_cls[r["layer"]]["fine_wet"] = {"wet_points": cls["fine"]["wet_points"],
                                             "mass_remaining": cls["fine"]["mass_remaining"]}
+        traj_cls[r["layer"]]["envelope"] = cls["fine"].get("envelope")
         env[r["layer"]] = envelope_polygon(cls["fine"]["pts"])
         r["nwp_only_trajectory"] = True
 
     exp = exposure(args.lat, args.lon, traj_fc or traj, start, skip_km=args.skip_km)
     firms = firms_hotspots(args.firms_key, args.lat, args.lon, args.pad, args.days) if args.firms_key else {}
+
+    # combined multi-band polygon: the model-side counterpart of the union
+    # polygons Darwin draws across layers (conservative convex hull)
+    env_union = union_envelope(env)
 
     if args.json:
         print(json.dumps({
@@ -1047,16 +1778,30 @@ def main() -> int:
             "ensemble_dirs": {str(k): v for k, v in (nwp or {}).get("ensemble", {}).items()},
             "trajectories_observed": traj, "trajectories_forecast": traj_fc,
             "trajectories_settling": traj_cls, "envelopes": env,
-            "settling_classes_ms": SETTLE_CLASSES, "diffusivity_m2_s": K_DIFFUSIVITY,
+            "envelope_union": env_union,
+            "envelope_emission": emission,
+            "settling_classes_ms": SETTLE_CLASSES,
+            "class_mass_fractions": CLASS_MASS_FRACTIONS,
+            "envelope_model": {
+                "name": "mass-coupled gaussian v2",
+                "k_m2_s": K_DIFFUSIVITY, "phi_det": PHI_DET,
+                "sigma0_km": SIGMA0_KM,
+                "emission_age_h": round(t_age, 2),
+                "emission_age_source": emission.get("source"),
+                "calibrated": "n=1 event, Darwin advisory 2026/209 (10 Sep 2026)"
+                              " — see calibrate_envelope.py; re-fit as backtest grows",
+            },
             "downwind_exposure": exp, "firms": firms,
         }, ensure_ascii=False, indent=2, default=str))
     else:
-        print(render(args, amv_rows, nwp or {"times": [], "levels": {}}, traj, start, exp, firms, traj_fc))
+        print(render(args, amv_rows, nwp or {"times": [], "levels": {}}, traj, start,
+                     exp, firms, traj_fc, emission=emission, union_env=env_union))
 
     if not args.no_svg and traj:
         try:
             svg_map(args.lat, args.lon, {k: v for k, v in traj.items() if "observed" not in k},
-                    amv_rows, path=args.svg)
+                    amv_rows, path=args.svg,
+                    union_poly=(env_union or {}).get("polygon"))
             if not args.json:
                 print(f"\n[map written to {args.svg}]")
         except Exception as e:  # noqa: BLE001
@@ -1065,6 +1810,9 @@ def main() -> int:
 
 
 def _read_cached(path, tag):
+    if netCDF4 is None:
+        raise RuntimeError("netCDF4 not installed — cannot read cached AMV "
+                           "files (pip install netCDF4)")
     ds = netCDF4.Dataset(path); ds.set_auto_maskandscale(False)
     g = lambda n: ds[n][:] if n in ds.variables else None
     lat, lon, spd, wd = g("Latitude"), g("Longitude"), g("Wind_Speed"), g("Wind_Dir")

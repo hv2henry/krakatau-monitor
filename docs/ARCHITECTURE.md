@@ -8,27 +8,34 @@ traps we hit — so future contributors (and forks) don't rediscover them.
 ```
 GitHub Actions (public repo, every 15 min, free unlimited minutes)
   └─ src/build_site.py               ← the only command CI runs
+       ├─ volcanoes.py                 resolves the target volcano (registry:
+       │                               coords, MAGMA code, VAAC name, framing)
        ├─ volcano_monitor.collect()    PRIMARY  MAGMA/PVMBG  (HTML, stdlib)
        ├─ darwin_vaac.fetch()          PRIMARY  Darwin VAAC  (JSON endpoint)
        ├─ ash_transport (subprocess)   SECONDARY Himawari-9 AMV (NOAA S3) + open-meteo
        ├─ validate.validate()          gates -> verdict (checks, corroboration)
        ├─ GIBS stitch: Aqua+Suomi true colour (daily), Himawari loop (10-min frames)
-       ├─ site/data/snapshot.json      ← everything the website reads
-       ├─ site/data/forecast_candidate.json   (never shown)
-       ├─ site/data/forecast_model.json       ONLY via human approval flag
+       ├─ site/data/volcanoes.json   ← the registry boot file for the frontend
+       ├─ site/data/<slug>/snapshot.json          ← everything the website reads
+       ├─ site/data/<slug>/forecast_candidate.json (never shown)
+       ├─ site/data/<slug>/forecast_model.json    ONLY via human approval flag
+       ├─ site/data/<slug>/backtest.jsonl         model-vs-VAAC width ledger
        └─ embed boot payload into site/index.html (offline/preview rendering)
   └─ actions/deploy-pages -> GitHub Pages (static, free)
 ```
 
-The website never scrapes anything. It reads local JSON/images only, refreshes
-every 5 min, and renders with plain JS (no framework: no build step between a
-non-developer maintainer and their own site).
+The website never scrapes anything. It only reads local JSON/images,
+bootstraps the active volcano from `data/volcanoes.json` (`?volcano=<slug>`
+picks another entry), refreshes every 5 min, and renders with plain JS (no
+framework: no build step between a non-developer maintainer and their own
+site). Adding a volcano is a one-file edit in `src/volcanoes.py` — data,
+archives and ledgers namespace themselves under `<slug>`.
 
 ## Source hierarchy (never blended)
 
 | Tier | Source | For |
 |---|---|---|
-| PRIMARY | MAGMA / PVMBG (CVGHM) | alert level, 6-h reports, eruptions, VONA, seismicity |
+| PRIMARY | MAGMA/PVMBG (CVGHM) | alert level, 6-h reports, eruptions, VONA, seismicity |
 | PRIMARY | Darwin VAAC (BoM, ICAO) | ash cloud extent/height/motion — **when published** |
 | SECONDARY | Himawari-9 AMV + open-meteo | plume estimate; human-gated; always disclosed |
 | context | NASA GIBS/FIRMS, Natural Earth | imagery, loops, coastlines |
@@ -59,8 +66,9 @@ Every publishable claim passes four gates; output is a routing decision:
 
 - **A freshness/SLA** per source (MAGMA ≤7 h, VAAC ≤7 h + its own NXT ADVISORY,
   AMV ≤1.5 h, open-meteo ≤3 h). Over hard limit → quarantine.
-- **B sanity/physicality** PSN within 0.6° of vent, FL ≤ 600, speeds ≤ 60 m/s,
-  polygons ≥3 vertices, no future timestamps, FROM/TOWARD antipodal.
+- **B sanity/physicality** PSN within 0.6° of the registry vent
+  (`src/volcanoes.py`), FL ≤ 600, speeds ≤ 60 m/s,
+  polygons ≥ 3 vertices, no future timestamps, FROM/TOWARD antipodal.
 - **C corroboration** direction per merged altitude band across VAAC/AMV/NWP
   (≤45° agree = corroborated; ≥90° = conflicting → review); occurrence counted
   across MAGMA+VONA+VAAC+FIRMS.
@@ -100,8 +108,8 @@ Machines flag; humans judge.
 
 ## Agent-friendly surface
 
-`data/snapshot.json` (schema v1, `<link rel=alternate>` + JSON-LD),
-`data/forecast_model.json`, `llms.txt`, `agent.md`, `robots.txt`.
+`data/<slug>/snapshot.json` (schema v1, `<link rel=alternate>` + JSON-LD),
+`data/<slug>/forecast_model.json`, `llms.txt`, `agent.md`, `robots.txt`.
 Semantics agents must respect are documented there (nil≠safe, move_toward is
 TOWARD, prefer `*_human_*` altitude strings, never quote the candidate file).
 

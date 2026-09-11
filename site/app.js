@@ -1,14 +1,16 @@
 /* ============================================================================
-   app.js — Krakatau community dashboard.
+   app.js — volcano community dashboard (default: Anak Krakatau).
    No build step, no framework: plain JS so a non-developer can edit safely.
    Reads only local JSON produced by build_site.py (the site never scrapes).
+   Multi-volcano: boots from data/volcanoes.json, reads data/<slug>/…, and
+   ?volcano=<slug> in the URL picks another registry entry.
    ==========================================================================*/
 "use strict";
 
 /* ---------------------------------------------------------------- i18n ---- */
 const I18N = {
   id: {
-    title: "Pantau Anak Krakatau",
+    title: "Pantau {volcano}",
     subtitle: "Dasbor komunitas — data resmi + model sekunder",
     sec_status: "Status Aktivitas",
     sec_report: "Laporan Pengamatan Terakhir",
@@ -48,7 +50,7 @@ const I18N = {
     vaac_advisory: "Advisori",
     vaac_nil: "Tidak ada advisori aktif",
     vaac_nil_body: "Darwin VAAC tidak menerbitkan advisori saat ini. <b>Ini BUKAN berarti tidak ada bahaya</b> — advisori hanya terbit bila abu teridentifikasi dan relevan bagi penerbangan. Untuk status erupsi, lihat MAGMA/PVMBG di atas.",
-    vaac_stale: "Advisori untuk gunung lain aktif, tetapi tidak ada untuk Krakatau. Ketidakadaan advisori bukan berarti aman.",
+    vaac_stale: "Advisori untuk gunung lain aktif, tetapi tidak ada untuk {volcano}. Ketidakadaan advisori bukan berarti aman.",
     issued: "Terbit",
     next_adv: "Advisori berikutnya paling lambat",
     eruption_detail: "Detail erupsi",
@@ -65,12 +67,15 @@ const I18N = {
     valid: "Berlaku",
     map_obs: "VAAC teramati",
     map_model: "Model sekunder (Himawari-9 + open-meteo)",
+    map_union: "Selubung gabungan (hull semua lapisan)",
+    map_env: "selubung abu terdeteksi (terkopel massa)",
+    emission_line: "Umur awan {a} jam — diturunkan dari lebar polygon OBS Darwin ({w} km); sebaran awal & massa airborne mengikuti riwayat emisi.",
     map_note: "Peta skematik — garis pantai Natural Earth. BUKAN untuk navigasi.",
     sat_none: "Citra harian belum tersedia.",
     sec_loop: "Animasi Himawari-9 (Inframerah)",
     src_loop: 'Sumber: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
     loop_none: "Animasi belum tersedia (butuh ≥4 frame). Akan muncul pada build berikutnya.",
-    loop_cap: "Putar untuk melihat pergerakan awan/abu. Putih = puncak awan dingin/tinggi; gelap = permukaan hangat. Garis pantai tipis + titik merah = Anak Krakatau.",
+    loop_cap: "Putar untuk melihat pergerakan awan/abu. Putih = puncak awan dingin/tinggi; gelap = permukaan hangat. Garis pantai tipis + titik merah = {volcano}.",
     loop_eruptions: "Tanda merah pada garis waktu = waktu erupsi menurut MAGMA/PVMBG.",
     model_plume_top: "Puncak awan abu resmi hari ini",
     model_no_top: "Tidak ada puncak awan abu resmi hari ini — semua lapisan ditampilkan setara.",
@@ -100,7 +105,7 @@ const I18N = {
     loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
     loop_verified: "Waktu frame terverifikasi: grid citra 10-menit Himawari {grid} · slot citra ada di NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Klik untuk membuka tile sumber NASA frame ini (verifikasi mandiri)",
-    map_need_network: "Peta interaktif butuh koneksi internet (tile © OpenStreetMap). Data poligon tetap dapat dibaca mesin di data/snapshot.json.",
+    map_need_network: "Peta interaktif butuh koneksi internet (tile © OpenStreetMap). Data poligon tetap dapat dibaca mesin dari berkas JSON di folder data/.",
     gal_of: "dari",
     sat_open: "Buka peta interaktif FIRMS untuk tanggal ini",
     model_unpub_t: "Model belum dipublikasikan",
@@ -119,7 +124,7 @@ const I18N = {
     just_now: "baru saja",
   },
   en: {
-    title: "Anak Krakatau Watch",
+    title: "{volcano} Watch",
     subtitle: "Community dashboard — official data + secondary model",
     sec_status: "Activity Status",
     sec_report: "Latest Observation Report",
@@ -159,7 +164,7 @@ const I18N = {
     vaac_advisory: "Advisory",
     vaac_nil: "No active advisory",
     vaac_nil_body: "Darwin VAAC has no current advisory. <b>This does NOT mean no hazard</b> — advisories are issued only when ash is identifiable and relevant to aviation. For eruption status see MAGMA/PVMBG above.",
-    vaac_stale: "Advisories are active for other volcanoes but none for Krakatau. Absence of an advisory is not an all-clear.",
+    vaac_stale: "Advisories are active for other volcanoes but none for {volcano}. Absence of an advisory is not an all-clear.",
     issued: "Issued",
     next_adv: "Next advisory no later than",
     eruption_detail: "Eruption details",
@@ -176,12 +181,15 @@ const I18N = {
     valid: "Valid",
     map_obs: "VAAC observed",
     map_model: "Secondary model (Himawari-9 + open-meteo)",
+    map_union: "Combined envelope (hull of all layers)",
+    map_env: "detectable-ash envelope (mass-coupled)",
+    emission_line: "Cloud age {a} h — derived from the Darwin OBS polygon width ({w} km); the initial spread and airborne mass follow the emission history.",
     map_note: "Schematic map — Natural Earth coastlines. NOT for navigation.",
     sat_none: "Daily imagery not available yet.",
     sec_loop: "Himawari-9 Animation (Infrared)",
     src_loop: 'Source: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
     loop_none: "Animation not available yet (needs ≥4 frames). It will appear on the next build.",
-    loop_cap: "Press play to watch cloud/ash motion. White = cold/high cloud tops; dark = warm surface. Thin coastline + red dot = Anak Krakatau.",
+    loop_cap: "Press play to watch cloud/ash motion. White = cold/high cloud tops; dark = warm surface. Thin coastline + red dot = {volcano}.",
     loop_eruptions: "Red marks on the timeline = eruption times per MAGMA/PVMBG.",
     model_plume_top: "Official ash-cloud top today",
     model_no_top: "No official ash-cloud top today — all layers shown equally.",
@@ -233,7 +241,18 @@ const I18N = {
 
 let LANG = localStorage.getItem("krak-lang") ||
            ((navigator.language || "id").toLowerCase().startsWith("id") ? "id" : "en");
-const T = (k) => (I18N[LANG][k] !== undefined ? I18N[LANG][k] : I18N.id[k] !== undefined ? I18N.id[k] : k);
+
+/* Active volcano: bootstrapped from data/volcanoes.json (written by
+   build_site.py from src/volcanoes.py) before the first render; the default
+   matches the registry's primary entry so a page cached before that file
+   existed degrades to the previous behaviour. */
+let VOLC = { slug: "anak-krakatau", name: "Anak Krakatau", lat: -6.102, lon: 105.423 };
+let DATA = "data/anak-krakatau";
+
+const T = (k) => {
+  const v = I18N[LANG][k] !== undefined ? I18N[LANG][k] : I18N.id[k] !== undefined ? I18N.id[k] : k;
+  return typeof v === "string" ? v.replace(/\{volcano\}/g, VOLC.name) : v;
+};
 
 /* ------------------------------------------------------------- helpers ---- */
 const $ = (s) => document.querySelector(s);
@@ -293,8 +312,8 @@ function applyI18n() {
   const lt = $("#btn-lang-txt");
   if (lt) lt.textContent = LANG === "id" ? "EN" : "ID";
   document.title = LANG === "id"
-    ? "Pantau Gunung Anak Krakatau — Dasbor Komunitas"
-    : "Anak Krakatau Watch — Community Dashboard";
+    ? `Pantau Gunung ${VOLC.name} — Dasbor Komunitas`
+    : `${VOLC.name} Watch — Community Dashboard`;
 }
 
 function renderStatus() {
@@ -409,7 +428,7 @@ function renderSat() {
     const d = s[k];
     if (!d) return `<div class="card"><p class="stamp">${T("sat_none")}</p></div>`;
     const sensor = d.sensor_label || (k === "snpp" ? "Suomi NPP (VIIRS)" : "Aqua (MODIS)");
-    const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/map/#d/${d.date},${d.date}/@105.423,-6.102,8z`;
+    const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/map/#d/${d.date},${d.date}/@${VOLC.lon},${VOLC.lat},8z`;
     return `<div class="card"><div class="stamp"><b>${sensor}</b> · ${esc(d.date)}</div>
       <img class="pic" style="margin-top:6px" src="${esc(d.asset)}" alt="${sensor} true color ${esc(d.date)}" loading="lazy">
       <div class="figcap">${d.sensor_note ? esc(d.sensor_note) + " · " : ""}${esc(d.credit)} ·
@@ -486,6 +505,9 @@ function renderModel() {
     ${MODEL.plume_vector ? `<p class="stamp">${T("blend_caption")}</p>` : ""}
     ${MODEL.backtest ? `<p class="stamp">${T("backtest_line")
       .replace("{m}", MODEL.backtest.mean_abs_deg).replace("{n}", MODEL.backtest.n)}</p>` : ""}
+    ${MODEL.envelope_emission && MODEL.envelope_emission.emission_age_h != null ? `<p class="stamp">${T("emission_line")
+      .replace("{a}", MODEL.envelope_emission.emission_age_h.toFixed(1))
+      .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
     ${pt ? `<div class="callout"><b>${T("model_plume_top")}:</b>
       ${esc(LANG === "id" ? pt.human_id : pt.human_en)} — ${esc(pt.source)}</div>`
       : `<p class="stamp">${T("model_no_top")}</p>`}
@@ -535,10 +557,10 @@ function loopOverlay() {
     });
     if (d) P.push(`<path d="${d}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.1"/>`);
   });
-  const vx = X(105.423), vy = Y(-6.102);
+  const vx = X(VOLC.lon), vy = Y(VOLC.lat);
   P.push(`<circle cx="${vx}" cy="${vy}" r="7" fill="none" stroke="#ff5544" stroke-width="1.4" opacity=".9"/>`);
   P.push(`<circle cx="${vx}" cy="${vy}" r="2.6" fill="#ff5544"/>`);
-  P.push(`<text x="${vx + 10}" y="${vy + 4}" font-size="11" font-weight="700" fill="#fff" opacity=".92">Anak Krakatau</text>`);
+  P.push(`<text x="${vx + 10}" y="${vy + 4}" font-size="11" font-weight="700" fill="#fff" opacity=".92">${esc(VOLC.name)}</text>`);
   svg.innerHTML = P.join("");
 }
 
@@ -621,7 +643,7 @@ function renderLoop() {
    dragging bug, and a native collapsible layer control. Vectors still render
    if tiles cannot load (offline preview), just without basemap. */
 const MAP = { el: null, control: null, groups: {}, on: { obs: true, f6: true, f12: false, f18: false, model: false } };
-const VENT = [-6.102, 105.423];
+let VENT = [-6.102, 105.423];   // vent marker; refreshed from the registry in loadAll()
 const PCOL = { obs: "#9B2B1A", f6: "#d97706", f12: "#b45309", f18: "#78716c" };
 
 let LEAFLET = 0;   // 0 idle, 1 loading, 2 ready, 3 failed
@@ -664,7 +686,7 @@ function initMap() {
     if (LEAFLET === 1) return;            // script in flight; onload will retry
     return mapFallback();
   }
-  const map = L.map("map", { zoomControl: true }).setView([-6.35, 105.42], 8);
+  const map = L.map("map", { zoomControl: true }).setView([VOLC.lat - 0.25, VOLC.lon], 8);
   MAP.el = map;
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 12,
@@ -672,7 +694,7 @@ function initMap() {
   }).addTo(map);
   L.circleMarker(VENT, { radius: 6, color: "#9B2B1A", weight: 2, fillColor: "#9B2B1A", fillOpacity: 0.9 })
     .addTo(map)
-    .bindTooltip("Anak Krakatau", { permanent: true, direction: "right", offset: [9, 0], className: "vent-tip" });
+    .bindTooltip(VOLC.name, { permanent: true, direction: "right", offset: [9, 0], className: "vent-tip" });
   map.on("overlayadd", (e) => { const k = e.layer._krkKey; if (k) MAP.on[k] = true; });
   map.on("overlayremove", (e) => { const k = e.layer._krkKey; if (k) MAP.on[k] = false; });
   rebuildMapLayers();
@@ -742,9 +764,11 @@ function rebuildMapLayers() {
         parts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
           .bindTooltip(`+${e[2]}h · ${l.layer}`));
         if (l.envelope && l.envelope.length > 2) {
-          parts.push(L.polygon(l.envelope, { color: c, weight: 0.8, fillColor: c,
-            fillOpacity: 0.07, dashArray: "2 4" })
-            .bindTooltip(`${l.layer}: diffusion envelope (K=5×10³ m²/s)`));
+          // envelope rings are [lon, lat] (GeoJSON order) — Leaflet wants [lat, lon]
+          parts.push(L.polygon(l.envelope.map((pt) => [pt[1], pt[0]]),
+            { color: c, weight: 0.8, fillColor: c,
+              fillOpacity: 0.07, dashArray: "2 4" })
+            .bindTooltip(`${l.layer}: ${T("map_env")}`));
         }
         Object.entries(l.settling_classes || {}).forEach(([cn, obj]) => {
           const pts = obj.pts || obj;
@@ -761,6 +785,16 @@ function rebuildMapLayers() {
           });
         });
       });
+      // v2.1: combined (hull) envelope across all bands — the shape that is
+      // comparable to what Darwin's multi-layer polygons describe
+      const un = MODEL.envelope_union;
+      if (un && un.polygon && un.polygon.length > 2) {
+        parts.push(L.polygon(un.polygon.map((pt) => [pt[1], pt[0]]),
+          { color: "#111827", weight: 2.2, fillColor: "#6b7280", fillOpacity: 0.08,
+            dashArray: "6 3" })
+          .bindTooltip(`${T("map_union")} · ${un.n_bands} × ${T("layer")} · ` +
+            `${Math.round(un.area_km2).toLocaleString()} km²`));
+      }
       const g = L.layerGroup(parts);
       g._krkKey = "model";
       MAP.groups.model = g;
@@ -877,9 +911,22 @@ function inlineJSON(id) {
 async function loadAll() {
   const bootSnap = inlineJSON("boot-snapshot");
   const bootModel = inlineJSON("boot-model");
-  SNAP = await loadJSON("data/snapshot.json").catch(() => bootSnap);
+  // volcano registry first: it decides which data folder everything below
+  // reads (?volcano=<slug> in the URL picks a non-primary entry)
+  try {
+    const reg = await loadJSON("data/volcanoes.json");
+    const wanted = new URLSearchParams(location.search).get("volcano");
+    const list = reg.volcanoes || [];
+    const v = list.find((x) => x.slug === wanted) || list[0];
+    if (v && v.slug) {
+      VOLC = v;
+      DATA = "data/" + v.slug;
+      VENT = [v.lat, v.lon];
+    }
+  } catch (e) { /* older build without the registry: keep the primary default */ }
+  SNAP = await loadJSON(DATA + "/snapshot.json").catch(() => bootSnap);
   if (!SNAP) throw new Error("no snapshot available");
-  MODEL = await loadJSON("data/forecast_model.json")
+  MODEL = await loadJSON(DATA + "/forecast_model.json")
     .catch(() => (bootModel && bootModel.status === "approved" ? bootModel : null));
   renderAll();
 }
@@ -896,7 +943,7 @@ document.documentElement.dataset.theme = localStorage.getItem("krak-theme") || "
 
 loadAll().catch((e) => {
   document.querySelectorAll(".card").forEach((c) => {
-    c.innerHTML = `<p class="stamp">data/snapshot.json: ${esc(String(e))}</p>`;
+    c.innerHTML = `<p class="stamp">${DATA}/snapshot.json: ${esc(String(e))}</p>`;
   });
 });
 setInterval(() => { loadAll().catch(() => {}); }, 300000);   // auto-refresh 5 min

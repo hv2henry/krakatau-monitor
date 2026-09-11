@@ -51,7 +51,7 @@ import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 
-PARSER_VERSION = "validate/1.0"
+PARSER_VERSION = "validate/1.1"
 
 # ---------------------------------------------------------------- SLA table
 # (warn_after_h, hard_fail_after_h) per source. Hard fail => quarantine.
@@ -69,8 +69,27 @@ CORR_ANGLE_OK = 45.0      # deg: independent sources this close => corroborated
 CORR_ANGLE_BAD = 90.0     # deg: beyond this => human must look
 SPEED_SANITY_MS = (0.0, 60.0)
 FL_SANITY = (0, 600)
-VENT = {"anak krakatau": (-6.102, 105.423)}
+# Known vents come from the volcano registry (src/volcanoes.py): every
+# registered name and alias maps to its vent coordinates, so gate B can
+# sanity-check the VAA PSN distance from the TRUE vent for any volcano the
+# dashboard monitors. Unregistered names keep the old skip behaviour.
+import volcanoes as _volc_registry
+
+VENT = {}
+for _e in _volc_registry.all_volcanoes():
+    VENT[_e["name"].lower()] = (_e["lat"], _e["lon"])
+    for _a in _e.get("aliases", []):
+        VENT[_a.lower()] = (_e["lat"], _e["lon"])
 VENT_BOX_DEG = 0.6        # a VAA PSN further than this from the known vent = suspect
+
+# Envelope sanity (secondary model v2.1 outputs). Bounds are deliberately
+# generous: they exist to catch parser/code blow-ups, not to second-guess
+# the model's meteorology.
+ENVELOPE_BOX = (80.0, 160.0, -30.0, 20.0)   # lon0, lon1, lat0, lat1 domain
+WIDTH_SANITY_KM = (0.0, 3000.0)             # per-band detectable half-width
+UNION_AREA_SANITY_KM2 = (0.0, 8.0e6)        # combined multi-band hull area
+EMISSION_AGE_SANITY_H = (0.0, 48.0)         # OBS-derived cloud age at analysis
+PHI_SANITY = (0.0, 1.01)                    # airborne mass fraction
 
 AUTO_KINDS = {"LEVEL_CHANGE", "NEW_VONA", "VAAC_ADVISORY", "NEW_ERUPTION"}
 # Verbatim official channels may auto-publish. Anything we DERIVED cannot.
@@ -240,6 +259,87 @@ def gate_sanity_amv(profile: list[dict]) -> list[Check]:
     return out
 
 
+# ---------------------------------------------------------------- gate B (envelope)
+def _poly_in_box(polygon, box) -> bool:
+    lon0, lon1, lat0, lat1 = box
+    for p in polygon or []:
+        if isinstance(p, dict):
+            lon, lat = p.get("lon"), p.get("lat")
+        else:
+            lon, lat = (p[0], p[1]) if len(p) >= 2 else (None, None)
+        if lon is None or lat is None:
+            return False
+        if not (lon0 <= lon <= lon1 and lat0 <= lat <= lat1):
+            return False
+    return True
+
+
+def gate_sanity_envelope(ash_model: dict | None) -> list[Check]:
+    """Sanity of the secondary model's ENVELOPE outputs (v2.1 JSON).
+
+    Additive and tolerant by design: fields that old cached model JSON does
+    not carry are simply skipped, so this gate hard-fails only on outputs
+    that are present AND unphysical — a blown-up width, a polygon vertex
+    outside the transport domain, an airborne fraction above 1, a cloud age
+    outside the inversion cap. It runs on the raw ash_transport --json dict
+    (trajectories_settling / envelopes / envelope_union / envelope_emission).
+    """
+    out: list[Check] = []
+    if not ash_model:
+        return out
+
+    for lab, cls in (ash_model.get("trajectories_settling") or {}).items():
+        env = (cls or {}).get("envelope") or {}
+        if not env:
+            continue
+        w = env.get("width_end_km")
+        if w is not None:
+            out.append(Check("sanity", f"envelope:{lab}:width_end",
+                             WIDTH_SANITY_KM[0] <= w <= WIDTH_SANITY_KM[1],
+                             f"{w} km", "fail"))
+        ph = env.get("phi_end")
+        if ph is not None:
+            out.append(Check("sanity", f"envelope:{lab}:phi_end",
+                             PHI_SANITY[0] <= ph <= PHI_SANITY[1],
+                             f"{ph}", "fail"))
+        ta = env.get("emission_age_h")
+        if ta is not None:
+            out.append(Check("sanity", f"envelope:{lab}:emission_age",
+                             EMISSION_AGE_SANITY_H[0] <= ta <= EMISSION_AGE_SANITY_H[1],
+                             f"{ta} h", "fail"))
+
+    for lab, poly in (ash_model.get("envelopes") or {}).items():
+        n = len(poly or [])
+        out.append(Check("sanity", f"envelope:{lab}:polygon", n >= 3,
+                         f"{n} vertices", "warn"))
+        if n:
+            out.append(Check("sanity", f"envelope:{lab}:polygon_in_domain",
+                             _poly_in_box(poly, ENVELOPE_BOX),
+                             "vertex outside the transport domain", "fail"))
+
+    uni = ash_model.get("envelope_union")
+    if uni and uni.get("polygon"):
+        n = len(uni["polygon"])
+        out.append(Check("sanity", "envelope_union:polygon", n >= 3,
+                         f"{n} vertices over {uni.get('n_bands')} band(s)", "warn"))
+        out.append(Check("sanity", "envelope_union:polygon_in_domain",
+                         _poly_in_box(uni["polygon"], ENVELOPE_BOX),
+                         "vertex outside the transport domain", "fail"))
+        a = uni.get("area_km2")
+        if a is not None:
+            out.append(Check("sanity", "envelope_union:area",
+                             UNION_AREA_SANITY_KM2[0] < a <= UNION_AREA_SANITY_KM2[1],
+                             f"{a:.0f} km2", "warn"))
+
+    em = ash_model.get("envelope_emission") or {}
+    ta = em.get("emission_age_h")
+    if ta is not None:
+        out.append(Check("sanity", "emission:age",
+                         EMISSION_AGE_SANITY_H[0] <= ta <= EMISSION_AGE_SANITY_H[1],
+                         f"{ta} h ({em.get('source')})", "fail"))
+    return out
+
+
 # ---------------------------------------------------------------- gate C
 def ash_directions(monitor=None, vaac=None, amv=None, om=None) -> dict:
     """Collect every independent statement of ash transport direction, keyed
@@ -382,7 +482,10 @@ def route(kind: str, checks: list[Check], corr: dict | None = None) -> tuple[str
 # ---------------------------------------------------------------- top level
 def validate(monitor: dict | None = None, vaac: dict | None = None,
              amv_profile: list | None = None, om: dict | None = None,
-             firms: dict | None = None, volcano: str = "Anak Krakatau") -> dict:
+             firms: dict | None = None, volcano: str = "Anak Krakatau",
+             ash_model: dict | None = None) -> dict:
+    """ash_model: the raw ash_transport.py --json dict, for the envelope
+    sanity gate (v2.1 fields). Optional — old cached runs simply skip it."""
     checks: list[Check] = []
 
     if monitor:
@@ -411,6 +514,8 @@ def validate(monitor: dict | None = None, vaac: dict | None = None,
                     ts = recs[0].get("t")
                     break
         checks += gate_freshness("open_meteo", ts)
+    if ash_model:
+        checks += gate_sanity_envelope(ash_model)
 
     bands = ash_directions(monitor, vaac, amv_profile, om)
     corr_dir = corroborate_direction(bands)
@@ -463,7 +568,7 @@ if __name__ == "__main__":
     v = validate(mon, va, (ash or {}).get("observed_wind_profile"),
                  {"levels": {int(k): x for k, x in (ash or {}).get("forecast_wind", {}).items()},
                   "times": []} if ash else None,
-                 volcano=a.volcano)
+                 volcano=a.volcano, ash_model=ash)
     print(json.dumps(v, ensure_ascii=False, indent=2))
     import sys as _sys
     _p = lambda *a: print(*a, file=_sys.stderr)

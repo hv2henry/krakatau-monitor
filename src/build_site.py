@@ -66,7 +66,7 @@ GIBS_LAYERS = {"snpp": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
 SAT_BOX = (100.0, 112.0, -12.0, -1.0)   # lon0 lon1 lat0 lat1
 SAT_Z = 7
 
-CREDIT_GIBS = ("NASA GIBS/Earthdata — {sensor} Corrected Reflectance (True Color), "
+CREDIT_GIBS = ("NASA GIBS/Earthdata—{sensor} Corrected Reflectance (True Color), "
                "{date}. https://worldview.earthdata.nasa.gov")
 
 
@@ -954,16 +954,16 @@ def build(args) -> int:
                 out.append({
                     "id": f"Tidak ada vektor angin satelit dalam {int(min(nearest))} km dari kawah; ini aliran REGIONAL, bukan pengukuran di kawah.",
                     "en": f"No satellite wind vector within {int(min(nearest))} km of the vent; this is REGIONAL flow, not a crater measurement.",
-                    "plain_id": "Angin satelit terdekat berjarak ratusan kilometer dari kawah — ini gambaran wilayah luas, bukan titik persis.",
-                    "plain_en": "The nearest satellite winds are hundreds of kilometres from the crater — a wide-area picture, not a pinpoint."})
+                    "plain_id": "Angin satelit terdekat berjarak ratusan kilometer dari kawah—ini gambaran wilayah luas, bukan titik persis.",
+                    "plain_en": "The nearest satellite winds are hundreds of kilometres from the crater—a wide-area picture, not a pinpoint."})
             lowR = [l for l in layers_list if l.get("consistency_R") is not None
                     and l["consistency_R"] < 0.7 and l.get("relevant_today")]
             if lowR:
                 out.append({
                     "id": "Vektor satelit pada lapisan relevan tidak saling sepakat (R<0.7); arah lapisan tersebut tidak pasti.",
                     "en": "Satellite vectors in a relevant layer disagree (R<0.7); that layer's direction is uncertain.",
-                    "plain_id": "Untuk lapisan ini pengukuran satelit saling bertentangan — arahnya belum pasti.",
-                    "plain_en": "For this layer the satellite measurements disagree — its direction is not yet certain."})
+                    "plain_id": "Untuk lapisan ini pengukuran satelit saling bertentangan—arahnya belum pasti.",
+                    "plain_en": "For this layer the satellite measurements disagree—its direction is not yet certain."})
             agg = (verdict or {}).get("direction_corroboration", {}).get("agreement")
             if agg == "divergent":
                 out.append({
@@ -984,13 +984,13 @@ def build(args) -> int:
                 out.append({
                     "id": "Sebagian lintasan melewati sel hujan (open-meteo): deposisi basah diterapkan (Λ=1e-4/s per mm/h); titik biru = perpotongan hujan → interpretasi risiko ashfall.",
                     "en": "Part of the trajectory crosses rain cells (open-meteo): wet deposition applied (Λ=1e-4/s per mm/h); blue dots = rain crossings → ashfall-risk interpretation.",
-                    "plain_id": "Sebagian lintasan melewati hujan — sebagian abu bisa jatuh lebih dulu di sana.",
-                    "plain_en": "Part of the path crosses rain — some ash may fall out there first."})
+                    "plain_id": "Sebagian lintasan melewati hujan—sebagian abu bisa jatuh lebih dulu di sana.",
+                    "plain_en": "Part of the path crosses rain—some ash may fall out there first."})
             out.append({
-                "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); sebaran memakai σ²=σ0²+2Kt+(geser·t)² yang terkopel ke massa airborne Φ(t): ambang deteksi ikut menipis saat awan menyebar, sehingga lebar bisa naik lalu turun.",
+                "id": "Kecepatan endapan dikoreksi kepadatan udara v(h)=v0·√(ρ0/ρ(h)); sebaran memakai σ²=σ0²+2Kt+(geser·t)² yang mengikuti massa airborne Φ(t): ambang deteksi ikut menipis saat awan menyebar, sehingga lebar bisa naik lalu turun.",
                 "en": "Settling velocity density-corrected v(h)=v0·√(ρ0/ρ(h)); spread uses σ²=σ0²+2Kt+(shear·t)² coupled to the airborne mass Φ(t): the detection threshold dilutes as the cloud spreads, so the width can rise and then fall.",
-                    "plain_id": "Perhitungan memakai abu yang jatuh perlahan, menyebar, dan angin yang berubah theo ketinggian — dengan ketidakpastian yang jujur.",
-                    "plain_en": "The calculation accounts for ash settling slowly, spreading, and wind changing with height — with honest uncertainty."})
+                    "plain_id": "Perhitungan memakai abu yang jatuh perlahan, menyebar, dan angin yang berubah theo ketinggian—dengan ketidakpastian yang jujur.",
+                    "plain_en": "The calculation accounts for ash settling slowly, spreading, and wind changing with height—with honest uncertainty."})
             out.append({
                 "id": "ECMWF/GFS/ICON beresolusi ~9-25 km: sirkulasi lokal mesoscale (angin laut/darat, topografi) tidak tertangkap.",
                 "en": "ECMWF/GFS/ICON run at ~9-25 km grids: local mesoscale circulations (sea/land breeze, terrain flows) are not resolved.",

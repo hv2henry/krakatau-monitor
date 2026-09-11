@@ -11,15 +11,15 @@
 const I18N = {
   id: {
     title: "Pantau {volcano}",
-    subtitle: "Dasbor komunitas — data resmi + model sekunder",
+    subtitle: "Dasbor komunitas—data resmi + model sekunder",
     sec_status: "Status Aktivitas",
     sec_report: "Laporan Pengamatan Terakhir",
     sec_eruptions: "Kejadian Erupsi",
     sec_vona: "VONA (Penerbangan)",
-    sec_vaac: "Advisori Abu Vulkanik — Darwin VAAC",
+    sec_vaac: "Advisori Abu Vulkanik—Darwin VAAC",
     sec_sat: "Citra Satelit Harian",
     sec_model: "Model Arah Abu (Sekunder)",
-    src_model: "Himawari-9 + open-meteo — bukan data resmi",
+    src_model: "Himawari-9 + open-meteo—bukan data resmi",
     src_magma: 'Sumber: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_magma2: 'Sumber: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_vaac: 'Sumber: <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Bureau of Meteorology (Australia), ICAO VAAC</a>',
@@ -49,7 +49,7 @@ const I18N = {
     no_vona: "Tidak ada VONA pada umpan saat ini.",
     vaac_advisory: "Advisori",
     vaac_nil: "Tidak ada advisori aktif",
-    vaac_nil_body: "Darwin VAAC tidak menerbitkan advisori saat ini. <b>Ini BUKAN berarti tidak ada bahaya</b> — advisori hanya terbit bila abu teridentifikasi dan relevan bagi penerbangan. Untuk status erupsi, lihat MAGMA/PVMBG di atas.",
+    vaac_nil_body: "Darwin VAAC tidak menerbitkan advisori saat ini. <b>Ini BUKAN berarti tidak ada bahaya</b>—advisori hanya terbit bila abu teridentifikasi dan relevan bagi penerbangan. Untuk status erupsi, lihat MAGMA/PVMBG di atas.",
     vaac_stale: "Advisori untuk gunung lain aktif, tetapi tidak ada untuk {volcano}. Ketidakadaan advisori bukan berarti aman.",
     issued: "Terbit",
     next_adv: "Advisori berikutnya paling lambat",
@@ -70,9 +70,14 @@ const I18N = {
     map_envs: "Selubung per lapisan",
     map_union: "Selubung gabungan (di bawah puncak resmi)",
     map_union_all: "Selubung semua lapisan (worst-case)",
-    map_env: "selubung abu terdeteksi (terkopel massa)",
-    emission_line: "Umur awan {a} jam — diturunkan dari lebar polygon OBS Darwin ({w} km); sebaran awal & massa airborne mengikuti riwayat emisi.",
-    map_note: "Peta skematik — garis pantai Natural Earth. BUKAN untuk navigasi.",
+    map_tracks_upper: "Jalur di atas puncak resmi (worst-case)",
+    map_env: "selubung abu terdeteksi (mengikuti sisa massa abu di udara)",
+    map_env_w: "lebar maks {a} km → {b} km di +12 jam",
+    map_env_none: "< 0,5 km—di bawah ambang deteksi, menyatu dengan garis jalur",
+    map_union_hull: "batas luar worst-case (hull semua pita): {a} km²",
+    emission_line: "Umur awan {a} jam—diturunkan dari lebar polygon OBS Darwin ({w} km); sebaran awal & massa airborne mengikuti riwayat emisi.",
+    emission_capped: "Catatan: umur awan dicap pada batas model 48 jam—lebar polygon OBS ({w} km) melebihi yang bisa dijelaskan model; baca lebar selubung dengan hati-hati.",
+    map_note: "Peta skematik—garis pantai Natural Earth. BUKAN untuk navigasi.",
     sat_none: "Citra harian belum tersedia.",
     sec_loop: "Animasi Himawari-9 (Inframerah)",
     src_loop: 'Sumber: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
@@ -80,21 +85,21 @@ const I18N = {
     loop_cap: "Putar untuk melihat pergerakan awan/abu. Putih = puncak awan dingin/tinggi; gelap = permukaan hangat. Garis pantai tipis + titik merah = {volcano}.",
     loop_eruptions: "Tanda merah pada garis waktu = waktu erupsi menurut MAGMA/PVMBG.",
     model_plume_top: "Puncak awan abu resmi hari ini",
-    model_no_top: "Tidak ada puncak awan abu resmi hari ini — semua lapisan ditampilkan setara.",
+    model_no_top: "Tidak ada puncak awan abu resmi hari ini—semua lapisan ditampilkan setara.",
     model_relevant: "paling relevan hari ini",
     model_traj_kind: "Garis pergerakan memakai angin prakiraan yang berubah per jam ({kind}); varian angin-tetap tersedia di forecast_model.json.",
-    verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan — termasuk bila sumber mengandung pengulangan kalimat.",
+    verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan—termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
-    backtest_line: "Uji silak historis vs Darwin VAAC: rerata selisih sudut {m}° (n={n}).",
+    backtest_line: "Pemeriksaan ulang historis vs Darwin VAAC: rerata selisih sudut {m}° (n={n}).",
     caveats_title: "Catatan kejujuran:",
     no_data: "tidak ada data",
-    no_data_note: "No data = Himawari-9 tidak menangkap vektor angin di lapisan itu pada slot ini; jalurnya di peta murni angin Open-Meteo.",
+    no_data_note: 'Baris "tidak ada data": Himawari-9 tidak memiliki nilai vektor angin di lapisan tersebut saat data diambil; garis jalur di peta murni angin dari data Open-Meteo.',
     auto_note: "Model ini dipublikasikan OTOMATIS oleh jadwal 6-jam (jendela aktivitas menurun); tetap bawa catatan kejujuran di atas.",
-    src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
+    src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil—KESENJANGAN INI BUKAN berarti aktivitas menurun.",
     magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
     vaac_unreachable: "Darwin VAAC tidak terjangkau saat pembaruan terakhir; periksa langsung bom.gov.au untuk advisori terkini.",
-    loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA — wajar, bukan kesalahan data.",
+    loop_latency: "Frame tertinggal ±20–60 menit dari waktu nyata karena pemrosesan NASA—wajar, bukan kesalahan data.",
     loop_verified: "Waktu frame terverifikasi: grid citra 10-menit Himawari {grid} · slot citra ada di NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Klik untuk membuka tile sumber NASA frame ini (verifikasi mandiri)",
     map_need_network: "Peta interaktif butuh koneksi internet (tile © OpenStreetMap). Data poligon tetap dapat dibaca mesin dari berkas JSON di folder data/.",
@@ -109,7 +114,7 @@ const I18N = {
     model_conf: "keyakinan",
     model_traj: "Perkiraan posisi abu",
     model_show_map: "Tampilkan sebagai lapisan peta",
-    disclosure: '⚠️ <b>Model ini dihitung OTOMATIS</b> dari angin satelit Himawari-9 dan prakiraan open-meteo — <b>bisa tidak akurat</b>. Ini BUKAN keluaran PVMBG, BNPB, maupun Darwin VAAC. ketinggian dan arah abu dapat berubah cepat. Untuk keputusan apa pun, gunakan rilis resmi: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA/PVMBG</a>, <a href="https://www.bnpb.go.id" target="_blank" rel="noopener">BNPB/BPBD</a>, <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Darwin VAAC</a>.',
+    disclosure: '⚠️ <b>Model ini dihitung OTOMATIS</b> dari angin satelit Himawari-9 dan prakiraan open-meteo—<b>bisa tidak akurat</b>. Ini BUKAN keluaran PVMBG, BNPB, maupun Darwin VAAC. ketinggian dan arah abu dapat berubah cepat. Untuk keputusan apa pun, gunakan rilis resmi: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA/PVMBG</a>, <a href="https://www.bnpb.go.id" target="_blank" rel="noopener">BNPB/BPBD</a>, <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Darwin VAAC</a>.',
     hours_ago: (n) => `${n} jam lalu`,
     min_ago: (n) => `${n} menit lalu`,
     days_ago: (n) => `${n} hari lalu`,
@@ -117,15 +122,15 @@ const I18N = {
   },
   en: {
     title: "{volcano} Watch",
-    subtitle: "Community dashboard — official data + secondary model",
+    subtitle: "Community dashboard—official data + secondary model",
     sec_status: "Activity Status",
     sec_report: "Latest Observation Report",
     sec_eruptions: "Eruption Events",
     sec_vona: "VONA (Aviation)",
-    sec_vaac: "Volcanic Ash Advisory — Darwin VAAC",
+    sec_vaac: "Volcanic Ash Advisory—Darwin VAAC",
     sec_sat: "Daily Satellite Imagery",
     sec_model: "Ash Direction Model (Secondary)",
-    src_model: "Himawari-9 + open-meteo — not official data",
+    src_model: "Himawari-9 + open-meteo—not official data",
     src_magma: 'Source: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_magma2: 'Source: <a href="https://magma.esdm.go.id/v1/gunung-api/laporan" target="_blank" rel="noopener">MAGMA Indonesia/PVMBG</a>',
     src_vaac: 'Source: <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Bureau of Meteorology (Australia), ICAO VAAC</a>',
@@ -155,7 +160,7 @@ const I18N = {
     no_vona: "No VONA in the current feed.",
     vaac_advisory: "Advisory",
     vaac_nil: "No active advisory",
-    vaac_nil_body: "Darwin VAAC has no current advisory. <b>This does NOT mean no hazard</b> — advisories are issued only when ash is identifiable and relevant to aviation. For eruption status see MAGMA/PVMBG above.",
+    vaac_nil_body: "Darwin VAAC has no current advisory. <b>This does NOT mean no hazard</b>—advisories are issued only when ash is identifiable and relevant to aviation. For eruption status see MAGMA/PVMBG above.",
     vaac_stale: "Advisories are active for other volcanoes but none for {volcano}. Absence of an advisory is not an all-clear.",
     issued: "Issued",
     next_adv: "Next advisory no later than",
@@ -176,9 +181,14 @@ const I18N = {
     map_envs: "Per-layer envelopes",
     map_union: "Combined envelope (below the official top)",
     map_union_all: "All-layers envelope (worst case)",
+    map_tracks_upper: "Tracks above the official top (worst case)",
     map_env: "detectable-ash envelope (mass-coupled)",
-    emission_line: "Cloud age {a} h — derived from the Darwin OBS polygon width ({w} km); the initial spread and airborne mass follow the emission history.",
-    map_note: "Schematic map — Natural Earth coastlines. NOT for navigation.",
+    map_env_w: "max width {a} km → {b} km at +12 h",
+    map_env_none: "< 0.5 km—below the detection threshold, merged with the track line",
+    map_union_hull: "worst-case outer bound (hull of all bands): {a} km²",
+    emission_line: "Cloud age {a} h—derived from the Darwin OBS polygon width ({w} km); the initial spread and airborne mass follow the emission history.",
+    emission_capped: "Note: cloud age capped at the model's 48 h limit—the OBS polygon width ({w} km) exceeds what the model can explain; read envelope widths with care.",
+    map_note: "Schematic map—Natural Earth coastlines. NOT for navigation.",
     sat_none: "Daily imagery not available yet.",
     sec_loop: "Himawari-9 Animation (Infrared)",
     src_loop: 'Source: <a href="https://worldview.earthdata.nasa.gov" target="_blank" rel="noopener">NASA GIBS</a>/JMA Himawari-9 AHI Band 13',
@@ -186,21 +196,21 @@ const I18N = {
     loop_cap: "Press play to watch cloud/ash motion. White = cold/high cloud tops; dark = warm surface. Thin coastline + red dot = {volcano}.",
     loop_eruptions: "Red marks on the timeline = eruption times per MAGMA/PVMBG.",
     model_plume_top: "Official ash-cloud top today",
-    model_no_top: "No official ash-cloud top today — all layers shown equally.",
+    model_no_top: "No official ash-cloud top today—all layers shown equally.",
     model_relevant: "most relevant today",
     model_traj_kind: "Trajectories use hourly-evolving forecast wind ({kind}); a steady-wind variant ships in forecast_model.json.",
-    verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited — including where the source itself repeats a sentence.",
+    verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited—including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
     backtest_line: "Historical cross-check vs Darwin VAAC: mean angular difference {m}° (n={n}).",
     caveats_title: "Honesty notes:",
     no_data: "no data",
-    no_data_note: "No data = no Himawari-9 wind vectors in that layer this slot; its map track is Open-Meteo winds only.",
+    no_data_note: '"no data" rows: Himawari-9 had no wind-vector values for that layer at acquisition time; the track line on the map is Open-Meteo winds only.',
     auto_note: "This model was published AUTOMATICALLY by the 6-hourly schedule (decreasing-activity window); it still carries the honesty notes above.",
-    src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
+    src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data—THIS GAP DOES NOT mean activity has decreased.",
     magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
     vaac_unreachable: "Darwin VAAC was unreachable at the last rebuild; check bom.gov.au directly for the current advisory.",
-    loop_latency: "Frames lag real time by ±20–60 min due to NASA processing — expected, not a data error.",
+    loop_latency: "Frames lag real time by ±20–60 min due to NASA processing—expected, not a data error.",
     loop_verified: "Frame times verified: Himawari 10-min imaging grid {grid} · imaging slot present on NOAA S3 {noaa} ({slot}).",
     loop_verify_hint: "Click to open NASA's source tile for this frame (self-verification)",
     map_need_network: "Map library failed to load: site/vendor/leaflet.js is missing and backup CDNs are unreachable. Check the site/vendor/ upload - the rest of the dashboard works normally.",
@@ -215,7 +225,7 @@ const I18N = {
     model_conf: "confidence",
     model_traj: "Projected ash positions",
     model_show_map: "Show as map layer",
-    disclosure: '⚠️ <b>This model is computed AUTOMATICALLY</b> from Himawari-9 satellite winds and open-meteo forecasts — <b>it can be inaccurate</b>. It is NOT output from PVMBG, BNPB or Darwin VAAC. Ash height and direction can change quickly. For any decision use official releases: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA/PVMBG</a>, <a href="https://www.bnpb.go.id" target="_blank" rel="noopener">BNPB/BPBD</a>, <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Darwin VAAC</a>.',
+    disclosure: '⚠️ <b>This model is computed AUTOMATICALLY</b> from Himawari-9 satellite winds and open-meteo forecasts—<b>it can be inaccurate</b>. It is NOT output from PVMBG, BNPB or Darwin VAAC. Ash height and direction can change quickly. For any decision use official releases: <a href="https://magma.esdm.go.id" target="_blank" rel="noopener">MAGMA/PVMBG</a>, <a href="https://www.bnpb.go.id" target="_blank" rel="noopener">BNPB/BPBD</a>, <a href="https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml" target="_blank" rel="noopener">Darwin VAAC</a>.',
     hours_ago: (n) => `${n} h ago`,
     min_ago: (n) => `${n} min ago`,
     days_ago: (n) => `${n} d ago`,
@@ -296,8 +306,8 @@ function applyI18n() {
   const lt = $("#btn-lang-txt");
   if (lt) lt.textContent = LANG === "id" ? "EN" : "ID";
   document.title = LANG === "id"
-    ? `Pantau Gunung ${VOLC.name} — Dasbor Komunitas`
-    : `${VOLC.name} Watch — Community Dashboard`;
+    ? `Pantau Gunung ${VOLC.name}—Dasbor Komunitas`
+    : `${VOLC.name} Watch—Community Dashboard`;
 }
 
 function renderStatus() {
@@ -468,7 +478,7 @@ function renderModel() {
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
   box.innerHTML = `
     <div class="kv"><span class="k">${T("model_approved")}</span>
-      <span class="v"><b>${esc(MODEL.approved_by)}</b> — ${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})</span></div>
+      <span class="v"><b>${esc(MODEL.approved_by)}</b>—${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})</span></div>
     ${MODEL.auto_published ? `<p class="stamp">${T("auto_note")}</p>` : ""}
     <div class="kv"><span class="k">${T("model_computed")}</span><span class="v">${fmtWib(MODEL.computed_utc)}</span></div>
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
@@ -479,8 +489,10 @@ function renderModel() {
     ${MODEL.envelope_emission && MODEL.envelope_emission.emission_age_h != null ? `<p class="stamp">${T("emission_line")
       .replace("{a}", MODEL.envelope_emission.emission_age_h.toFixed(1))
       .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
+    ${(MODEL.envelope_emission && /capped/i.test(MODEL.envelope_emission.note || "")) ? `<p class="stamp">${T("emission_capped")
+      .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
     ${pt ? `<div class="callout"><b>${T("model_plume_top")}:</b>
-      ${esc(LANG === "id" ? pt.human_id : pt.human_en)} — ${esc(pt.source)}</div>`
+      ${esc(LANG === "id" ? pt.human_id : pt.human_en)}—${esc(pt.source)}</div>`
       : `<p class="stamp">${T("model_no_top")}</p>`}
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
     <table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th><th></th></tr></thead>
@@ -615,8 +627,8 @@ function renderLoop() {
    dragging bug, and a native collapsible layer control. Vectors still render
    if tiles cannot load (offline preview), just without basemap. */
 const MAP = { el: null, control: null, groups: {},
-  on: { obs: true, f6: true, f12: false, f18: false,
-        tracks: true, envs: false, union: true, unionall: false } };
+  on: { obs: true, f6: true, f12: false, f18: false, tracks: true, tracks_upper: false,
+        envs: false, union: true, unionall: false } };
 let VENT = [-6.102, 105.423];   // vent marker; refreshed from the registry in loadAll()
 const PCOL = { obs: "#9B2B1A", f6: "#d97706", f12: "#b45309", f18: "#78716c" };
 
@@ -710,41 +722,89 @@ function rebuildMapLayers() {
   if (MODEL && MODEL.status === "approved") {
     const ls = (MODEL.layers || []).filter((l) => l.trajectory && l.trajectory.length > 1);
     if (ls.length) {
-      // v2.3: the model is no longer one monolithic overlay. Three separate
-      // toggle families — tracks / per-layer envelopes / combined hulls — so
-      // visitors can compare shapes without the combined hull covering the
-      // rest of the map, and hide layers they do not care about.
+      // The model renders as separate toggle families: tracks / per-layer
+      // envelopes / combined envelope / worst-case views, so visitors can
+      // compare shapes without one family covering the rest of the map.
+      // UI polish: the DEFAULT "tracks" family now carries only bands at or
+      // below the official cloud top (same rule as the combined envelope);
+      // tracks above the top describe ash the bulletin says is not there
+      // today, so they moved to their own worst-case toggle, off by default.
+      const topKm = MODEL.plume_top && MODEL.plume_top.km != null ? MODEL.plume_top.km : null;
+      const bandAlt = (l) => (l.alt_km != null ? l.alt_km
+        : (l.nom_alt_km != null ? l.nom_alt_km : null));
+      const belowTop = (l) => {
+        if (topKm == null) return true;          // no official top: all equal
+        const a = bandAlt(l);
+        return a == null || a <= topKm + 0.5;
+      };
+      // Honest per-band ring geometry (max width, end width, area) from the
+      // [lon, lat] envelope ring: powers the combined hover tooltip and the
+      // below-top combined envelope. Ring = left[] + right[] reversed, so
+      // ring[k] pairs with ring[len-1-k].
+      const ringStats = (env) => {
+        if (!Array.isArray(env) || env.length < 4) return null;
+        const n = Math.floor(env.length / 2);
+        const cf = Math.cos(-6.1 * Math.PI / 180);
+        let wMax = 0, wEnd = 0, s = 0;
+        for (let k = 0; k < n; k++) {
+          const a = env[k], b = env[2 * n - 1 - k];
+          const w = 0.5 * Math.hypot((a[0] - b[0]) * 111.32 * cf, (a[1] - b[1]) * 110.57);
+          if (w > wMax) wMax = w;
+          if (k === n - 1) wEnd = w;
+        }
+        for (let i = 0; i < env.length; i++) {
+          const p = env[i], q = env[(i + 1) % env.length];
+          s += p[0] * q[1] - q[0] * p[1];
+        }
+        return { wMax, wEnd, area: Math.abs(s) / 2 * 110.57 * 111.32 * cf };
+      };
+      // One COMBINED tooltip per band (track + envelope state). Hovering a
+      // thin/degenerate ring used to flip between two different tooltips
+      // (track info vs envelope info); identical content on both the line
+      // and the ring makes that flip invisible, whatever layer wins the hit.
+      const envLine = (l) => {
+        const st = ringStats(l.envelope);
+        if (!st || st.wMax < 0.5) return `${T("map_env")}: ${T("map_env_none")}`;
+        return `${T("map_env")}: ${T("map_env_w")
+          .replace("{a}", st.wMax.toFixed(1)).replace("{b}", st.wEnd.toFixed(1))}`;
+      };
       const trackParts = [];
+      const upperParts = [];
       const envParts = [];
       ls.forEach((l, i) => {
         const c = BAND_COLORS[i % 6];
         const e = l.trajectory[l.trajectory.length - 1];
         const nwpOnly = l.trajectory_kind === "nwp-only";   // no Himawari vectors this slot
-        const lab = l.toward_deg != null
+        const lab = (l.toward_deg != null
           ? `${l.layer} → ${esc(l.toward_compass)} ${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}`
-          : `${l.layer} → ${LANG === "id" ? "model cuaca saja" : "weather model only"}`;
-        trackParts.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
+          : `${l.layer} → ${LANG === "id" ? "model cuaca saja" : "weather model only"}`)
+          + `<br>${envLine(l)}`;
+        const dest = belowTop(l) ? trackParts : upperParts;
+        dest.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
           { color: c, weight: 2.6, opacity: nwpOnly ? 0.7 : 0.9,
             dashArray: nwpOnly ? "5 7" : null }).bindTooltip(lab));
-        trackParts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
+        dest.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
           .bindTooltip(`+${e[2]}h · ${l.layer}`));
         if (l.envelope && l.envelope.length > 2) {
-          // envelope rings are [lon, lat] (GeoJSON order) — Leaflet wants [lat, lon]
+          // envelope rings are [lon, lat] (GeoJSON order); Leaflet wants [lat, lon]
           envParts.push(L.polygon(l.envelope.map((pt) => [pt[1], pt[0]]),
             { color: c, weight: 0.8, fillColor: c,
               fillOpacity: 0.07, dashArray: "2 4" })
-            .bindTooltip(`${l.layer}: ${T("map_env")}`));
+            .bindTooltip(lab));               // same combined content as the track
         }
         Object.entries(l.settling_classes || {}).forEach(([cn, obj]) => {
+          // classes whose mass has fully settled get no marker: a dot for ash
+          // that has already landed is visual noise, not information
+          if (obj.mass_remaining != null && obj.mass_remaining < 0.01) return;
           const pts = obj.pts || obj;
           const ce = pts[pts.length - 1];
           if (!ce || ce[0] == null) return;
-          trackParts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
+          dest.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
             fillColor: "#fff", fillOpacity: 0.9 })
             .bindTooltip(`${cn} ash: +${ce[2]}h, alt ${ce[3]} km` +
               (obj.mass_remaining != null ? `, mass left ${(obj.mass_remaining * 100).toFixed(0)}%` : "")));
           (obj.wet_points || []).forEach((w) => {
-            trackParts.push(L.circleMarker([w.lat, w.lon], { radius: 3.4, color: "#2563eb",
+            dest.push(L.circleMarker([w.lat, w.lon], { radius: 3.4, color: "#2563eb",
               weight: 1.2, fillColor: "#2563eb", fillOpacity: 0.55 })
               .bindTooltip(`rain cell ${w.rate_mm_h} mm/h at +${w.hours}h (wet deposition)`));
           });
@@ -762,9 +822,29 @@ function rebuildMapLayers() {
         named[label] = g;
       };
       mkGroup("tracks", trackParts, T("map_tracks"));
+      if (upperParts.length) mkGroup("tracks_upper", upperParts, T("map_tracks_upper"));
       mkGroup("envs", envParts, T("map_envs"));
+      // Combined envelope, drawn HONESTLY: the actual per-band rings of the
+      // bands at/below the official top, not their convex hull. On quiet days
+      // the hull bridged empty space between diverging bands (about 47x the
+      // real ring area), which read like a fabricated corridor. The hull
+      // number survives as the worst-case figure in the tooltip.
       const un = MODEL.envelope_union;
-      if (un && un.polygon && un.polygon.length > 2) {
+      const unBands = ls.filter((l) => belowTop(l) && l.envelope && l.envelope.length > 2);
+      if (unBands.length) {
+        const hullLine = un && un.area_km2
+          ? `<br>${T("map_union_hull").replace("{a}", Math.round(un.area_km2).toLocaleString())}` : "";
+        mkGroup("union", unBands.map((l) => {
+          const st = ringStats(l.envelope);
+          return L.polygon(l.envelope.map((pt) => [pt[1], pt[0]]),
+            { color: "#111827", weight: 1.8, fillColor: "#6b7280", fillOpacity: 0.10,
+              dashArray: "6 3" })
+            .bindTooltip(`${T("map_union")} · ${l.layer}` +
+              (st && st.area >= 1 ? ` · ${Math.round(st.area).toLocaleString()} km²` : "") + hullLine);
+        }), T("map_union"));
+      } else if (un && un.polygon && un.polygon.length > 2) {
+        // legacy data path: no per-band rings on this run, fall back to the
+        // stored hull polygon so the toggle never silently disappears
         mkGroup("union", [L.polygon(un.polygon.map((pt) => [pt[1], pt[0]]),
           { color: "#111827", weight: 2.2, fillColor: "#6b7280", fillOpacity: 0.08,
             dashArray: "6 3" })

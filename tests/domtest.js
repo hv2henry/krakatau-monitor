@@ -84,6 +84,14 @@ setTimeout(() => {
   const mh = (cache["#card-model"] || {}).innerHTML || "";
   if (/Vektor abu|Ash vector/.test(mh)) { console.error("ASH-VECTOR CALLOUT STILL RENDERED"); process.exit(1); }
   if (/class="nodata"/.test(mh) && !/Open-Meteo/.test(mh)) { console.error("NO-DATA NOTE MISSING"); process.exit(1); }
+  // UI-polish guards: i18n decisions that must not regress.
+  //  * backtest label typo ("Uji silak") and the stiff "terkopel" wording;
+  //  * spaced em-dashes in app.js-rendered templates (site style: no spaces);
+  //  * the no-data footnote must use the agreed sentence (not "No data =").
+  if (/Uji silak/.test(mh)) { console.error("OLD BACKTEST LABEL (typo) STILL PRESENT"); process.exit(1); }
+  if (/terkopel/.test(mh)) { console.error("OLD STIFF WORDING 'terkopel' STILL PRESENT"); process.exit(1); }
+  if (/<\/b> — |dpl — Darwin|asl — Darwin/.test(mh)) { console.error("SPACED EM-DASH STILL RENDERED IN TEMPLATE"); process.exit(1); }
+  if (/class="nodata"/.test(mh) && !/(nilai vektor angin|wind-vector values)/.test(mh)) { console.error("NEW NO-DATA SENTENCE MISSING"); process.exit(1); }
   console.log("domtest: all sections rendered");
   process.exit(0);
 }, 700);

@@ -17,3 +17,4 @@
 {"t": "2026-09-11T04:00Z", "model_toward": 259.3, "model_unc": 28.4, "vaac_toward": 270}
 {"t": "2026-09-11T06:00Z", "model_toward": 248.0, "model_unc": 30.7, "vaac_toward": 225}
 {"t": "2026-09-11T09:00Z", "model_toward": 257.8, "model_unc": 42.7, "vaac_toward": 225, "obs_width_km": 90.1, "emission_age_h": 8.28, "emission_source": "OBS polygon (Darwin advisory)", "fcst_widths": [{"h": 6, "vaac_km": 100.5, "model_km": 104.6}, {"h": 12, "vaac_km": 96.5, "model_km": 112.4}, {"h": 18, "vaac_km": 105.6, "model_km": null}]}
+{"t": "2026-09-11T10:00Z", "model_toward": 252.3, "model_unc": 54.4, "vaac_toward": 225, "obs_width_km": 90.1, "emission_age_h": 8.28, "emission_source": "OBS polygon (Darwin advisory)", "fcst_widths": [{"h": 6, "vaac_km": 100.5, "model_km": 104.6}, {"h": 12, "vaac_km": 96.5, "model_km": 112.4}, {"h": 18, "vaac_km": 105.6, "model_km": null}]}

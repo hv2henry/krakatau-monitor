@@ -43,6 +43,10 @@ from datetime import datetime, timedelta, timezone
 import volcano_monitor
 import darwin_vaac
 import validate as V
+try:  # pure hull helper from the model module (numpy is in requirements.txt)
+    from ash_transport import union_envelope
+except Exception:  # noqa: BLE001
+    union_envelope = None
 import volcanoes
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -579,6 +583,46 @@ def archive_run(embed, vaac, slug: str) -> None:
     print(f"[build] archived: model-{stamp}, vaac-{stamp}, graphics={len(gfxs)}")
 
 
+def dual_union(cand: dict, top_km):
+    """v2.3: two combined envelopes instead of one monolithic hull.
+
+    Returns (union_top, union_all):
+      union_top — hull of the bands at/below the OFFICIAL cloud top
+        (+0.5 km grace, the same rule as the table's relevance star):
+        the shape comparable to what Darwin actually draws, because VAAC
+        only draws layers where ash is observed/forecast.
+        None when there is no official top, or when nothing gets filtered
+        (high cloud top / quiet day) — then one hull tells the whole story.
+      union_all — the model's own hull over every band 0-16 km, i.e. the
+        worst-case view. The site only carries it when it differs from
+        union_top, so visitors never see two identical polygons.
+    """
+    union_all = cand.get("envelope_union")
+    envs = cand.get("envelopes") or {}
+    if union_envelope is None or not envs:
+        return None, union_all
+    if union_all is None:
+        # older cached model runs predate the union field — rebuild it from
+        # the per-band envelopes so the worst-case hull is never lost
+        union_all = union_envelope(envs)
+    if top_km is None:
+        return None, union_all
+
+    def _alt_km(row):
+        a = row.get("alt_km") or row.get("mean_altitude_km")
+        if a:
+            return float(a)
+        pr = row.get("pressure_range") or [750, 900]
+        return 44.3308 * (1 - (((pr[0] + pr[1]) / 2) / 1013.25) ** 0.190284)
+
+    keep = {r["layer"]: envs[r["layer"]]
+            for r in cand.get("observed_wind_profile", [])
+            if r.get("layer") in envs and _alt_km(r) <= float(top_km) + 0.5}
+    if not keep or set(keep) == set(envs):
+        return None, union_all
+    return union_envelope(keep), union_all
+
+
 def build(args) -> int:
     embed = {}
     # ---- resolve the target volcano from the registry (src/volcanoes.py) ----
@@ -1078,6 +1122,11 @@ def build(args) -> int:
                 "relevant_today": bool(plume_top and
                                        row["mean_altitude_km"] <= plume_top["km"] + 0.5),
             })
+        # v2.3: dual combined envelope — "at/below the official top" (the
+        # VAAC-comparable shape) plus the all-bands worst case, so the map
+        # can show both under separate toggles instead of one hull that
+        # covers layers where there is provably no ash today
+        union_top, union_all = dual_union(cand, plume_top["km"] if plume_top else None)
         model = {
             "schema_version": 1,
             "status": "candidate",
@@ -1105,7 +1154,10 @@ def build(args) -> int:
             # reports on its own JSON path
             "envelope_model": cand.get("envelope_model"),
             "envelope_emission": cand.get("envelope_emission"),
-            "envelope_union": cand.get("envelope_union"),
+            "envelope_union": union_top or union_all,
+            "envelope_union_all": union_all if union_top else None,
+            "envelope_union_rule": ("bands <= official top + 0.5 km"
+                                    if union_top else "all bands"),
             "sources": ["Himawari-9 AMV (NOAA S3, JMA product)", "open-meteo pressure-level winds"],
         }
         cp = os.path.join(DD, "forecast_candidate.json")

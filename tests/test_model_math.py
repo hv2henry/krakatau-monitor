@@ -361,6 +361,40 @@ NXT ADVISORY: NO LATER THAN 20260910/1700Z="""
     check("empty vaac/cand -> empty ledger entry",
           bs.width_ledger_entry(None, None) == {})
 
+    # 24) v2.3 dual union: the "VAAC-comparable" hull only carries bands
+    #     at/below the official cloud top (+0.5 km grace); the all-bands
+    #     worst-case hull is only offered when the two actually differ
+    _LO = [[105.0, -6.10], [105.9, -6.05], [105.5, -5.60]]
+    _HI = [[105.0, -4.00], [106.0, -4.00], [105.5, -3.40]]
+    _cand23 = {
+        "envelopes": {"~0-1 km surface": _LO, "~1-2 km ASH-CRITICAL": _LO,
+                      "~2-4 km ASH-CRITICAL": _HI, "~9-16 km upper": _HI},
+        "envelope_union": {"polygon": _HI + _LO, "n_bands": 4, "area_km2": 9999.0},
+        "observed_wind_profile": [
+            {"layer": "~0-1 km surface", "alt_km": 0.1},
+            {"layer": "~1-2 km ASH-CRITICAL", "alt_km": 1.5},
+            {"layer": "~2-4 km ASH-CRITICAL", "alt_km": 3.3},
+            {"layer": "~9-16 km upper", "pressure_range": [100, 300]},  # no alt -> pressure
+        ],
+    }
+    _ut, _ua = bs.dual_union(_cand23, 1.52)
+    check("dual union: bands above the official top stay out of the hull",
+          _ut is not None and _ut["n_bands"] == 2
+          and set(_ut["bands"]) == {"~0-1 km surface", "~1-2 km ASH-CRITICAL"}
+          and _ua is _cand23["envelope_union"], str(_ut and _ut.get("bands")))
+    _lat_max = max(p[1] for p in (_ut or {}).get("polygon", [[0, 0]]))
+    check("dual union: filtered hull is geometrically smaller (no high vertex)",
+          _lat_max < -5.0, str(_lat_max))
+    _ut2, _ua2 = bs.dual_union(_cand23, 20.0)
+    check("dual union: top above every band -> nothing filtered, one hull",
+          _ut2 is None and _ua2 is _cand23["envelope_union"])
+    _ut3, _ua3 = bs.dual_union(_cand23, None)
+    check("dual union: no official top -> all-bands hull only",
+          _ut3 is None and _ua3 is _cand23["envelope_union"])
+    _ut4, _ua4 = bs.dual_union({}, None)
+    check("dual union: empty candidate -> both hulls None",
+          _ut4 is None and _ua4 is None)
+
     # 23) validate.py gate B: envelope sanity on the v2.1 JSON contract
     _ok = V.gate_sanity_envelope({
         "trajectories_settling": {"~0-1 km surface": {"envelope": {

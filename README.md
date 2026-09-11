@@ -60,8 +60,10 @@ labelled as secondary. Highlights of the current model version:
 - **Emission-history-aware start:** the model reads the age of the cloud
   from the observed polygon width instead of assuming the ash was emitted
   at the analysis time.
-- **Multi-band union hull:** a combined envelope across all height bands,
-  comparable to how Darwin's multi-layer polygons are drawn.
+- **Dual union hull:** a combined envelope across height bands at/below the
+  official cloud top — the shape comparable to Darwin's multi-layer
+  polygons — plus an opt-in all-bands worst-case hull on the map, where
+  tracks, per-layer envelopes and hulls are separate toggles.
 - **Honesty plumbing:** every model run passes sanity gates before it can
   be published, auto-published runs must have zero hard failures, caveats
   travel with the data onto the page, and a public backtest ledger tracks

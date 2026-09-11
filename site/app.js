@@ -66,8 +66,10 @@ const I18N = {
     motion: "Gerakan",
     valid: "Berlaku",
     map_obs: "VAAC teramati",
-    map_model: "Model sekunder (Himawari-9 + open-meteo)",
-    map_union: "Selubung gabungan (hull semua lapisan)",
+    map_tracks: "Jalur model sekunder",
+    map_envs: "Selubung per lapisan",
+    map_union: "Selubung gabungan (di bawah puncak resmi)",
+    map_union_all: "Selubung semua lapisan (worst-case)",
     map_env: "selubung abu terdeteksi (terkopel massa)",
     emission_line: "Umur awan {a} jam — diturunkan dari lebar polygon OBS Darwin ({w} km); sebaran awal & massa airborne mengikuti riwayat emisi.",
     map_note: "Peta skematik — garis pantai Natural Earth. BUKAN untuk navigasi.",
@@ -84,20 +86,10 @@ const I18N = {
     verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan — termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
-    plume_vec: "Vektor abu pada puncak resmi ({h}): menuju {t}° ±{u} · {s} m/s (blend AMV+NWP)",
     backtest_line: "Uji silak historis vs Darwin VAAC: rerata selisih sudut {m}° (n={n}).",
-    corr_line: "Koroborasi arah antar-sumber: {state} (selisih terburuk {w}°).",
     caveats_title: "Catatan kejujuran:",
-    blend_caption: "Baris lapisan di bawah adalah INPUT; vektor campuran pada puncak resmi ditampilkan di atas.",
     no_data: "tidak ada data",
-    corr_line: "Pembanding arah — model kami: {a} · Darwin VAAC: {b} · {state} (selisih {w}°).",
-    corr_no_vaac: "Pembanding arah — model kami: {a} · Darwin VAAC: tidak ada advisori hari ini.",
-    corr_state_corroborated: "sepakat",
-    corr_state_divergent: "tidak sepenuhnya sepakat",
-    corr_state_conflicting: "bertentangan",
-    corr_state_single_source: "baru satu sumber",
-    corr_state_none: "—",
-    ash_vec_expl: "Vektor abu = perkiraan arah & kecepatan angkutan abu pada ketinggian puncak awan resmi, dari gabungan angin satelit (Himawari-9) dan model cuaca.",
+    no_data_note: "No data = Himawari-9 tidak menangkap vektor angin di lapisan itu pada slot ini; jalurnya di peta murni angin Open-Meteo.",
     auto_note: "Model ini dipublikasikan OTOMATIS oleh jadwal 6-jam (jendela aktivitas menurun); tetap bawa catatan kejujuran di atas.",
     src_err_banner: "Sebagian sumber resmi tidak terjangkau saat pembaruan terakhir ({list}). Bagian terkait menampilkan data terakhir yang berhasil diambil — KESENJANGAN INI BUKAN berarti aktivitas menurun.",
     magma_unreachable: "MAGMA/PVMBG tidak terjangkau saat pembaruan terakhir; kartu ini menampilkan data terakhir yang berhasil diambil.",
@@ -180,8 +172,10 @@ const I18N = {
     motion: "Motion",
     valid: "Valid",
     map_obs: "VAAC observed",
-    map_model: "Secondary model (Himawari-9 + open-meteo)",
-    map_union: "Combined envelope (hull of all layers)",
+    map_tracks: "Secondary model tracks",
+    map_envs: "Per-layer envelopes",
+    map_union: "Combined envelope (below the official top)",
+    map_union_all: "All-layers envelope (worst case)",
     map_env: "detectable-ash envelope (mass-coupled)",
     emission_line: "Cloud age {a} h — derived from the Darwin OBS polygon width ({w} km); the initial spread and airborne mass follow the emission history.",
     map_note: "Schematic map — Natural Earth coastlines. NOT for navigation.",
@@ -198,20 +192,10 @@ const I18N = {
     verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited — including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
-    plume_vec: "Ash vector at the official cloud top ({h}): toward {t}° ±{u} · {s} m/s (AMV+NWP blend)",
     backtest_line: "Historical cross-check vs Darwin VAAC: mean angular difference {m}° (n={n}).",
-    corr_line: "Cross-source direction corroboration: {state} (worst disagreement {w}°).",
     caveats_title: "Honesty notes:",
-    blend_caption: "The layer rows below are INPUTS; the blended vector at the official cloud top is shown above.",
     no_data: "no data",
-    corr_line: "Direction cross-check — our model: {a} · Darwin VAAC: {b} · {state} ({w}° apart).",
-    corr_no_vaac: "Direction cross-check — our model: {a} · Darwin VAAC: no advisory today.",
-    corr_state_corroborated: "agree",
-    corr_state_divergent: "not fully agreeing",
-    corr_state_conflicting: "conflicting",
-    corr_state_single_source: "one source only",
-    corr_state_none: "—",
-    ash_vec_expl: "Ash vector = estimated ash transport direction & speed at the official cloud-top height, from blended satellite winds (Himawari-9) and weather models.",
+    no_data_note: "No data = no Himawari-9 wind vectors in that layer this slot; its map track is Open-Meteo winds only.",
     auto_note: "This model was published AUTOMATICALLY by the 6-hourly schedule (decreasing-activity window); it still carries the honesty notes above.",
     src_err_banner: "Some official sources were unreachable at the last rebuild ({list}). Affected sections show the last successfully fetched data — THIS GAP DOES NOT mean activity has decreased.",
     magma_unreachable: "MAGMA/PVMBG was unreachable at the last rebuild; this card shows the last successfully fetched data.",
@@ -470,12 +454,16 @@ function renderModel() {
     const stats = l.data
       ? `R=${l.consistency_R.toFixed(2)}, n=${l.n_vectors}, ${T("model_conf")}: ${esc(l.confidence || "?")}`
       : "—";
-    return `<tr${l.data ? "" : ' class="nodata"'}>
+    const gapTitle = l.data ? "" :
+      ` title="${esc((LANG === "id" ? l.note_id : l.note_en) || "")}"`;
+    return `<tr${l.data ? "" : ` class="nodata"${gapTitle}`}>
       <td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${c};margin-right:7px"></span>${esc(l.layer)}${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
       <td>${alt}</td>
       <td>${motion}</td>
       <td class="stamp">${stats}</td></tr>`;
   }).join("");
+  // v2.3: one clear explanation of what a "no data" row means, right under the table
+  const hasGap = srcRows.some((l) => !(l.data !== undefined ? !!l.data : l.toward_deg != null));
   const pt = MODEL.plume_top;
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
   box.innerHTML = `
@@ -486,23 +474,6 @@ function renderModel() {
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
       hard_failures=${MODEL.validation.hard_failures} · agreement=${esc(MODEL.validation.direction_agreement)} ·
       occurrence=[${(MODEL.validation.occurrence_sources || []).map(esc).join(", ")}]</span></div>
-    ${MODEL.plume_vector ? `<div class="callout">${T("plume_vec")
-      .replace("{h}", esc(LANG === "id" ? (pt && pt.human_id) || "?" : (pt && pt.human_en) || "?"))
-      .replace("{t}", MODEL.plume_vector.toward_deg)
-      .replace("{u}", MODEL.plume_vector.uncertainty_deg)
-      .replace("{s}", MODEL.plume_vector.speed_ms)}</div>
-      <p class="stamp">${T("ash_vec_expl")}</p>
-      ${MODEL.plume_vector ? (MODEL.vaac_motion ? `<p class="stamp">${(() => {
-        const diff = Math.abs((MODEL.plume_vector.toward_deg - MODEL.vaac_motion.deg + 540) % 360 - 180);
-        const st = diff <= 45 ? "corroborated" : diff <= 90 ? "divergent" : "conflicting";
-        return T("corr_line")
-          .replace("{a}", `${MODEL.plume_vector.toward_deg.toFixed(0)}° ±${MODEL.plume_vector.uncertainty_deg}°`)
-          .replace("{b}", `${MODEL.vaac_motion.compass} (${MODEL.vaac_motion.deg}°)`)
-          .replace("{state}", T("corr_state_" + st))
-          .replace("{w}", diff.toFixed(0));
-      })()}</p>` : `<p class="stamp">${T("corr_no_vaac")
-        .replace("{a}", `${MODEL.plume_vector.toward_deg.toFixed(0)}° ±${MODEL.plume_vector.uncertainty_deg}°`)}</p>`) : ""}` : ""}
-    ${MODEL.plume_vector ? `<p class="stamp">${T("blend_caption")}</p>` : ""}
     ${MODEL.backtest ? `<p class="stamp">${T("backtest_line")
       .replace("{m}", MODEL.backtest.mean_abs_deg).replace("{n}", MODEL.backtest.n)}</p>` : ""}
     ${MODEL.envelope_emission && MODEL.envelope_emission.emission_age_h != null ? `<p class="stamp">${T("emission_line")
@@ -514,6 +485,7 @@ function renderModel() {
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
     <table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>
+    ${hasGap ? `<p class="stamp" style="margin-top:6px">${T("no_data_note")}</p>` : ""}
     <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")} · ${T("star_note")}</p>
 `;
 }
@@ -642,7 +614,9 @@ function renderLoop() {
    real coastlines for free, proper mobile gestures, no text-selection-while-
    dragging bug, and a native collapsible layer control. Vectors still render
    if tiles cannot load (offline preview), just without basemap. */
-const MAP = { el: null, control: null, groups: {}, on: { obs: true, f6: true, f12: false, f18: false, model: false } };
+const MAP = { el: null, control: null, groups: {},
+  on: { obs: true, f6: true, f12: false, f18: false,
+        tracks: true, envs: false, union: true, unionall: false } };
 let VENT = [-6.102, 105.423];   // vent marker; refreshed from the registry in loadAll()
 const PCOL = { obs: "#9B2B1A", f6: "#d97706", f12: "#b45309", f18: "#78716c" };
 
@@ -736,36 +710,27 @@ function rebuildMapLayers() {
   if (MODEL && MODEL.status === "approved") {
     const ls = (MODEL.layers || []).filter((l) => l.trajectory && l.trajectory.length > 1);
     if (ls.length) {
-      const parts = [];
-      const pv = MODEL.plume_vector;
-      if (pv && pv.uncertainty_deg) {
-        // direction wedge: the honest shape of an uncertain forecast
-        const R = 1.2;
-        const a0 = (pv.toward_deg - pv.uncertainty_deg - 90) * Math.PI / 180;
-        const a1 = (pv.toward_deg + pv.uncertainty_deg - 90) * Math.PI / 180;
-        const pts2 = [[VENT[0], VENT[1]]];
-        for (let k = 0; k <= 12; k++) {
-          const a = a0 + ((a1 - a0) * k) / 12;
-          const east = Math.sin(a) * R, north = Math.cos(a) * R;
-          pts2.push([VENT[0] + north, VENT[1] + east]);
-        }
-        parts.push(L.polygon(pts2, { color: "#9B2B1A", weight: 1, fillColor: "#9B2B1A",
-          fillOpacity: 0.10, dashArray: "3 3" })
-          .bindTooltip(`${T("plume_vec").split(":")[0]}: ${pv.toward_deg}° ±${pv.uncertainty_deg}°`));
-      }
+      // v2.3: the model is no longer one monolithic overlay. Three separate
+      // toggle families — tracks / per-layer envelopes / combined hulls — so
+      // visitors can compare shapes without the combined hull covering the
+      // rest of the map, and hide layers they do not care about.
+      const trackParts = [];
+      const envParts = [];
       ls.forEach((l, i) => {
         const c = BAND_COLORS[i % 6];
         const e = l.trajectory[l.trajectory.length - 1];
+        const nwpOnly = l.trajectory_kind === "nwp-only";   // no Himawari vectors this slot
         const lab = l.toward_deg != null
           ? `${l.layer} → ${esc(l.toward_compass)} ${l.toward_deg.toFixed(0)}°${l.uncertainty_deg ? " ±" + l.uncertainty_deg + "°" : ""}`
           : `${l.layer} → ${LANG === "id" ? "model cuaca saja" : "weather model only"}`;
-        parts.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
-          { color: c, weight: 2.6, opacity: 0.9 }).bindTooltip(lab));
-        parts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
+        trackParts.push(L.polyline(l.trajectory.map((pt) => [pt[0], pt[1]]),
+          { color: c, weight: 2.6, opacity: nwpOnly ? 0.7 : 0.9,
+            dashArray: nwpOnly ? "5 7" : null }).bindTooltip(lab));
+        trackParts.push(L.circleMarker([e[0], e[1]], { radius: 4, color: c, fillColor: c, fillOpacity: 1 })
           .bindTooltip(`+${e[2]}h · ${l.layer}`));
         if (l.envelope && l.envelope.length > 2) {
           // envelope rings are [lon, lat] (GeoJSON order) — Leaflet wants [lat, lon]
-          parts.push(L.polygon(l.envelope.map((pt) => [pt[1], pt[0]]),
+          envParts.push(L.polygon(l.envelope.map((pt) => [pt[1], pt[0]]),
             { color: c, weight: 0.8, fillColor: c,
               fillOpacity: 0.07, dashArray: "2 4" })
             .bindTooltip(`${l.layer}: ${T("map_env")}`));
@@ -774,31 +739,46 @@ function rebuildMapLayers() {
           const pts = obj.pts || obj;
           const ce = pts[pts.length - 1];
           if (!ce || ce[0] == null) return;
-          parts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
+          trackParts.push(L.circleMarker([ce[0], ce[1]], { radius: 3, color: c, weight: 1.4,
             fillColor: "#fff", fillOpacity: 0.9 })
             .bindTooltip(`${cn} ash: +${ce[2]}h, alt ${ce[3]} km` +
               (obj.mass_remaining != null ? `, mass left ${(obj.mass_remaining * 100).toFixed(0)}%` : "")));
           (obj.wet_points || []).forEach((w) => {
-            parts.push(L.circleMarker([w.lat, w.lon], { radius: 3.4, color: "#2563eb",
+            trackParts.push(L.circleMarker([w.lat, w.lon], { radius: 3.4, color: "#2563eb",
               weight: 1.2, fillColor: "#2563eb", fillOpacity: 0.55 })
               .bindTooltip(`rain cell ${w.rate_mm_h} mm/h at +${w.hours}h (wet deposition)`));
           });
         });
       });
-      // v2.1: combined (hull) envelope across all bands — the shape that is
-      // comparable to what Darwin's multi-layer polygons describe
+      // v2.3: dual combined hull. envelope_union = bands at/below the official
+      // cloud top (the VAAC-comparable shape); envelope_union_all = every band
+      // 0-16 km, the worst-case view — the builder only emits it when the two
+      // actually differ, so quiet/high-top days never show duplicate hulls.
+      const mkGroup = (key, polys, label) => {
+        if (!polys.length) return;
+        const g = L.layerGroup(polys);
+        g._krkKey = key;
+        MAP.groups[key] = g;
+        named[label] = g;
+      };
+      mkGroup("tracks", trackParts, T("map_tracks"));
+      mkGroup("envs", envParts, T("map_envs"));
       const un = MODEL.envelope_union;
       if (un && un.polygon && un.polygon.length > 2) {
-        parts.push(L.polygon(un.polygon.map((pt) => [pt[1], pt[0]]),
+        mkGroup("union", [L.polygon(un.polygon.map((pt) => [pt[1], pt[0]]),
           { color: "#111827", weight: 2.2, fillColor: "#6b7280", fillOpacity: 0.08,
             dashArray: "6 3" })
           .bindTooltip(`${T("map_union")} · ${un.n_bands} × ${T("layer")} · ` +
-            `${Math.round(un.area_km2).toLocaleString()} km²`));
+            `${Math.round(un.area_km2).toLocaleString()} km²`)], T("map_union"));
       }
-      const g = L.layerGroup(parts);
-      g._krkKey = "model";
-      MAP.groups.model = g;
-      named[T("map_model")] = g;
+      const una = MODEL.envelope_union_all;
+      if (una && una.polygon && una.polygon.length > 2) {
+        mkGroup("unionall", [L.polygon(una.polygon.map((pt) => [pt[1], pt[0]]),
+          { color: "#9ca3af", weight: 1.4, fillColor: "#d1d5db", fillOpacity: 0.05,
+            dashArray: "2 6" })
+          .bindTooltip(`${T("map_union_all")} · ${una.n_bands} × ${T("layer")} · ` +
+            `${Math.round(una.area_km2).toLocaleString()} km²`)], T("map_union_all"));
+      }
     }
   }
   MAP.control = L.control.layers(null, named, { collapsed: true }).addTo(map);

@@ -78,6 +78,12 @@ setTimeout(() => {
   console.log(JSON.stringify(out, null, 1));
   const bad = Object.entries(out).filter(([k, v]) => typeof v === "number" && v === 0 && k !== "model");
   if (bad.length) { console.error("EMPTY SECTIONS:", bad.map((b) => b[0]).join(", ")); process.exit(1); }
+  // v2.3 regression guards on the secondary-model card:
+  //  * the ash-vector callout must stay gone (it confused visitors);
+  //  * a "no data" row must come with the Open-Meteo fallback explanation.
+  const mh = (cache["#card-model"] || {}).innerHTML || "";
+  if (/Vektor abu|Ash vector/.test(mh)) { console.error("ASH-VECTOR CALLOUT STILL RENDERED"); process.exit(1); }
+  if (/class="nodata"/.test(mh) && !/Open-Meteo/.test(mh)) { console.error("NO-DATA NOTE MISSING"); process.exit(1); }
   console.log("domtest: all sections rendered");
   process.exit(0);
 }, 700);

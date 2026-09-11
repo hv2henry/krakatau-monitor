@@ -119,8 +119,32 @@ polygons Darwin draws are unions across layers — on the 4–6 Sep 2026
 paroxysm the SFC/FL500 union fan reached ~1,900 km while no single band
 was wider than ~900 km. `union_envelope()` returns the convex hull of all
 band envelope polygons (conservative: hull ≥ true union) as a GeoJSON-ready
-lon/lat ring plus area, and the SVG map draws it. It is also shipped in the
-site JSON as `envelope_union`.
+lon/lat ring plus area, and the SVG map draws it.
+
+### 3.3 v2.3 — dual union on the site (below-top vs all-bands)
+
+A single all-bands hull has a failure mode the live site exposed: on a
+low-cloud-top day (official top FL050 ≈ 1.5 km) the hull still swallowed
+bands at 2–16 km — altitudes where there is provably no ash — so the
+"combined envelope" looked far larger than anything Darwin draws. Darwin
+only draws layers where ash is observed or forecast. `build_site.dual_union()`
+therefore ships TWO hulls in the site JSON:
+
+- `envelope_union` — hull of the bands at/below the **official cloud top**
+  (+0.5 km grace, the same rule as the table's ★ relevance star). This is
+  the VAAC-comparable shape and the map's default combined envelope.
+- `envelope_union_all` — the all-bands 0–16 km worst-case hull, only
+  emitted when the two actually differ (quiet days / top above every band
+  never show duplicate polygons).
+- `envelope_union_rule` — machine-readable provenance of which rule was
+  applied. The model-side `envelope_union` inside the model's own JSON
+  stays all-bands; the split happens at the site-builder stage.
+
+The map offers them as separate toggles, alongside per-layer envelope
+rings and the track lines themselves (previously all of this was one
+monolithic "model" overlay). Track lines for layers without Himawari-9
+vectors this slot (NWP-only) render dashed and dimmer, and the layers
+table carries a one-line explanation of what "no data" means.
 
 ## 4. Where things live (pipeline wiring)
 
@@ -128,8 +152,8 @@ site JSON as `envelope_union`.
 |------|------|
 | `src/ash_transport.py` | the whole v2/v2.1 model: class fractions, survival curves, `airborne_fraction`, `envelope_width_series`, `effective_shear_ms`, `implied_emission_age_h`, `union_envelope`, `convex_hull`, `polygon_cross_track_width_km`, OBS-polygon CLI, rewritten `trajectory_settling` (per-point `phi`/`width_km`), `envelope_polygon` on detectable width, JSON blocks `envelope_model` / `envelope_emission` / `envelope_union`. `netCDF4` import guarded — pure-math helpers import without it. |
 | `src/validate.py` | `gate_sanity_envelope()` (gate B extension): per-band `width_end`/`phi_end`/`emission_age` bounds, polygon vertex domain box, union area bounds. `validate(..., ash_model=...)` runs it; old cached runs without envelope fields are skipped. `PARSER_VERSION` → `validate/1.1`. |
-| `src/build_site.py` | `obs_polygon_args(vaac)` derives the three CLI args from the fetched advisory (first observed layer with a polygon; SFC → base 0 km; `--obs-polygon=` "=" form so negative latitudes survive argparse). Seeds the model subprocess, validates with `ash_model=`, and ships `envelope_model`, `envelope_emission`, `envelope_union` in the site JSON. `width_ledger_entry(vaac, cand)` appends to each `backtest.jsonl` row: `obs_width_km`, `emission_age_h`, `emission_source`, and `fcst_widths` [{h, vaac_km, model_km}] — VAAC FCST polygon widths vs the model's full widths (2 × half-width, max over the bands intersecting the OBS layer; `null` beyond the 12 h model horizon, recorded honestly). |
-| `site/app.js` | per-band envelope polygons are `[lon, lat]` (GeoJSON order) and get swapped to `[lat, lon]` for Leaflet (this fixed a real mirroring bug). The union hull is drawn (dashed dark polygon, tooltip with band count + area). The `emission_line` stamp shows the OBS-derived cloud age. |
+| `src/build_site.py` | `obs_polygon_args(vaac)` derives the three CLI args from the fetched advisory (first observed layer with a polygon; SFC → base 0 km; `--obs-polygon=` "=" form so negative latitudes survive argparse). Seeds the model subprocess, validates with `ash_model=`, and ships `envelope_model`, `envelope_emission`, plus the v2.3 dual union (`envelope_union` below-top, `envelope_union_all` worst case, `envelope_union_rule` provenance) in the site JSON. `width_ledger_entry(vaac, cand)` appends to each `backtest.jsonl` row: `obs_width_km`, `emission_age_h`, `emission_source`, and `fcst_widths` [{h, vaac_km, model_km}] — VAAC FCST polygon widths vs the model's full widths (2 × half-width, max over the bands intersecting the OBS layer; `null` beyond the 12 h model horizon, recorded honestly). |
+| `site/app.js` | per-band envelope polygons are `[lon, lat]` (GeoJSON order) and get swapped to `[lat, lon]` for Leaflet (this fixed a real mirroring bug). v2.3: the model renders as three separate map toggle families — tracks (NWP-only layers dashed & dimmer), per-layer envelope rings, and the dual combined hull (below-top default on, all-bands worst case opt-in). The ash-vector callout was removed (its blend weights made it more confusing than useful); the layers table explains what a "no data" row means (Himawari-9 gap, Open-Meteo-only track). The `emission_line` stamp shows the OBS-derived cloud age. |
 | `tools/calibrate_envelope.py`, `tools/validate_eventB.py` | research scripts: 5-parameter fit to the 2026/209 widths; independent cross-check on the 4–6 Sep paroxysm with full data provenance. |
 
 Data locations (per-volcano, `<slug>` from `src/volcanoes.py`):

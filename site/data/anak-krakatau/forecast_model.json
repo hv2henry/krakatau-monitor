@@ -15362,9 +15362,9 @@
   "deg": 225
  },
  "backtest": {
-  "n": 26,
-  "mean_abs_deg": 55.5,
-  "median_abs_deg": 64.0
+  "n": 27,
+  "mean_abs_deg": 54.5,
+  "median_abs_deg": 62.6
  },
  "plume_top": {
   "km": 1.52,

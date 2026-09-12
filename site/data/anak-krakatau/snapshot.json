@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-12T22:30:13Z",
- "generated_wib": "13 Sep 2026, 05:30 WIB",
+ "generated_utc": "2026-09-12T22:45:20Z",
+ "generated_wib": "13 Sep 2026, 05:45 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-12T22:30:19Z",
-  "fetched_wib": "13 Sep 2026, 05:30 WIB",
+  "fetched_utc": "2026-09-12T22:45:25Z",
+  "fetched_wib": "13 Sep 2026, 05:45 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -35,13 +35,13 @@
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 11.8,
+   "vaac_age_hours": 12.1,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 113.9,
+   "vona_age_hours": 114.2,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-12T22:30Z"
+  "assessed_utc": "2026-09-12T22:45Z"
  },
  "report": {
   "period": "Sabtu - 12 September 2026 00:00-24:00 WIB",
@@ -59,7 +59,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "13 Sep 2026, 05:30 WIB"
+  "fetched_wib": "13 Sep 2026, 05:45 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -114,8 +114,8 @@
   "advisory_nr": "2026/217",
   "dtg_utc": "2026-09-12T10:40Z",
   "dtg_wib": "12 Sep 2026, 17:40 WIB",
-  "age_hours": 11.8,
-  "is_current": true,
+  "age_hours": 12.1,
+  "is_current": false,
   "advisory_status": "terminated",
   "terminated": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
@@ -146,7 +146,7 @@
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
-  "warning": "This bulletin TERMINATES the episode (VAAC wording: terminated). Treat the ash picture as closed unless a new advisory or VONA appears."
+  "warning": "This advisory is 12.1 h old. Darwin VAAC promised the next by None. Treat the ash picture as OUT OF DATE and re-check."
  },
  "satellite": {
   "snpp": {
@@ -264,7 +264,7 @@
    "noaa_slot": "2026-09-12 21:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-12T21:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-12T22:31:00Z"
+  "built_utc": "2026-09-12T22:46:04Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

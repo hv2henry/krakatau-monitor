@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-12T05:00:13Z",
- "generated_wib": "12 Sep 2026, 12:00 WIB",
+ "generated_utc": "2026-09-12T05:15:14Z",
+ "generated_wib": "12 Sep 2026, 12:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-12T05:00:22Z",
-  "fetched_wib": "12 Sep 2026, 12:00 WIB",
+  "fetched_utc": "2026-09-12T05:15:20Z",
+  "fetched_wib": "12 Sep 2026, 12:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -25,21 +25,21 @@
   }
  },
  "report": {
-  "period": "Sabtu - 12 September 2026 00:00-06:00 WIB",
-  "author": "Muhammad Dika Nurzaman",
-  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan hingga mendung, angin lemah hingga sedang ke arah barat laut.",
-  "climate": "Cuaca berawan hingga mendung, angin lemah hingga sedang ke arah barat laut. Suhu udara sekitar 26.5-27.1°C. Kelembaban 84-86%.",
+  "period": "Sabtu - 12 September 2026 06:00-12:00 WIB",
+  "author": "Anggi Nuryo Saputro, A.Md.",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah hingga sedang ke arah barat daya dan barat laut.",
+  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah barat daya dan barat laut. Suhu udara sekitar 26.8-30.9°C. Kelembaban 72-87%.",
   "seismic_counts": {
-   "Low Frequency": 3,
-   "Hybrid/Fase Banyak": 7,
-   "Tektonik Jauh": 1,
+   "Hembusan": 1,
+   "Low Frequency": 1,
+   "Hybrid/Fase Banyak": 8,
    "Tremor Menerus": 1
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 12:00 WIB"
+  "fetched_wib": "12 Sep 2026, 12:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -94,7 +94,7 @@
   "advisory_nr": "2026/216",
   "dtg_utc": "2026-09-12T05:00Z",
   "dtg_wib": "12 Sep 2026, 12:00 WIB",
-  "age_hours": 0.0,
+  "age_hours": 0.3,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -377,7 +377,7 @@
    "noaa_slot": "2026-09-12 04:20Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-12T04:20:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-12T05:02:18Z"
+  "built_utc": "2026-09-12T05:16:44Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

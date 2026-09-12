@@ -1,5 +1,5 @@
 {
- "updated": "20260912T1456Z",
+ "updated": "20260912T1800Z",
  "models": [
   "models/model-20260909T1758Z.json",
   "models/model-20260909T1759Z.json",
@@ -32,7 +32,8 @@
   "vaac/vaac-20260911T2024Z.json",
   "vaac/vaac-20260912T0259Z.json",
   "vaac/vaac-20260912T0940Z.json",
-  "vaac/vaac-20260912T1456Z.json"
+  "vaac/vaac-20260912T1456Z.json",
+  "vaac/vaac-20260912T1800Z.json"
  ],
  "vaac_graphics": [
   "vaac/graphic-2026-206.png",

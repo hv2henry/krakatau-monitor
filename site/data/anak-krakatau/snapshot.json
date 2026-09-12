@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-12T08:00:12Z",
- "generated_wib": "12 Sep 2026, 15:00 WIB",
+ "generated_utc": "2026-09-12T08:15:13Z",
+ "generated_wib": "12 Sep 2026, 15:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-12T08:00:19Z",
-  "fetched_wib": "12 Sep 2026, 15:00 WIB",
+  "fetched_utc": "2026-09-12T08:15:19Z",
+  "fetched_wib": "12 Sep 2026, 15:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -39,7 +39,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 15:00 WIB"
+  "fetched_wib": "12 Sep 2026, 15:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -94,7 +94,7 @@
   "advisory_nr": "2026/216",
   "dtg_utc": "2026-09-12T05:00Z",
   "dtg_wib": "12 Sep 2026, 12:00 WIB",
-  "age_hours": 3.0,
+  "age_hours": 3.3,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -270,7 +270,7 @@
   "snpp": {
    "sensor": "snpp",
    "gibs_layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-   "date": "2026-09-11",
+   "date": "2026-09-12",
    "asset": "assets/sat_snpp.jpg",
    "bbox": [
     100.0,
@@ -280,12 +280,12 @@
    ],
    "zoom": 7,
    "missing_tiles": 0,
-   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-09-11. https://worldview.earthdata.nasa.gov"
+   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-09-12. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
    "sensor": "terra",
    "gibs_layer": "MODIS_Terra_CorrectedReflectance_TrueColor",
-   "date": "2026-09-11",
+   "date": "2026-09-12",
    "asset": "assets/sat_modis.jpg",
    "bbox": [
     100.0,
@@ -295,7 +295,7 @@
    ],
    "zoom": 7,
    "missing_tiles": 0,
-   "credit": "NASA GIBS/Earthdata—Terra MODIS Corrected Reflectance (True Color), 2026-09-11. https://worldview.earthdata.nasa.gov",
+   "credit": "NASA GIBS/Earthdata—Terra MODIS Corrected Reflectance (True Color), 2026-09-12. https://worldview.earthdata.nasa.gov",
    "sensor_label": "Terra (MODIS)"
   }
  },
@@ -307,63 +307,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-12T05:10:00Z",
-    "t_wib": "12 Sep 2026, 12:10 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-09-12T05:20:00Z",
-    "t_wib": "12 Sep 2026, 12:20 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-09-12T05:30:00Z",
-    "t_wib": "12 Sep 2026, 12:30 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
     "t_utc": "2026-09-12T05:40:00Z",
     "t_wib": "12 Sep 2026, 12:40 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-12T05:50:00Z",
     "t_wib": "12 Sep 2026, 12:50 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-09-12T06:00:00Z",
     "t_wib": "12 Sep 2026, 13:00 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-12T06:10:00Z",
     "t_wib": "12 Sep 2026, 13:10 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-12T06:20:00Z",
     "t_wib": "12 Sep 2026, 13:20 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-12T06:30:00Z",
     "t_wib": "12 Sep 2026, 13:30 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-12T06:40:00Z",
     "t_wib": "12 Sep 2026, 13:40 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-12T06:50:00Z",
     "t_wib": "12 Sep 2026, 13:50 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-12T07:00:00Z",
     "t_wib": "12 Sep 2026, 14:00 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-09-12T07:10:00Z",
+    "t_wib": "12 Sep 2026, 14:10 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-09-12T07:20:00Z",
+    "t_wib": "12 Sep 2026, 14:20 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-09-12T07:30:00Z",
+    "t_wib": "12 Sep 2026, 14:30 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -379,10 +379,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-12 07:00Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-12T07:00:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-12 07:30Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-12T07:30:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-12T08:01:29Z"
+  "built_utc": "2026-09-12T08:16:46Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

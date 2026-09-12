@@ -48,6 +48,7 @@ try:  # pure hull helper from the model module (numpy is in requirements.txt)
 except Exception:  # noqa: BLE001
     union_envelope = None
 import volcanoes
+import activity_state as ACT
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(REPO, "site")
@@ -536,19 +537,25 @@ def verdict_hard_failures(embed) -> bool:
     return bool(vf) if vf is not None else False
 
 
-def archive_run(embed, vaac, slug: str) -> None:
+def archive_run(embed, vaac, slug: str, models_too: bool = True) -> None:
     """Six-hourly memory: our model, the VAAC state, and the official chart.
     Namespaced per volcano under archive/<slug>/. Pruned so the repo stays
     light: 60 model snapshots, 40 VAAC states, 30 graphical advisories
-    (one per advisory number)."""
+    (one per advisory number).
+
+    models_too=False in a quiet state: the candidate on disk belongs to the
+    ended episode, so copying it under TODAY's stamp would forge history —
+    only the VAAC state (e.g. the terminating bulletin) is archived."""
     base = os.path.join(REPO, "archive", slug)   # repo root: archive data, NOT website files
     mdir, vdir = os.path.join(base, "models"), os.path.join(base, "vaac")
     os.makedirs(mdir, exist_ok=True)
     os.makedirs(vdir, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%MZ")
     cand = os.path.join(SITE, "data", slug, "forecast_candidate.json")
-    if os.path.exists(cand):
+    if models_too and os.path.exists(cand):
         shutil.copy(cand, os.path.join(mdir, f"model-{stamp}.json"))
+    if not models_too:
+        print("[build] archive: model snapshot skipped (quiet); VAAC state still archived")
     vstate = {"t": stamp, "state": vaac.get("state"),
               "advisory_nr": (vaac.get("advisory") or {}).get("advisory_nr"),
               "dtg_utc": (vaac.get("advisory") or {}).get("dtg_utc"),
@@ -715,6 +722,31 @@ def build(args) -> int:
         vona.append(e)
         snapshot_vona.append(e)
 
+    # ---- activity state: live episode vs NORMAL (the 2026-09-12 lesson) ----
+    # Read the PREVIOUS snapshot (before it is overwritten below) for
+    # hysteresis + since_utc carry-forward. Rules agreed with the maintainer:
+    # no real-time data from MAGMA *and* Darwin VAAC => NORMAL (never a
+    # silent fallback to old data); an explicit VAAC "ADVISORY TERMINATED"
+    # bulletin closes the episode authoritatively; an unreachable source can
+    # never vote for normal (absence of data != absence of ash, 2026-09-08).
+    prev_activity = None
+    prev_snap_path = os.path.join(DD, "snapshot.json")
+    if os.path.exists(prev_snap_path):
+        try:
+            prev_activity = (json.load(open(prev_snap_path, encoding="utf-8"))
+                             or {}).get("activity")
+        except Exception:
+            prev_activity = None
+    activity = ACT.assess_activity(
+        vaac, snapshot_vona, eruptions, now=now,
+        previous=prev_activity, magma_ok=not mon.get("error"))
+    print(f"[build] activity: {activity['state']} ({activity['reason_code']})")
+    # The verdict lands in snapshot["activity"] below and is COMMITTED with
+    # the build — that file is what pg_cron's sync job
+    # (sync_model_scheduler_from_github, tmp/pg_cron_model6h.sql) reads to
+    # pause/resume the 6-hourly model dispatch. Pull, not push: no Edge
+    # Function, no service_role key, no shared token, no new secrets.
+
     def layer_json(ly):
         return {"base": ly.get("base"), "top": ly.get("top"),
                 "top_km": ly.get("top_km"),
@@ -734,6 +766,9 @@ def build(args) -> int:
         "dtg_wib": wib_human(adv.get("dtg_utc")),
         "age_hours": vaac.get("age_hours"),
         "is_current": vaac.get("is_current"),
+        # episode end in the VAAC's own words (2026/217: ADVISORY TERMINATED)
+        "advisory_status": vaac.get("advisory_status") or adv.get("episode_status"),
+        "terminated": bool(vaac.get("terminated") or adv.get("terminated")),
         "eruption_details": adv.get("eruption_details"),
         "info_source": adv.get("info_source"),
         "observed_layers": [layer_json(l) for l in adv.get("observed_layers", [])],
@@ -845,6 +880,7 @@ def build(args) -> int:
                    "fetched_utc": mon.get("generated_utc"),
                    "fetched_wib": wib_human(mon.get("generated_utc")),
                    "indonesia_counts": mon.get("indonesia_level_counts")},
+        "activity": activity,
         "report": {"period": rep.get("period"), "author": rep.get("author"),
                    "visual": rep.get("visual"), "climate": rep.get("climate"),
                    "seismic_counts": rep.get("seismic_counts"),
@@ -873,28 +909,38 @@ def build(args) -> int:
     embed["snapshot"] = snapshot
 
     # ---- forecast model (candidate; publish only with a human) -----------
-    print("[build] computing secondary model (Himawari-9 + open-meteo) ...")
     import subprocess
     cand = None
-    try:
-        # v2.1: seed the model with the advisory's OBS polygon so the cloud
-        # age (emission history) is derived from the observed width instead
-        # of silently assuming fresh ash at the analysis time
-        obs_args = obs_polygon_args(vaac)
-        if obs_args:
-            print("[build] seeding model with Darwin OBS polygon "
-                  "(emission-history inversion enabled)")
-        r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "ash_transport.py"),
-                            "--json", "--no-svg",
-                            "--lat", str(args.lat), "--lon", str(args.lon),
-                            "--name", volc["name"],
-                            "--slots", str(args.slots), "--hours", "12"]
-                           + (obs_args or []),
-                           capture_output=True, text=True, timeout=args.ash_timeout)
-        if r.returncode == 0:
-            cand = json.loads(r.stdout)
-    except Exception as e:  # noqa: BLE001
-        print(f"  [warn] model: {e}", file=sys.stderr)
+    if activity["state"] == "quiet":
+        # Graceful stop, part 1 (build-side): with no live episode there is
+        # nothing to model. The last computed candidate/model stays on disk
+        # as the archive of the ended episode; the site labels it as such.
+        # Part 2 (infra-side): the committed snapshot's activity.state is
+        # what pg_cron's sync job reads every 5 min to pause the 6-hourly
+        # dispatch (and a fresh advisory/VONA resumes it).
+        print("[build] quiet state — secondary model SKIPPED "
+              "(no ash episode in progress)")
+    else:
+        print("[build] computing secondary model (Himawari-9 + open-meteo) ...")
+        try:
+            # v2.1: seed the model with the advisory's OBS polygon so the cloud
+            # age (emission history) is derived from the observed width instead
+            # of silently assuming fresh ash at the analysis time
+            obs_args = obs_polygon_args(vaac)
+            if obs_args:
+                print("[build] seeding model with Darwin OBS polygon "
+                      "(emission-history inversion enabled)")
+            r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "ash_transport.py"),
+                                "--json", "--no-svg",
+                                "--lat", str(args.lat), "--lon", str(args.lon),
+                                "--name", volc["name"],
+                                "--slots", str(args.slots), "--hours", "12"]
+                               + (obs_args or []),
+                               capture_output=True, text=True, timeout=args.ash_timeout)
+            if r.returncode == 0:
+                cand = json.loads(r.stdout)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [warn] model: {e}", file=sys.stderr)
 
     if cand:
         verdict = V.validate(mon, vaac, cand.get("observed_wind_profile"),
@@ -917,23 +963,34 @@ def build(args) -> int:
                              "source": "Darwin VAAC observed cloud top"}
         if plume_top is None:
             # VONA fallback: MAGMA's own ash-top estimate keeps the height anchor
-            # alive on nil/stale VAAC days (the 2026-09-08 failure mode).
-            for v in (snapshot_vona or []):
-                if v.get("ash_top_m"):
-                    km = round(v["ash_top_m"] / 1000.0, 2)
-                    plume_top = {"km": km, "fl": f"{v['ash_top_m']} M",
-                                 "human_id": f"≈ {km:.1f} km dpl",
-                                 "human_en": f"≈ {km:.1f} km asl",
-                                 "source": "VONA/MAGMA ash-top estimate",
-                                 "issued_wib": v.get("wib")}
-                    break
-        if plume_top is None:
+            # alive on nil/stale VAAC days (the 2026-09-08 failure mode) — but
+            # ONLY while fresh. The 2026-09-12 mirror-image failure: no fresh
+            # VONA for 19 days, and this loop happily quoted the 24-Aug 557 m
+            # estimate as the OFFICIAL top "today". activity_state.vona_plume_top
+            # age-gates the anchor (<= 24 h) and the quiet state suppresses it
+            # entirely — normal is normal, not "the eruption's memory, daily".
+            v = (ACT.vona_plume_top(snapshot_vona, now=now)
+                 if activity["state"] == "active" else None)
+            if v and v.get("ash_top_m"):
+                km = round(v["ash_top_m"] / 1000.0, 2)
+                plume_top = {"km": km, "fl": f"{v['ash_top_m']} M",
+                             "human_id": f"≈ {km:.1f} km dpl",
+                             "human_en": f"≈ {km:.1f} km asl",
+                             "source": "VONA/MAGMA ash-top estimate",
+                             "issued_wib": v.get("wib")}
+            elif any(x.get("ash_top_m") for x in (snapshot_vona or [])):
+                print(f"[build] VONA ash-top anchor SKIPPED: newest VONA with an "
+                      f"ash-top is {activity['evidence'].get('vona_age_hours')} h old "
+                      f"(> {ACT.VONA_FRESH_H:.0f} h) — no official top today")
+        if plume_top is None and activity["state"] == "active":
             # last resort, clearly labelled: the highest well-consistent AMV
             # cloud band near the vent. Cloud top, NOT confirmed ash — the label
             # says so, and a caveat repeats it in plain language.
             # (reads the model's wind profile directly: the display `layers`
             # list is only built further down, and this branch must work on
-            # nil-advisory + no-VONA days too — the case that once crashed here)
+            # nil-advisory + no-VONA days too — the case that once crashed here.
+            # Quiet state: skipped — a speculative cloud estimate must never
+            # stand in for an ash top when there is no episode at all.)
             cands = [r for r in cand.get("observed_wind_profile", [])
                      if r.get("data") and r.get("consistency_R") is not None
                      and r["consistency_R"] >= 0.7 and (r.get("n_eff") or 0) >= 5
@@ -1178,7 +1235,8 @@ def build(args) -> int:
             json.dump(model, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             print(f"[build] MODEL PUBLISHED by {model['approved_by']} -> {mp}")
     else:
-        print("[build] no model computed")
+        print("[build] no model computed" +
+              (" (quiet state)" if activity["state"] == "quiet" else ""))
 
     # ---- backtest ledger: model direction vs VAAC observed motion, per build ----
     bt_path = os.path.join(DD, "backtest.jsonl")
@@ -1203,7 +1261,8 @@ def build(args) -> int:
     except Exception:
         model_vec = None
     stamp_now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:00Z")
-    if model_vec and not any(r.get("t") == stamp_now for r in rows):
+    if model_vec and activity["state"] == "active" \
+            and not any(r.get("t") == stamp_now for r in rows):
         rows.append({"t": stamp_now,
                      "model_toward": model_vec.get("toward_deg"),
                      "model_unc": model_vec.get("uncertainty_deg"),
@@ -1233,8 +1292,12 @@ def build(args) -> int:
             pass
 
     # ---- 6-hourly auto-publish (maintainer decision for the decreasing-activity
-    # window): clean validation only, always stamped, always carrying caveats ----
-    if args.auto_publish:
+    # window): clean validation only, always stamped, always carrying caveats.
+    # Quiet state: NO auto-publish — stamping a fresh approval time onto a
+    # stale model would manufacture "current" out of history. ----
+    if args.auto_publish and activity["state"] != "active":
+        print("[build] auto-publish SKIPPED (quiet state — no live episode to model)")
+    if args.auto_publish and activity["state"] == "active":
         mp = os.path.join(DD, "forecast_model.json")
         try:
             cand_now = json.load(open(os.path.join(DD, "forecast_candidate.json"),
@@ -1253,7 +1316,10 @@ def build(args) -> int:
 
     # ---- archive: our finding + Darwin VAAC state + graphical advisory ----
     if args.archive:
-        archive_run(embed, vaac, slug)
+        # quiet: keep archiving the VAAC state (the terminated bulletin IS the
+        # official end-of-episode record) but do not stamp the stale model
+        # snapshot with a fresh archive time.
+        archive_run(embed, vaac, slug, models_too=activity["state"] == "active")
 
     embed_into_index(embed, slug)
     if source_errors and len(source_errors) >= 2:

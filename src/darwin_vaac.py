@@ -321,6 +321,32 @@ def strip_bulletin_markup(text: str) -> str:
     return html_mod.unescape(t).strip()
 
 
+def episode_status(bulletin: str, remarks: str = "", nxt: str = "") -> str:
+    """Classify the EPISODE status the bulletin itself declares.
+
+    "active"     ordinary advisory: ash observed/forecast, more to come.
+    "terminated" the VAAC closed the episode in its own words:
+                   ... ADVISORY TERMINATED.            (RMK)
+                   NXT ADVISORY: NO FURTHER ADVISORIES= (final bulletin)
+    "cancelled"  the advisory is withdrawn (CANCEL/CANCELLED wording) —
+                 also means no ash episode per this bulletin.
+
+    Anchored on the real 2026-09-12 bulletin 2026/217 for Anak Krakatau:
+        RMK: VA NOT IDENTIFIABLE ON RECENT SATELLITE IMAGERY. NO OTHER
+             REPORTS INDICATE ONGOING ERUPTION. ADVISORY TERMINATED.
+        NXT ADVISORY: NO FURTHER ADVISORIES=
+    Bulletins are hard-wrapped, so whitespace is collapsed before matching.
+    """
+    text = re.sub(r"\s+", " ", " ".join([bulletin or "", remarks or "", nxt or ""])).upper()
+    if re.search(r"ADVISORY\s+TERMINATED", text):
+        return "terminated"
+    if re.search(r"NO\s+FURTHER\s+ADVISOR", text):
+        return "terminated"
+    if re.search(r"\bCANCEL\b|\bCANCELS\b|\bCANCELLED\b|\bCANCELED\b", text):
+        return "cancelled"
+    return "active"
+
+
 def parse_advisory(bulletin: str) -> dict:
     bulletin = strip_bulletin_markup(bulletin)
     f = _reassemble(bulletin)
@@ -377,6 +403,12 @@ def parse_advisory(bulletin: str) -> dict:
         except ValueError:
             pass
 
+    # Episode status per the bulletin's own wording (2026-09-12: Darwin
+    # stopped issuing for Krakatau with ADVISORY TERMINATED — the pipeline
+    # must read that as the authoritative end of the episode, not as
+    # business-as-usual "advisory".)
+    epi = episode_status(bulletin, f.get("RMK", ""), nxt)
+
     return {
         "wmo_header": header.group(0) if header else None,
         "bulletin_id": header.group(1) if header else None,
@@ -397,6 +429,8 @@ def parse_advisory(bulletin: str) -> dict:
         "forecast": fcst,
         "remarks": f.get("RMK"),
         "next_advisory_by_utc": _iso(nxt_dt),
+        "episode_status": epi,
+        "terminated": epi != "active",
         "raw": bulletin,
     }
 
@@ -504,7 +538,18 @@ def fetch(volcano: str = "Anak Krakatau", page: str | None = None,
         "age_hours": age_h,
         "is_current": bool(age_h is not None and age_h <= 12),
         "next_advisory_overdue": overdue,
+        # episode end, in the bulletin's own words (2026/217: ADVISORY
+        # TERMINATED / NO FURTHER ADVISORIES). Mirrored top-level so the
+        # activity state machine (src/activity_state.py) and the site can
+        # switch to normal mode without re-parsing the raw text.
+        "advisory_status": adv.get("episode_status"),
+        "terminated": bool(adv.get("terminated")),
     })
+    if adv.get("terminated"):
+        result["warning"] = ("This bulletin TERMINATES the episode "
+                              "(VAAC wording: " + (adv.get("episode_status") or "") + "). "
+                              "Treat the ash picture as closed unless a new "
+                              "advisory or VONA appears.")
     if age_h is not None and age_h > 12:
         result["warning"] = (f"This advisory is {age_h} h old. Darwin VAAC promised the next "
                              f"by {nxt_iso}. Treat the ash picture as OUT OF DATE and re-check.")
@@ -550,6 +595,9 @@ def render(res: dict) -> str:
     a = res["advisory"]
     L.append(f"\n  STATE: CURRENT ADVISORY   (age {res.get('age_hours')} h"
              f"{'' if res.get('is_current') else ' — STALE, re-check'})")
+    if res.get("terminated"):
+        L.append(f"  EPISODE: {str(res.get('advisory_status') or 'TERMINATED').upper()}"
+                 " — the VAAC closed this episode in its own words")
     L.append("  " + "-" * 70)
     L.append(f"  Advisory NR    : {a['advisory_nr']}      WMO bulletin: {a['wmo_header']}")
     L.append(f"  Issued (DTG)   : {a['dtg_utc']}")

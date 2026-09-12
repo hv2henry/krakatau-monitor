@@ -130,6 +130,17 @@ const I18N = {
     vaac_codes_t: "Kode advisori (cara membaca)",
     vaac_codes: '<dl class="codes"><dt>VA</dt><dd>volcanic ash—abu vulkanik</dd><dt>OBS</dt><dd>observed—teramati (OBS VA DTG = saat awan abu teramati)</dd><dt>DTG</dt><dd>date/time group—waktu advisori diterbitkan (UTC)</dd><dt>FCST</dt><dd>forecast—prakiraan</dd><dt>SFC</dt><dd>surface—permukaan tanah</dd><dt>FL050</dt><dd>flight level 050—ketinggian penerbangan 5.000 kaki ≈ 1,5 km</dd><dt>MOV NW 10KT</dt><dd>bergerak ke barat laut dengan kecepatan 10 knot</dd><dt>RMK</dt><dd>remarks—catatan</dd><dt>NXT ADV</dt><dd>advisori berikutnya</dd><dt>11/0820Z</dt><dd>tanggal 11, pukul 08:20 UTC (Z = UTC)</dd></dl>',
     vaac_codes_ex: 'Contoh: “VA TO FL050 OBS AT 11/0820Z MOV SW” = abu vulkanik hingga FL050 (5.000 kaki ≈ 1,5 km), teramati 11 September pukul 08:20 UTC, bergerak ke barat daya.',
+    /* ---- quiet / normal state (activity_state, pelajaran 2026-09-12) ---- */
+    quiet_t: "Aktivitas normal",
+    quiet_banner: "Tidak ada episode abu vulkanik yang berlangsung—{why} Tingkat aktivitas resmi di bawah tetap ditampilkan apa adanya.",
+    quiet_since: "kondisi normal sejak {when}",
+    vaac_term_t: "Episode dihentikan",
+    vaac_term_b: "Buletin ini menutup episode: VAAC menyatakan <b>ADVISORY TERMINATED</b>—abu tidak lagi teridentifikasi dan tidak ada laporan erupsi berlangsung. Situs kembali ke mode normal; advisori atau VONA baru akan memulai pemantauan ulang.",
+    model_paused_t: "Model dijeda—kondisi normal",
+    model_paused_b: "Tidak ada episode abu yang berlangsung, sehingga model sekunder tidak dihitung dan jadwal 6-jamnya dijeda. Tabel di bawah adalah ARSIP perhitungan terakhir saat episode masih berlangsung ({when}).",
+    model_archive_badge: "ARSIP",
+    model_plume_top_arch: "Puncak awan abu resmi saat episode terakhir",
+    live_quiet: "Kondisi normal—tidak ada episode abu vulkanik yang berlangsung.",
   },
   en: {
     title: "{volcano} Watch",
@@ -252,6 +263,17 @@ const I18N = {
     vaac_codes_t: "Advisory codes (how to read)",
     vaac_codes: '<dl class="codes"><dt>VA</dt><dd>volcanic ash</dd><dt>OBS</dt><dd>observed (OBS VA DTG = when the ash cloud was observed)</dd><dt>DTG</dt><dd>date/time group—issue time (UTC)</dd><dt>FCST</dt><dd>forecast</dd><dt>SFC</dt><dd>surface (ground level)</dd><dt>FL050</dt><dd>flight level 050—5,000 ft ≈ 1.5 km</dd><dt>MOV NW 10KT</dt><dd>moving northwest at 10 knots</dd><dt>RMK</dt><dd>remarks</dd><dt>NXT ADV</dt><dd>next advisory</dd><dt>11/0820Z</dt><dd>day 11, 08:20 UTC (Z = UTC)</dd></dl>',
     vaac_codes_ex: 'Example: “VA TO FL050 OBS AT 11/0820Z MOV SW” = volcanic ash up to FL050 (5,000 ft ≈ 1.5 km), last observed 11 September at 08:20 UTC, moving southwest.',
+    /* ---- quiet / normal state (activity_state, 2026-09-12 lesson) ---- */
+    quiet_t: "Normal activity",
+    quiet_banner: "No volcanic ash episode in progress—{why} The official alert level below is still shown exactly as issued.",
+    quiet_since: "normal conditions since {when}",
+    vaac_term_t: "Episode terminated",
+    vaac_term_b: "This bulletin closes the episode: the VAAC declares <b>ADVISORY TERMINATED</b>—ash is no longer identifiable and no ongoing eruption is reported. The site is back in normal mode; a new advisory or VONA will restart monitoring.",
+    model_paused_t: "Model paused—normal conditions",
+    model_paused_b: "No ash episode in progress, so the secondary model is not computed and its 6-hourly schedule is paused. The table below is the ARCHIVE of the last computation during the episode ({when}).",
+    model_archive_badge: "ARCHIVE",
+    model_plume_top_arch: "Official ash-cloud top during the last episode",
+    live_quiet: "Normal conditions—no volcanic ash episode in progress.",
   },
 };
 
@@ -446,11 +468,17 @@ function renderVaac() {
   const fc = Object.entries(v.forecasts || {}).map(([k, f]) => `
     <div class="kv"><span class="k">${T("fcst_cloud")} ${esc(k)}</span><span class="v stamp">${esc(f.valid_wib || fmtWib(f.valid_utc))}</span></div>
     ${layerTable(f.layers)}`).join("");
+  /* terminated bulletin (e.g. 2026/217): the episode's official end — show
+     it as such, not as business-as-usual advisory traffic */
+  const termNote = v.terminated
+    ? `<div class="callout ok" style="margin-top:10px"><b>${T("vaac_term_t")}.</b> ${T("vaac_term_b")}</div>`
+    : "";
   $("#card-vaac").innerHTML = `
     <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap">
       <b style="font-size:1.02rem">${T("vaac_advisory")} ${esc(v.advisory_nr)}</b>
       <span class="stamp">${T("issued")}: <b>${esc(v.dtg_wib || fmtWib(v.dtg_utc))}</b> (${relWib(v.dtg_utc)})</span>
     </div>
+    ${termNote}
     <div class="kv" style="margin-top:8px"><span class="k">${T("eruption_detail")}</span><span class="v" lang="en">${esc(v.eruption_details || "—")}</span></div>
     <div class="stamp" style="margin:8px 0 2px">${T("obs_cloud")}</div>
     ${layerTable(v.observed_layers)}
@@ -488,8 +516,16 @@ const BAND_COLORS = ["#6b7280", "#d97706", "#9b2b1a", "#7c3aed", "#2563eb", "#16
 function renderModel() {
   $("#model-disclosure").innerHTML = T("disclosure");
   const box = $("#card-model");
+  /* quiet state (activity_state): no live episode -> the model is paused and
+     whatever is on screen is the ARCHIVE of the ended episode, never a
+     fresh-looking "today" computation */
+  const quiet = !!(SNAP && SNAP.activity && SNAP.activity.state === "quiet");
+  const pausedNote = quiet
+    ? `<div class="callout ok"><b>${T("model_paused_t")}.</b> ${T("model_paused_b")
+        .replace("{when}", MODEL && MODEL.computed_utc ? fmtWib(MODEL.computed_utc) : "—")}</div>`
+    : "";
   if (!MODEL || MODEL.status !== "approved") {
-    box.innerHTML = `<div class="model-unpub">
+    box.innerHTML = `${pausedNote}<div class="model-unpub">
       <svg class="ic"><use href="#i-shield"/></svg>
       <h3 style="margin:8px 0 4px">${T("model_unpub_t")}</h3>
       <p class="stamp" style="max-width:520px;margin:0 auto">${T("model_unpub_b")}</p></div>`;
@@ -529,9 +565,13 @@ function renderModel() {
   const pt = MODEL.plume_top;
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
   box.innerHTML = `
-    <div class="kv"><span class="k">${T("model_approved")}</span>
+    ${pausedNote}
+    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap">
+      <div class="kv" style="margin:0"><span class="k">${T("model_approved")}</span>
       <span class="v"><b>${esc(MODEL.approved_by)}</b>—${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})</span></div>
-    ${MODEL.auto_published ? `<p class="stamp">${T("auto_note")}</p>` : ""}
+      ${quiet ? `<span class="badge arch">${T("model_archive_badge")}</span>` : ""}
+    </div>
+    ${MODEL.auto_published && !quiet ? `<p class="stamp">${T("auto_note")}</p>` : ""}
     <div class="kv"><span class="k">${T("model_computed")}</span><span class="v">${fmtWib(MODEL.computed_utc)}</span></div>
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
       hard_failures=${MODEL.validation.hard_failures} · agreement=${esc(MODEL.validation.direction_agreement)} ·
@@ -543,7 +583,7 @@ function renderModel() {
       .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
     ${(MODEL.envelope_emission && /capped/i.test(MODEL.envelope_emission.note || "")) ? `<p class="stamp">${T("emission_capped")
       .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
-    ${pt ? `<div class="callout"><b>${T("model_plume_top")}:</b>
+    ${pt ? `<div class="callout"><b>${T(quiet ? "model_plume_top_arch" : "model_plume_top")}:</b>
       ${esc(LANG === "id" ? pt.human_id : pt.human_en)}—${esc(pt.source)}</div>`
       : `<p class="stamp">${T("model_no_top")}</p>`}
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
@@ -999,6 +1039,7 @@ function liveAnnounce() {
     .replace("{vona}", String((SNAP.vona || []).length))
     .replace("{vaac}", vaac)
     .replace("{wib}", SNAP.generated_wib || "");
+  if ((SNAP.activity || {}).state === "quiet") msg = `${T("live_quiet")} ${msg}`;
   if (names) msg = `${T("live_partial").replace("{list}", names)} ${msg}`;
   if (msg === LIVE_LAST) return;
   LIVE_LAST = msg;
@@ -1020,10 +1061,29 @@ function renderBanner() {
   if (!box) return;
   const errs = (SNAP && SNAP.source_errors) || {};
   const keys = Object.keys(errs);
-  if (!keys.length) { box.hidden = true; box.innerHTML = ""; return; }
-  const names = keys.map((k) => (k === "magma" ? "MAGMA/PVMBG" : "Darwin VAAC")).join(", ");
-  box.hidden = false;
-  box.innerHTML = T("src_err_banner").replace("{list}", esc(names));
+  const act = (SNAP && SNAP.activity) || {};
+  if (keys.length) {
+    /* a degraded fetch outranks everything: silence must never look like
+       calm ("no news is not good news") — keep the orange banner on top. */
+    const names = keys.map((k) => (k === "magma" ? "MAGMA/PVMBG" : "Darwin VAAC")).join(", ");
+    box.hidden = false;
+    box.className = "callout warn";
+    box.innerHTML = T("src_err_banner").replace("{list}", esc(names));
+    return;
+  }
+  if (act.state === "quiet") {
+    /* normal mode: green callout with the reason and since-when. The alert
+       level card below is untouched — Siaga III stays Siaga III. */
+    const why = esc((act.reason || {})[LANG] || "");
+    box.hidden = false;
+    box.className = "callout ok";
+    box.innerHTML = `<b>${T("quiet_t")}.</b> ${T("quiet_banner").replace("{why}", why)}` +
+      (act.since_utc ? ` <span class="stamp">${esc(T("quiet_since").replace("{when}", fmtWib(act.since_utc)))}</span>` : "");
+    return;
+  }
+  box.hidden = true;
+  box.className = "callout warn";
+  box.innerHTML = "";
 }
 
 function renderAll() {

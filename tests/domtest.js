@@ -102,13 +102,17 @@ setTimeout(() => {
   const rh = (cache["#card-report"] || {}).innerHTML || "";
   if (!/scope="row"/.test(rh)) { console.error("REPORT TABLE ROW-SCOPE MISSING"); process.exit(1); }
   if (!/lang="id"/.test(rh)) { console.error("REPORT VERBATIM LANG ATTR MISSING"); process.exit(1); }
-  if (!/(Seismogram PVMBG untuk periode|PVMBG seismogram for this reporting)/.test(rh)) { console.error("DESCRIPTIVE SEISMOGRAM ALT MISSING"); process.exit(1); }
+  if (/<img class="pic"/.test(rh) && !/(Seismogram PVMBG untuk periode|PVMBG seismogram for this reporting)/.test(rh)) { console.error("DESCRIPTIVE SEISMOGRAM ALT MISSING"); process.exit(1); }
   const vh = (cache["#card-vaac"] || {}).innerHTML || "";
   if (!/(cara membaca|how to read)/.test(vh)) { console.error("VAAC CODE GLOSSARY MISSING"); process.exit(1); }
-  if (!/scope="col"/.test(vh)) { console.error("VAAC TABLE COL-SCOPE MISSING"); process.exit(1); }
-  if (!/aria-label="[^"]*(barat laut|northwest)/.test(vh)) { console.error("COMPASS SR EXPANSION MISSING"); process.exit(1); }
+  /* table-dependent guards: on quiet/terminated days (e.g. bulletin 2026/217,
+     no OBS/FCST polygons) the VAAC card legitimately has NO table at all —
+     scope/compass checks only apply when a table rendered. */
+  const hasVaacTable = /<table/.test(vh);
+  if (hasVaacTable && !/scope="col"/.test(vh)) { console.error("VAAC TABLE COL-SCOPE MISSING"); process.exit(1); }
+  if (hasVaacTable && !/aria-label="[^"]*(barat laut|northwest)/.test(vh)) { console.error("COMPASS SR EXPANSION MISSING"); process.exit(1); }
   if (!/lang="en"/.test(vh)) { console.error("VAAC EN LANG ATTR MISSING"); process.exit(1); }
-  if (!/(Grafik advisori Darwin VAAC|Darwin VAAC advisory chart)/.test(vh)) { console.error("DESCRIPTIVE VAAC GRAPHIC ALT MISSING"); process.exit(1); }
+  if (/<img class="pic"/.test(vh) && !/(Grafik advisori Darwin VAAC|Darwin VAAC advisory chart)/.test(vh)) { console.error("DESCRIPTIVE VAAC GRAPHIC ALT MISSING"); process.exit(1); }
   const vh2 = (cache["#card-vona"] || {}).innerHTML || "";
   if (!/lang="en"/.test(vh2)) { console.error("VONA EN LANG ATTR MISSING"); process.exit(1); }
   // a11y guards: css/contrast decisions (read the stylesheets directly).
@@ -123,6 +127,32 @@ setTimeout(() => {
   const appSrc = fs.readFileSync(path.join(SITE, "app.js"), "utf8");
   if (!/prefers-reduced-motion/.test(appSrc)) { console.error("REDUCED-MOTION GUARD MISSING IN LOOP PLAYER"); process.exit(1); }
   if (!/T\("ext_link"\)/.test(appSrc)) { console.error("ICON-ONLY LINK NAME (ext_link) MISSING"); process.exit(1); }
+  // quiet-state guards (2026-09-12 lesson): the normal-mode rendering path must
+  // exist in BOTH languages, the banner must be able to go green, and the
+  // model card must be able to switch to archive labelling. The snapshot on
+  // disk decides which branch renders today; these guards keep the branches
+  // from silently disappearing in a refactor.
+  for (const key of ["quiet_t", "quiet_banner", "vaac_term_t", "vaac_term_b",
+                     "model_paused_t", "model_paused_b", "model_archive_badge",
+                     "model_plume_top_arch", "live_quiet"]) {
+    const n = (appSrc.match(new RegExp(key + "\\s*:", "g")) || []).length;
+    if (n !== 2) { console.error("QUIET-STATE I18N KEY NOT BILINGUAL: " + key + " (found " + n + ")"); process.exit(1); }
+  }
+  if (!/SNAP\.activity/.test(appSrc) || !/state === "quiet"/.test(appSrc)) { console.error("QUIET-STATE BRANCH MISSING IN RENDER PATH"); process.exit(1); }
+  if (!/callout ok/.test(appSrc) || !/\.callout\.ok/.test(css)) { console.error("NORMAL-STATE GREEN CALLOUT MISSING (app.js or site.css)"); process.exit(1); }
+  if (!/badge arch/.test(appSrc) || !/\.badge\.arch/.test(css)) { console.error("ARCHIVE BADGE MISSING (app.js or site.css)"); process.exit(1); }
+  if (!/v\.terminated/.test(appSrc)) { console.error("TERMINATED-BULLETIN BADGE BRANCH MISSING IN renderVaac"); process.exit(1); }
+  // the pipeline side: activity state module + age-gated VONA anchor exist
+  const bs = fs.readFileSync(path.join(SITE, "..", "src", "build_site.py"), "utf8");
+  if (!/activity_state as ACT/.test(bs) || !/assess_activity/.test(bs)) { console.error("ACTIVITY STATE NOT WIRED INTO build_site.py"); process.exit(1); }
+  if (!/vona_plume_top/.test(bs)) { console.error("AGE-GATED VONA PLUME-TOP MISSING IN build_site.py"); process.exit(1); }
+  if (/KRAKATAU_SCHED|notify_scheduler/.test(bs)) { console.error("PUSH-BASED SCHEDULER WIRING MUST NOT EXIST (pg_cron pulls activity.state from snapshot.json)"); process.exit(1); }
+  if (!/"activity":\s*activity/.test(bs)) { console.error("ACTIVITY VERDICT NOT WRITTEN TO snapshot.json (the pg_cron sync reads it)"); process.exit(1); }
+  const schedSql = fs.readFileSync(path.join(SITE, "..", "tmp", "pg_cron_model6h.sql"), "utf8");
+  const schedSqlCode = schedSql.replace(/--.*$/gm, "");   // guard executable SQL, not prose
+  if (!/sync_model_scheduler_from_github/.test(schedSqlCode)) { console.error("PG_CRON PULL SYNC (sync_model_scheduler_from_github) MISSING IN tmp/pg_cron_model6h.sql"); process.exit(1); }
+  if (/service_role/i.test(schedSqlCode)) { console.error("SERVICE_ROLE MUST NOT APPEAR IN tmp/pg_cron_model6h.sql EXECUTABLE SQL (Supabase legacy keys deprecated — replaced by sb_secret_*)"); process.exit(1); }
+  if (fs.existsSync(path.join(SITE, "..", "supabase", "functions"))) { console.error("EDGE FUNCTION DIRECTORY supabase/functions/ MUST NOT EXIST (scheduler control is pull-based)"); process.exit(1); }
   console.log("domtest: all sections rendered");
   process.exit(0);
 }, 700);

@@ -1,7 +1,7 @@
 # Architecture & engineering notes
 
 This file records *how* it works and *why*, including the
-traps we hit — so future contributors (and forks) don't rediscover them.
+traps we hit—so future contributors (and forks) don't rediscover them.
 
 ## Pipeline
 
@@ -28,7 +28,7 @@ The website never scrapes anything. It only reads local JSON/images,
 bootstraps the active volcano from `data/volcanoes.json` (`?volcano=<slug>`
 picks another entry), refreshes every 5 min, and renders with plain JS (no
 framework: no build step between a non-developer maintainer and their own
-site). Adding a volcano is a one-file edit in `src/volcanoes.py` — data,
+site). Adding a volcano is a one-file edit in `src/volcanoes.py`—data,
 archives and ledgers namespace themselves under `<slug>`.
 
 ## Source hierarchy (never blended)
@@ -36,7 +36,7 @@ archives and ledgers namespace themselves under `<slug>`.
 | Tier | Source | For |
 |---|---|---|
 | PRIMARY | MAGMA/PVMBG (CVGHM) | alert level, 6-h reports, eruptions, VONA, seismicity |
-| PRIMARY | Darwin VAAC (BoM, ICAO) | ash cloud extent/height/motion — **when published** |
+| PRIMARY | Darwin VAAC (BoM, ICAO) | ash cloud extent/height/motion—**when published** |
 | SECONDARY | Himawari-9 AMV + open-meteo | plume estimate; human-gated; always disclosed |
 | context | NASA GIBS/FIRMS, Natural Earth | imagery, loops, coastlines |
 
@@ -106,6 +106,46 @@ Machines flag; humans judge.
   GIBS is the only universally reproducible source. Deliberate choice for an
   open project.
 
+## Quiet state & scheduler control (2026-09-12 lesson)
+
+The day Darwin VAAC ended the Krakatau episode with bulletin 2026/217
+("ADVISORY TERMINATED", "NXT ADVISORY: NO FURTHER ADVISORIES"), the pipeline
+happily kept rendering the memory of the eruption as the present: the
+plume-top fallback quoted a VONA issued 19 days earlier (557 m, 24 Aug) as
+the "official ash-cloud top today". Two rules now prevent that class of bug:
+
+- **`src/activity_state.py`** decides `active` vs `quiet` from what the
+  fetchers just produced: a current non-terminated advisory, a VONA ≤ 24 h,
+  or an eruption row ≤ 6 h means ACTIVE; both sources reachable with nothing
+  fresh means NORMAL (`quiet`), with `vaac_terminated` as the authoritative
+  sub-reason when the VAAC says so in its own words (`darwin_vaac.episode_status`
+  also recognises CANCEL wording). An *unreachable* source can never vote for
+  quiet—the previous state is held (hysteresis; absence of data is not
+  absence of ash, the 2026-09-08 lesson). The verdict rides in
+  `snapshot.json` as `activity{state, reason_code, reason{id,en}, evidence,
+  since_utc}` with `since_utc` carried across unchanged assessments.
+- **Consequences of quiet**, all graceful: the VONA/AMV plume-top fallbacks
+  are suppressed (no official top is *shown* as "today"—the VONA anchor is
+  age-gated at 24 h even in active state); the secondary model, its 6-hourly
+  auto-publish and the fresh-stamped model archive are skipped; the backtest
+  ledger stops appending; the site shows a green "Aktivitas normal" banner
+  with the reason, relabels the model card as an ARSIP of the ended episode,
+  and badges a terminated bulletin in the VAAC card. The MAGMA alert level
+  (Siaga III) is deliberately untouched—it keeps rendering exactly as
+  issued while it is in force.
+- **Scheduler**: GitHub's native `schedule:` triggers were removed from both
+  workflows when the cadence moved to Supabase `pg_cron`.
+  Pause/resume verdict lands in the committed `site/data/<slug>/snapshot.json`
+  (`activity.state`); the pg_cron job every 5 min reads that file
+  from raw.githubusercontent.com. `public.set_model_scheduler()` →
+  `cron.alter_job` to pause/resume the model job, with `trigger_model_run()`
+  re-checking the state flag before every dispatch. Idempotent and self-healing
+  (the SQL no-ops when unchanged; a failed fetch raises and the state stays put;
+  worst case one extra dispatch that hits the build-side quiet gate and does no work);
+  the build-side gates above work even with no Supabase side configured at
+  all—the pg_cron layer only stops the *dispatch*, the Python layer stops
+  the *work*.
+
 ## Agent-friendly surface
 
 `data/<slug>/snapshot.json` (schema v1, `<link rel=alternate>` + JSON-LD),
@@ -115,11 +155,15 @@ TOWARD, prefer `*_human_*` altitude strings, never quote the candidate file).
 
 ## Tests
 
-- `node tests/domtest.js` (+ `--offline`, `--en`) — headless render of every
+- `node tests/domtest.js` (+ `--offline`, `--en`)—headless render of every
   dashboard section against real data; catches runtime errors `--check` can't.
-- `python3 darwin_vaac.py --fixture tests/fixture_advisory.html` — pins the
+- `python3 tests/test_model_math.py`—the envelope math + registry wiring.
+- `python3 tests/test_quiet_state.py`—the activity state machine, the
+  terminated-bulletin parsing (real 2026/217 text as fixture), the VONA
+  age gate and the MAGMA timestamp format.
+- `python3 darwin_vaac.py --fixture tests/fixture_advisory.html`—pins the
   WMO bulletin parser (positions, FL→km, motion, forecasts).
-- `python3 publish.py --dry-run` — routing preview without sending.
+- `python3 publish.py --dry-run`—routing preview without sending.
 PRs that change parsing must add/update a fixture.
 
 ## Self-hosting (alternative to GitHub Actions)

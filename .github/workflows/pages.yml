@@ -1,17 +1,16 @@
 name: Build & deploy dashboard
 
 # ---------------------------------------------------------------------------
-#   Automatic : every 15 minutes the job re-collects MAGMA + Darwin VAAC,
-#               re-stitches NASA imagery, and redeploys.
+#   Automatic : pg_cron calls workflow_dispatch every 15 minutes:
+#               re-collects MAGMA + Darwin VAAC, re-stitches NASA imagery,
+#               and redeploys.
 #   Manual    : "Run workflow" button in the Actions tab.
 #               Tick `publish_forecast_model` to push the secondary model to
 #               the site — that checkbox IS the human-in-the-loop approval.
 #               Type your handle in `approver_name`; it is stamped on the page.
 # ---------------------------------------------------------------------------
 on:
-  schedule:
-    - cron: '*/15 * * * *'
-  push:                 # rebuild on any commit (also re-registers the schedule)
+  push:                 # rebuild on any commit
     branches: [main, master]
   workflow_dispatch:
     inputs:

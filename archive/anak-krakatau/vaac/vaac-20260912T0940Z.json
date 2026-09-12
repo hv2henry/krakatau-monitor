@@ -1,0 +1,40 @@
+{
+ "t": "20260912T0940Z",
+ "state": "advisory",
+ "advisory_nr": "2026/216",
+ "dtg_utc": "2026-09-12T05:00Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "SW",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.1167,
+     "lon": 105.5167
+    },
+    {
+     "lat": -6.8667,
+     "lon": 104.5333
+    },
+    {
+     "lat": -6.35,
+     "lon": 104.1167
+    },
+    {
+     "lat": -5.8167,
+     "lon": 104.4167
+    },
+    {
+     "lat": -5.9833,
+     "lon": 105.4667
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT IDENTIFIABLE ON LATEST SAT IMG DUE TO MET CLOUD. ERUPTIONS ARE EXPECTED TO BE ONGOING. VA HEIGHT AND FORECAST MOVEMENT BASED ON LAST OBSERVED MOVEMENT, MODEL GUIDANCE AND GROUND REPORTS."
+}

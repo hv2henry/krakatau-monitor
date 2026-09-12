@@ -1,14 +1,21 @@
 name: Model 6-hourly (auto-generate + archive)
 
 # ---------------------------------------------------------------------------
-# Maintainer decision (decreasing-activity window, 2026-09): the secondary model
-# is generated EVERY 6 HOURS without a human in the loop, so it can be compared
-# against Darwin VAAC over time. Guardrails kept:
+# Maintainer decision: the secondary model is generated EVERY 6 HOURS without
+# a human in the loop, so it can be compared against Darwin VAAC over time.
+# Guardrails kept:
 #   * auto-publish ONLY when validation reports zero hard failures;
 #   * every auto-published model is stamped auto_published + approved_by=auto:6h;
 #   * caveats[] travel with it and render on the page;
 #   * the manual approval button (pages.yml) still overrides at any time;
 #   * set repo variable AUTO_PUBLISH_MODEL=false to fall back to manual-only.
+#
+# Transition State: when the VAAC bulletin says ADVISORY TERMINATED, or
+# neither MAGMA nor Darwin VAAC has real-time data, the build classifies the
+# volcano as quiet — it then skips the model, auto-publish and model archiving
+# entirely (graceful stop). The verdict is COMMITTED to snapshot.json
+# (activity.state); pg_cron's sync job reads that file every 5 min and
+# pauses/resumes this job's dispatch.
 #
 # This job also ARCHIVES, every 6 hours (per volcano, under archive/<slug>/ —
 # see src/volcanoes.py; today that means archive/anak-krakatau/):
@@ -19,8 +26,6 @@ name: Model 6-hourly (auto-generate + archive)
 # Pruned automatically: 60 models / 40 states / 30 graphics.
 # ---------------------------------------------------------------------------
 on:
-  schedule:
-    - cron: '0 */6 * * *'      # 00,06,12,18 UTC = 07,13,19,01 WIB
   workflow_dispatch: {}
 
 concurrency:

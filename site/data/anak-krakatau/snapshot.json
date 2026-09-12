@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-12T14:15:19Z",
- "generated_wib": "12 Sep 2026, 21:15 WIB",
+ "generated_utc": "2026-09-12T14:19:11Z",
+ "generated_wib": "12 Sep 2026, 21:19 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-12T14:15:24Z",
-  "fetched_wib": "12 Sep 2026, 21:15 WIB",
+  "fetched_utc": "2026-09-12T14:19:16Z",
+  "fetched_wib": "12 Sep 2026, 21:19 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -38,7 +38,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 21:15 WIB"
+  "fetched_wib": "12 Sep 2026, 21:19 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -93,7 +93,7 @@
   "advisory_nr": "2026/217",
   "dtg_utc": "2026-09-12T10:40Z",
   "dtg_wib": "12 Sep 2026, 17:40 WIB",
-  "age_hours": 3.6,
+  "age_hours": 3.7,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -241,7 +241,7 @@
    "noaa_slot": "2026-09-12 13:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-12T13:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-12T14:15:53Z"
+  "built_utc": "2026-09-12T14:19:45Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

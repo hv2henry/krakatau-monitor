@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-12T11:00:13Z",
- "generated_wib": "12 Sep 2026, 18:00 WIB",
+ "generated_utc": "2026-09-12T11:07:04Z",
+ "generated_wib": "12 Sep 2026, 18:07 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-12T11:00:20Z",
-  "fetched_wib": "12 Sep 2026, 18:00 WIB",
+  "fetched_utc": "2026-09-12T11:07:10Z",
+  "fetched_wib": "12 Sep 2026, 18:07 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -39,7 +39,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "12 Sep 2026, 18:00 WIB"
+  "fetched_wib": "12 Sep 2026, 18:07 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -94,7 +94,7 @@
   "advisory_nr": "2026/217",
   "dtg_utc": "2026-09-12T10:40Z",
   "dtg_wib": "12 Sep 2026, 17:40 WIB",
-  "age_hours": 0.3,
+  "age_hours": 0.5,
   "is_current": true,
   "eruption_details": "VA TO FL050 LAST OBS AT 11/0820Z MOV SW",
   "info_source": "HIMAWARI-9, CVGHM",
@@ -167,63 +167,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-12T08:10:00Z",
-    "t_wib": "12 Sep 2026, 15:10 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
     "t_utc": "2026-09-12T08:20:00Z",
     "t_wib": "12 Sep 2026, 15:20 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-12T08:30:00Z",
     "t_wib": "12 Sep 2026, 15:30 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-09-12T08:40:00Z",
     "t_wib": "12 Sep 2026, 15:40 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-12T08:50:00Z",
     "t_wib": "12 Sep 2026, 15:50 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-12T09:00:00Z",
     "t_wib": "12 Sep 2026, 16:00 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-12T09:10:00Z",
     "t_wib": "12 Sep 2026, 16:10 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-12T09:20:00Z",
     "t_wib": "12 Sep 2026, 16:20 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-12T09:30:00Z",
     "t_wib": "12 Sep 2026, 16:30 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-12T09:40:00Z",
     "t_wib": "12 Sep 2026, 16:40 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-09-12T09:50:00Z",
     "t_wib": "12 Sep 2026, 16:50 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f09.jpg"
    },
    {
     "t_utc": "2026-09-12T10:00:00Z",
     "t_wib": "12 Sep 2026, 17:00 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-09-12T10:10:00Z",
+    "t_wib": "12 Sep 2026, 17:10 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -239,10 +239,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-12 10:00Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-12T10:00:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-12 10:10Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-12T10:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-12T11:01:32Z"
+  "built_utc": "2026-09-12T11:08:31Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

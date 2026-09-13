@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-13T10:36:13Z",
- "generated_wib": "13 Sep 2026, 17:36 WIB",
+ "generated_utc": "2026-09-13T10:45:14Z",
+ "generated_wib": "13 Sep 2026, 17:45 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-13T10:36:18Z",
-  "fetched_wib": "13 Sep 2026, 17:36 WIB",
+  "fetched_utc": "2026-09-13T10:45:20Z",
+  "fetched_wib": "13 Sep 2026, 17:45 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 126.0,
+   "vona_age_hours": 126.2,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-13T10:36Z"
+  "assessed_utc": "2026-09-13T10:45Z"
  },
  "report": {
   "period": "Minggu - 13 September 2026 06:00-12:00 WIB",
@@ -55,7 +55,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "13 Sep 2026, 17:36 WIB"
+  "fetched_wib": "13 Sep 2026, 17:45 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -169,49 +169,64 @@
   "interval_min": 10,
   "frames": [
    {
+    "t_utc": "2026-09-13T07:50:00Z",
+    "t_wib": "13 Sep 2026, 14:50 WIB",
+    "asset": "assets/loop/f00.jpg"
+   },
+   {
+    "t_utc": "2026-09-13T08:00:00Z",
+    "t_wib": "13 Sep 2026, 15:00 WIB",
+    "asset": "assets/loop/f01.jpg"
+   },
+   {
+    "t_utc": "2026-09-13T08:10:00Z",
+    "t_wib": "13 Sep 2026, 15:10 WIB",
+    "asset": "assets/loop/f02.jpg"
+   },
+   {
     "t_utc": "2026-09-13T08:20:00Z",
     "t_wib": "13 Sep 2026, 15:20 WIB",
-    "asset": "assets/loop/f00.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-13T08:30:00Z",
     "t_wib": "13 Sep 2026, 15:30 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-13T08:40:00Z",
     "t_wib": "13 Sep 2026, 15:40 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-13T08:50:00Z",
     "t_wib": "13 Sep 2026, 15:50 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-13T09:00:00Z",
     "t_wib": "13 Sep 2026, 16:00 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-13T09:10:00Z",
     "t_wib": "13 Sep 2026, 16:10 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-09-13T09:20:00Z",
     "t_wib": "13 Sep 2026, 16:20 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f09.jpg"
    },
    {
     "t_utc": "2026-09-13T09:30:00Z",
     "t_wib": "13 Sep 2026, 16:30 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f10.jpg"
    },
    {
     "t_utc": "2026-09-13T09:40:00Z",
     "t_wib": "13 Sep 2026, 16:40 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -229,7 +244,7 @@
    "noaa_slot": "2026-09-13 09:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-13T09:40:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-13T10:38:16Z"
+  "built_utc": "2026-09-13T10:46:22Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

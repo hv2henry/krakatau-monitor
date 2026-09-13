@@ -92,6 +92,18 @@ setTimeout(() => {
   if (/terkopel/.test(mh)) { console.error("OLD STIFF WORDING 'terkopel' STILL PRESENT"); process.exit(1); }
   if (/<\/b> — |dpl — Darwin|asl — Darwin/.test(mh)) { console.error("SPACED EM-DASH STILL RENDERED IN TEMPLATE"); process.exit(1); }
   if (/class="nodata"/.test(mh) && !/(nilai vektor angin|wind-vector values)/.test(mh)) { console.error("NEW NO-DATA SENTENCE MISSING"); process.exit(1); }
+  // 2026-09-13 archive honesty: when the plume-top anchor is a VONA estimate,
+  // its issue date must be visible on screen. The 24-Aug lesson: a 19-day-old
+  // anchor rendered without provenance reads as an official "today" value.
+  // (offline skips: the model card renders its unpublished branch there)
+  if (!offline) {
+    try {
+      const mdl = JSON.parse(fs.readFileSync(path.join(SITE, "data", "anak-krakatau", "forecast_model.json"), "utf8"));
+      if (mdl.plume_top && mdl.plume_top.issued_wib && !/\((diterbitkan|issued) /.test(mh)) {
+        console.error("PLUME-TOP ISSUE DATE NOT RENDERED IN MODEL CARD"); process.exit(1);
+      }
+    } catch (e) { if (e.code !== "ENOENT") { throw e; } }
+  }
   // a11y guards: landmarks + live region must exist in the page source.
   if (!/<main id="main"/.test(html)) { console.error("MAIN LANDMARK MISSING"); process.exit(1); }
   if (!/class="skip-link"/.test(html) || !/data-i18n="skip_main"/.test(html)) { console.error("SKIP LINK MISSING"); process.exit(1); }
@@ -140,7 +152,8 @@ setTimeout(() => {
   // from silently disappearing in a refactor.
   for (const key of ["quiet_t", "quiet_banner", "vaac_term_t", "vaac_term_b",
                      "model_paused_t", "model_paused_b", "model_archive_badge",
-                     "model_plume_top_arch", "live_quiet"]) {
+                     "model_plume_top_arch", "model_top_issued", "star_note_arch",
+                     "live_quiet"]) {
     const n = (appSrc.match(new RegExp(key + "\\s*:", "g")) || []).length;
     if (n !== 2) { console.error("QUIET-STATE I18N KEY NOT BILINGUAL: " + key + " (found " + n + ")"); process.exit(1); }
   }
@@ -148,6 +161,10 @@ setTimeout(() => {
   if (!/callout ok/.test(appSrc) || !/\.callout\.ok/.test(css)) { console.error("NORMAL-STATE GREEN CALLOUT MISSING (app.js or site.css)"); process.exit(1); }
   if (!/badge arch/.test(appSrc) || !/\.badge\.arch/.test(css)) { console.error("ARCHIVE BADGE MISSING (app.js or site.css)"); process.exit(1); }
   if (!/v\.terminated/.test(appSrc)) { console.error("TERMINATED-BULLETIN BADGE BRANCH MISSING IN renderVaac"); process.exit(1); }
+  // plume-top provenance: the callout must wire pt.issued_wib through the
+  // model_top_issued template, and archive mode must not claim "today"
+  if (!/pt\.issued_wib/.test(appSrc) || !/model_top_issued/.test(appSrc)) { console.error("PLUME-TOP ISSUE-DATE WIRING MISSING IN app.js"); process.exit(1); }
+  if (!/star_note_arch/.test(appSrc)) { console.error("ARCHIVE STAR-NOTE VARIANT MISSING IN app.js"); process.exit(1); }
   // the pipeline side: activity state module + age-gated VONA anchor exist
   const bs = fs.readFileSync(path.join(SITE, "..", "src", "build_site.py"), "utf8");
   if (!/activity_state as ACT/.test(bs) || !/assess_activity/.test(bs)) { console.error("ACTIVITY STATE NOT WIRED INTO build_site.py"); process.exit(1); }

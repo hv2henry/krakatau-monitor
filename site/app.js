@@ -91,6 +91,7 @@ const I18N = {
     verbatim_note: "Seluruh teks dari lembaga resmi (PVMBG/MAGMA, VONA, Darwin VAAC) ditampilkan apa adanya, tanpa suntingan—termasuk bila sumber mengandung pengulangan kalimat.",
     abbr_note: "dpl = di atas permukaan laut · ft = kaki · km = kilometer",
     star_note: "★ = lapisan paling relevan hari ini (berdasar puncak awan abu resmi)",
+    star_note_arch: "★ = lapisan paling relevan saat episode terakhir (berdasar puncak awan abu resmi arsip)",
     backtest_line: "Pemeriksaan ulang historis vs Darwin VAAC: rerata selisih sudut {m}° (n={n}).",
     caveats_title: "Catatan kejujuran:",
     no_data: "tidak ada data",
@@ -140,6 +141,7 @@ const I18N = {
     model_paused_b: "Tidak ada episode abu yang berlangsung, sehingga model sekunder tidak dihitung dan jadwal 6-jamnya dihentikan sementara. Tabel di bawah adalah ARSIP perhitungan terakhir saat episode masih berlangsung ({when}).",
     model_archive_badge: "ARSIP",
     model_plume_top_arch: "Puncak awan abu resmi saat episode terakhir",
+    model_top_issued: "diterbitkan {d}",
     live_quiet: "Kondisi normal—tidak ada episode abu vulkanik yang berlangsung.",
   },
   en: {
@@ -224,6 +226,7 @@ const I18N = {
     verbatim_note: "All text from official agencies (PVMBG/MAGMA, VONA, Darwin VAAC) is shown verbatim, unedited—including where the source itself repeats a sentence.",
     abbr_note: "asl = above sea level · ft = feet · km = kilometres",
     star_note: "★ = most relevant layer today (based on the official ash-cloud top)",
+    star_note_arch: "★ = most relevant layer during the last episode (based on the archived official ash-cloud top)",
     backtest_line: "Historical cross-check vs Darwin VAAC: mean angular difference {m}° (n={n}).",
     caveats_title: "Honesty notes:",
     no_data: "no data",
@@ -273,6 +276,7 @@ const I18N = {
     model_paused_b: "No ash episode in progress, so the secondary model is not computed and its 6-hourly schedule is paused. The table below is the ARCHIVE of the last computation during the episode ({when}).",
     model_archive_badge: "ARCHIVE",
     model_plume_top_arch: "Official ash-cloud top during the last episode",
+    model_top_issued: "issued {d}",
     live_quiet: "Normal conditions—no volcanic ash episode in progress.",
   },
 };
@@ -555,7 +559,7 @@ function renderModel() {
     const gapTitle = l.data ? "" :
       ` title="${esc((LANG === "id" ? l.note_id : l.note_en) || "")}"`;
     return `<tr${l.data ? "" : ` class="nodata"${gapTitle}`}>
-      <td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${c};margin-right:7px"></span>${esc(l.layer)}${l.relevant_today ? `<span class="star" title="${esc(T("star_note"))}">★</span>` : ""}</td>
+      <td><span class="sw" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${c};margin-right:7px"></span>${esc(l.layer)}${l.relevant_today ? `<span class="star" title="${esc(T(quiet ? "star_note_arch" : "star_note"))}">★</span>` : ""}</td>
       <td>${alt}</td>
       <td>${motion}</td>
       <td class="stamp">${stats}</td></tr>`;
@@ -581,13 +585,13 @@ function renderModel() {
     ${(MODEL.envelope_emission && /capped/i.test(MODEL.envelope_emission.note || "")) ? `<p class="stamp">${T("emission_capped")
       .replace("{w}", Math.round(MODEL.envelope_emission.obs_width_km || 0))}</p>` : ""}
     ${pt ? `<div class="callout"><b>${T(quiet ? "model_plume_top_arch" : "model_plume_top")}:</b>
-      ${esc(LANG === "id" ? pt.human_id : pt.human_en)}—${esc(pt.source)}</div>`
+      ${esc(LANG === "id" ? pt.human_id : pt.human_en)}—${esc(pt.source)}${pt.issued_wib ? ` <span class="stamp">(${esc(T("model_top_issued").replace("{d}", pt.issued_wib))})</span>` : ""}</div>`
       : `<p class="stamp">${T("model_no_top")}</p>`}
     <div class="stamp" style="margin:10px 0 2px">${T("model_layers")}</div>
     <table><thead><tr><th>${T("layer")}</th><th>${T("height")}</th><th>${T("motion")}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>
     ${hasGap ? `<p class="stamp" style="margin-top:6px">${T("no_data_note")}</p>` : ""}
-    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")} · ${T("star_note")}</p>
+    <p class="stamp" style="margin-top:10px">${T("model_traj_kind").replace("{kind}", esc(kind))} · ${T("abbr_note")} · ${T(quiet ? "star_note_arch" : "star_note")}</p>
 `;
 }
 

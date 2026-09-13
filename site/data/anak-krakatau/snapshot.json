@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-13T11:00:18Z",
- "generated_wib": "13 Sep 2026, 18:00 WIB",
+ "generated_utc": "2026-09-13T11:15:49Z",
+ "generated_wib": "13 Sep 2026, 18:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-13T11:00:26Z",
-  "fetched_wib": "13 Sep 2026, 18:00 WIB",
+  "fetched_utc": "2026-09-13T11:15:55Z",
+  "fetched_wib": "13 Sep 2026, 18:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -37,25 +37,26 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 126.4,
+   "vona_age_hours": 126.7,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-13T11:00Z"
+  "assessed_utc": "2026-09-13T11:15Z"
  },
  "report": {
-  "period": "Minggu - 13 September 2026 06:00-12:00 WIB",
-  "author": "Anggi Nuryo Saputro, A.Md.",
-  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah hingga sedang ke arah barat laut.",
-  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah barat laut. Suhu udara sekitar 26.7-30.8°C. Kelembaban 72-87%.",
+  "period": "Minggu - 13 September 2026 12:00-18:00 WIB",
+  "author": "Rioboniek Situmorang",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah hingga sedang ke arah utara, timur laut, barat dan barat laut.",
+  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah utara, timur laut, barat dan barat laut. Suhu udara sekitar 29.1-31.6°C. Kelembaban 63-70%.",
   "seismic_counts": {
+   "Hybrid/Fase Banyak": 1,
    "Tremor Menerus": 1
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "13 Sep 2026, 18:00 WIB"
+  "fetched_wib": "13 Sep 2026, 18:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -169,58 +170,58 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-13T08:40:00Z",
-    "t_wib": "13 Sep 2026, 15:40 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
     "t_utc": "2026-09-13T08:50:00Z",
     "t_wib": "13 Sep 2026, 15:50 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-13T09:00:00Z",
     "t_wib": "13 Sep 2026, 16:00 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-09-13T09:10:00Z",
     "t_wib": "13 Sep 2026, 16:10 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-13T09:20:00Z",
     "t_wib": "13 Sep 2026, 16:20 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-13T09:30:00Z",
     "t_wib": "13 Sep 2026, 16:30 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-13T09:40:00Z",
     "t_wib": "13 Sep 2026, 16:40 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-13T09:50:00Z",
     "t_wib": "13 Sep 2026, 16:50 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-13T10:00:00Z",
     "t_wib": "13 Sep 2026, 17:00 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-13T10:10:00Z",
     "t_wib": "13 Sep 2026, 17:10 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-09-13T10:20:00Z",
     "t_wib": "13 Sep 2026, 17:20 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-09-13T10:40:00Z",
+    "t_wib": "13 Sep 2026, 17:40 WIB",
     "asset": "assets/loop/f10.jpg"
    }
   ],
@@ -236,10 +237,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-13 10:20Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-13T10:20:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-13 10:40Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-13T10:40:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-13T11:01:27Z"
+  "built_utc": "2026-09-13T11:17:07Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

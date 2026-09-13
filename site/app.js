@@ -136,8 +136,8 @@ const I18N = {
     quiet_since: "kondisi normal sejak {when}",
     vaac_term_t: "Episode dihentikan",
     vaac_term_b: "Buletin ini menutup episode: VAAC menyatakan <b>ADVISORY TERMINATED</b>—abu tidak lagi teridentifikasi dan tidak ada laporan erupsi berlangsung. Situs kembali ke mode normal; advisori atau VONA baru akan memulai pemantauan ulang.",
-    model_paused_t: "Model dijeda—kondisi normal",
-    model_paused_b: "Tidak ada episode abu yang berlangsung, sehingga model sekunder tidak dihitung dan jadwal 6-jamnya dijeda. Tabel di bawah adalah ARSIP perhitungan terakhir saat episode masih berlangsung ({when}).",
+    model_paused_t: "Model dihentikan sementara—kondisi normal",
+    model_paused_b: "Tidak ada episode abu yang berlangsung, sehingga model sekunder tidak dihitung dan jadwal 6-jamnya dihentikan sementara. Tabel di bawah adalah ARSIP perhitungan terakhir saat episode masih berlangsung ({when}).",
     model_archive_badge: "ARSIP",
     model_plume_top_arch: "Puncak awan abu resmi saat episode terakhir",
     live_quiet: "Kondisi normal—tidak ada episode abu vulkanik yang berlangsung.",
@@ -566,11 +566,8 @@ function renderModel() {
   const kind = (MODEL.layers.find((l) => l.trajectory_kind) || {}).trajectory_kind || "steady-wind";
   box.innerHTML = `
     ${pausedNote}
-    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap">
-      <div class="kv" style="margin:0"><span class="k">${T("model_approved")}</span>
-      <span class="v"><b>${esc(MODEL.approved_by)}</b>—${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})</span></div>
-      ${quiet ? `<span class="badge arch">${T("model_archive_badge")}</span>` : ""}
-    </div>
+    <div class="kv" style="margin:0"><span class="k">${T("model_approved")}</span>
+      <span class="v"><b>${esc(MODEL.approved_by)}</b>—${fmtWib(MODEL.approved_utc)} (${relWib(MODEL.approved_utc)})${quiet ? ` <span class="badge arch">${T("model_archive_badge")}</span>` : ""}</span></div>
     ${MODEL.auto_published && !quiet ? `<p class="stamp">${T("auto_note")}</p>` : ""}
     <div class="kv"><span class="k">${T("model_computed")}</span><span class="v">${fmtWib(MODEL.computed_utc)}</span></div>
     <div class="kv"><span class="k">${T("model_valid")}</span><span class="v stamp">
@@ -1059,6 +1056,13 @@ function safeRender(name, fn) {
 function renderBanner() {
   const box = $("#src-banner");
   if (!box) return;
+  /* banner-on pulls #sec-status up to the navbar (site.css): the banner
+     itself carries the bottom margin, so the section header keeps its gap. */
+  const show = (on) => {
+    box.hidden = !on;
+    const sec = $("#sec-status");
+    if (sec) sec.classList.toggle("banner-on", on);
+  };
   const errs = (SNAP && SNAP.source_errors) || {};
   const keys = Object.keys(errs);
   const act = (SNAP && SNAP.activity) || {};
@@ -1066,7 +1070,7 @@ function renderBanner() {
     /* a degraded fetch outranks everything: silence must never look like
        calm ("no news is not good news") — keep the orange banner on top. */
     const names = keys.map((k) => (k === "magma" ? "MAGMA/PVMBG" : "Darwin VAAC")).join(", ");
-    box.hidden = false;
+    show(true);
     box.className = "callout warn";
     box.innerHTML = T("src_err_banner").replace("{list}", esc(names));
     return;
@@ -1075,13 +1079,13 @@ function renderBanner() {
     /* normal mode: green callout with the reason and since-when. The alert
        level card below is untouched — Siaga III stays Siaga III. */
     const why = esc((act.reason || {})[LANG] || "");
-    box.hidden = false;
+    show(true);
     box.className = "callout ok";
     box.innerHTML = `<b>${T("quiet_t")}.</b> ${T("quiet_banner").replace("{why}", why)}` +
       (act.since_utc ? ` <span class="stamp">${esc(T("quiet_since").replace("{when}", fmtWib(act.since_utc)))}</span>` : "");
     return;
   }
-  box.hidden = true;
+  show(false);
   box.className = "callout warn";
   box.innerHTML = "";
 }

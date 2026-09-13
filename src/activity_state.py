@@ -39,11 +39,8 @@ STATE MACHINE
               VAAC said "nil" while MAGMA recorded five eruptions that day.
 
 The output dict rides along in snapshot.json as `activity`, drives the site's
-normal-mode banner, gates the plume-top fallbacks, pauses the 6-hourly model
-(auto-publish + archive), and is the signal the pg_cron scheduler control
-listens to (sync_model_scheduler_from_github pulls activity.state straight
-out of the committed snapshot.json — pull, not push: no Edge Function, no
-service_role key).
+normal-mode banner, gates the plume-top fallbacks, and pauses the 6-hourly
+model (auto-publish + archive) while the volcano is quiet.
 
 Stdlib only. Python 3.8+.
 """

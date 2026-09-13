@@ -69,9 +69,11 @@ VOLCANOES = {
             "bpbd_lampung": "https://bpbd.lampungprov.go.id",
             "bpbd_banten": "https://bpbd.bantenprov.go.id",
         },
-        # imagery framing kept EXACTLY as the pre-registry constants, so the
-        # Krakatau page does not change visually
-        "sat_box": (100.0, 112.0, -12.0, -1.0),
+        # daily true-colour framing: Sunda Strait close-up (3.6 x 2.6 deg,
+        # vent centred) — the old 12 x 11 deg regional box rendered the
+        # volcano as a few pixels; regional context stays on the Himawari
+        # loop and the VAAC map
+        "sat_box": (103.6, 107.2, -7.4, -4.8),
         "loop_box": (100.0, 111.0, -11.0, 0.0),
         "loop_crop": (100.4, 110.4, -10.5, -2.5),
     },

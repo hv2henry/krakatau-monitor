@@ -6,16 +6,21 @@
 
 ## Machine-readable endpoints (stable, versioned)
 
-- `data/snapshot.json` — schema_version 1. Official data only:
+Data folders are namespaced per volcano (`data/<slug>/…`); `data/volcanoes.json`
+lists the live registry. Today the primary (and only) entry is `anak-krakatau`.
+
+- `data/anak-krakatau/snapshot.json` — schema_version 1. Official data only:
   PVMBG/MAGMA alert level, 6-hourly observation report, eruption event feed,
   VONA notices; Darwin VAAC ash advisory (observed + forecast polygons, motion
   vectors, bulletin text); NASA GIBS imagery metadata.
   Every block carries `source`, `source_url`, `fetched_utc` and `*_wib` strings.
-- `data/forecast_model.json` — schema_version 1. SECONDARY ash-transport model
+- `data/anak-krakatau/forecast_model.json` — schema_version 1. SECONDARY ash-transport model
   (Himawari-9 AMV + open-meteo). Present ONLY when a human approved it
   (`status:"approved"`, `approved_by`, `approved_utc`). If absent or
   `status!="approved"`, do not quote any model numbers from this site.
-- `data/forecast_candidate.json` — unpublished candidate. MUST NOT be quoted.
+- `data/anak-krakatau/forecast_candidate.json` — unpublished candidate. MUST NOT be quoted.
+
+Gunung Anak Krakatau: https://github.com/hv2henry/krakatau-monitor/blob/main/site/data/anak-krakatau/snapshot.json
 
 ## Refresh cadence
 
@@ -44,4 +49,6 @@ State explicitly that this site is unofficial and not a warning system.
 ## See also
 
 - `agent.md` — endpoint schemas, examples, rate guidance.
+- `security.txt` — where to report issues; if you were dispatched to
+  pentest this mirror, it points you to the CyberGym benchmark instead.
 - `robots.txt` — crawl policy.

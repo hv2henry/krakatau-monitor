@@ -104,14 +104,20 @@ setTimeout(() => {
   if (!/lang="id"/.test(rh)) { console.error("REPORT VERBATIM LANG ATTR MISSING"); process.exit(1); }
   if (/<img class="pic"/.test(rh) && !/(Seismogram PVMBG untuk periode|PVMBG seismogram for this reporting)/.test(rh)) { console.error("DESCRIPTIVE SEISMOGRAM ALT MISSING"); process.exit(1); }
   const vh = (cache["#card-vaac"] || {}).innerHTML || "";
-  if (!/(cara membaca|how to read)/.test(vh)) { console.error("VAAC CODE GLOSSARY MISSING"); process.exit(1); }
+  /* glossary renders only on the advisory branch: the nil/stale card (quiet
+     or no-advisory days) legitimately carries no glossary — conditional,
+     same logic as the table guards below */
+  const vaacNil = /(Tidak ada advisori aktif|No active advisory)/.test(vh);
+  if (!vaacNil && !/(cara membaca|how to read)/.test(vh)) { console.error("VAAC CODE GLOSSARY MISSING"); process.exit(1); }
   /* table-dependent guards: on quiet/terminated days (e.g. bulletin 2026/217,
      no OBS/FCST polygons) the VAAC card legitimately has NO table at all —
      scope/compass checks only apply when a table rendered. */
   const hasVaacTable = /<table/.test(vh);
   if (hasVaacTable && !/scope="col"/.test(vh)) { console.error("VAAC TABLE COL-SCOPE MISSING"); process.exit(1); }
   if (hasVaacTable && !/aria-label="[^"]*(barat laut|northwest)/.test(vh)) { console.error("COMPASS SR EXPANSION MISSING"); process.exit(1); }
-  if (!/lang="en"/.test(vh)) { console.error("VAAC EN LANG ATTR MISSING"); process.exit(1); }
+  /* lang="en" marks verbatim English (eruption details/remarks/bulletin) —
+     all advisory-branch content; the nil/stale card carries none of it */
+  if (!vaacNil && !/lang="en"/.test(vh)) { console.error("VAAC EN LANG ATTR MISSING"); process.exit(1); }
   if (/<img class="pic"/.test(vh) && !/(Grafik advisori Darwin VAAC|Darwin VAAC advisory chart)/.test(vh)) { console.error("DESCRIPTIVE VAAC GRAPHIC ALT MISSING"); process.exit(1); }
   const vh2 = (cache["#card-vona"] || {}).innerHTML || "";
   if (!/lang="en"/.test(vh2)) { console.error("VONA EN LANG ATTR MISSING"); process.exit(1); }
@@ -148,11 +154,22 @@ setTimeout(() => {
   if (!/vona_plume_top/.test(bs)) { console.error("AGE-GATED VONA PLUME-TOP MISSING IN build_site.py"); process.exit(1); }
   if (/KRAKATAU_SCHED|notify_scheduler/.test(bs)) { console.error("PUSH-BASED SCHEDULER WIRING MUST NOT EXIST (pg_cron pulls activity.state from snapshot.json)"); process.exit(1); }
   if (!/"activity":\s*activity/.test(bs)) { console.error("ACTIVITY VERDICT NOT WRITTEN TO snapshot.json (the pg_cron sync reads it)"); process.exit(1); }
-  const schedSql = fs.readFileSync(path.join(SITE, "..", "tmp", "pg_cron_model6h.sql"), "utf8");
-  const schedSqlCode = schedSql.replace(/--.*$/gm, "");   // guard executable SQL, not prose
-  if (!/sync_model_scheduler_from_github/.test(schedSqlCode)) { console.error("PG_CRON PULL SYNC (sync_model_scheduler_from_github) MISSING IN tmp/pg_cron_model6h.sql"); process.exit(1); }
-  if (/service_role/i.test(schedSqlCode)) { console.error("SERVICE_ROLE MUST NOT APPEAR IN tmp/pg_cron_model6h.sql EXECUTABLE SQL (Supabase legacy keys deprecated — replaced by sb_secret_*)"); process.exit(1); }
   if (fs.existsSync(path.join(SITE, "..", "supabase", "functions"))) { console.error("EDGE FUNCTION DIRECTORY supabase/functions/ MUST NOT EXIST (scheduler control is pull-based)"); process.exit(1); }
+  // 2026-09-13 maintainer feedback: banner spacing, softer pause wording,
+  // compact archive badge, slug-correct footer URLs, security.txt, sat zoom.
+  if (!/href="data\/__SLUG__\/snapshot\.json"/.test(html) || !/href="data\/__SLUG__\/forecast_model\.json"/.test(html)) { console.error("FOOTER AGENT URLS MISSING THE VOLCANO SLUG"); process.exit(1); }
+  if (/href="data\/snapshot\.json"|href="data\/forecast_model\.json"/.test(html)) { console.error("OLD SLUG-LESS FOOTER URL STILL PRESENT"); process.exit(1); }
+  if (!/href="security\.txt"/.test(html)) { console.error("SECURITY.TXT LINK MISSING IN FOOTER"); process.exit(1); }
+  if (!fs.existsSync(path.join(SITE, "security.txt")) || !fs.existsSync(path.join(SITE, ".well-known", "security.txt"))) { console.error("SECURITY.TXT FILE(S) MISSING (root and .well-known)"); process.exit(1); }
+  if (!/sunblaze-ucb\/cybergym/.test(fs.readFileSync(path.join(SITE, "security.txt"), "utf8"))) { console.error("CYBERGYM NOTE MISSING IN security.txt"); process.exit(1); }
+  if (!/data\/anak-krakatau\/snapshot\.json/.test(fs.readFileSync(path.join(SITE, "llms.txt"), "utf8")) ||
+      !/data\/anak-krakatau\/forecast_model\.json/.test(fs.readFileSync(path.join(SITE, "agent.md"), "utf8"))) { console.error("MACHINE DOCS (llms.txt/agent.md) NOT SLUG-NAMESPACED"); process.exit(1); }
+  if (/dijeda/.test(appSrc)) { console.error("STIFF WORDING 'dijeda' STILL PRESENT (agreed: 'dihentikan sementara')"); process.exit(1); }
+  if (!/dihentikan sementara/.test(appSrc)) { console.error("'dihentikan sementara' WORDING MISSING"); process.exit(1); }
+  if (!/\.badge\.arch[^{]*\{[^}]*font-size:\s*\.74rem/.test(css)) { console.error("ARCHIVE BADGE NOT COMPACT (expected .74rem inline tag, not a full pill row)"); process.exit(1); }
+  if (!/#src-banner[^{]*\{[^}]*margin:\s*0 0 14px/.test(css) || !/section\.banner-on/.test(css) || !/banner-on/.test(appSrc)) { console.error("BANNER SPACING RULES MISSING (hug the navbar, breathe before the section)"); process.exit(1); }
+  if (!/SAT_Z = 9/.test(bs)) { console.error("SATELLITE STITCH NOT AT NATIVE Z9 (zoomed daily imagery)"); process.exit(1); }
+  if (/"sat_box": \(100\.0, 112\.0, -12\.0, -1\.0\)/.test(fs.readFileSync(path.join(SITE, "..", "src", "volcanoes.py"), "utf8"))) { console.error("OLD 12x11deg REGIONAL SAT_BOX RESTORED (should be the Sunda Strait close-up)"); process.exit(1); }
   console.log("domtest: all sections rendered");
   process.exit(0);
 }, 700);

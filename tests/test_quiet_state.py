@@ -46,14 +46,19 @@ def check(name, cond, detail=""):
         FAILS.append(name)
 
 
-NOW = datetime(2026, 9, 12, 14, 0, tzinfo=timezone.utc)
+# The test clock is REAL time, and every fixture timestamp below is
+# generated from it: dv.fetch() ages a bulletin against the wall clock, so
+# a hard-coded DTG rots one day after authoring (exactly what happened on
+# 2026-09-13). Shape stays verbatim 2026/217 — only the time tokens move.
+NOW = datetime.now(timezone.utc).replace(microsecond=0)
+B = NOW - timedelta(hours=2)          # bulletin DTG anchor: 2 h old => current
 
 # --- fixtures ---------------------------------------------------------------
 # Bulletin 2026/217, verbatim shape as served by the Darwin endpoint on
 # 2026-09-12 (hard-wrapped, = terminator, NO FURTHER ADVISORIES).
-TERM_BULLETIN = """FVAU04 ADRM 121040
+TERM_BULLETIN = f"""FVAU04 ADRM {B:%d%H%M}
 VA ADVISORY
-DTG: 20260912/1040Z
+DTG: {B:%Y%m%d/%H%M}Z
 VAAC: DARWIN
 VOLCANO: KRAKATAU 262000
 PSN: S0606 E10525
@@ -61,23 +66,24 @@ AREA: INDONESIA
 SOURCE ELEV: 155M AMSL
 ADVISORY NR: 2026/217
 INFO SOURCE: HIMAWARI-9, CVGHM
-ERUPTION DETAILS: VA TO FL050 LAST OBS AT 11/0820Z MOV SW
-EST VA DTG: 12/1020Z
+ERUPTION DETAILS: VA TO FL050 LAST OBS AT {(B - timedelta(hours=26)):%d/%H%M}Z MOV SW
+EST VA DTG: {(B - timedelta(minutes=20)):%d/%H%M}Z
 EST VA CLD: VA NOT IDENTIFIABLE FM SATELLITE DATA WIND
 SFC/FL050 070/20KT
-FCST VA CLD +6 HR: 12/1620Z NO VA EXP
-FCST VA CLD +12 HR: 12/2220Z NO VA EXP
-FCST VA CLD +18 HR: 13/0420Z NO VA EXP
+FCST VA CLD +6 HR: {(B + timedelta(hours=6)):%d/%H%M}Z NO VA EXP
+FCST VA CLD +12 HR: {(B + timedelta(hours=12)):%d/%H%M}Z NO VA EXP
+FCST VA CLD +18 HR: {(B + timedelta(hours=18)):%d/%H%M}Z NO VA EXP
 RMK: VA NOT IDENTIFIABLE ON RECENT SATELLITE  IMAGERY. NO
 OTHER REPORTS INDICATE ONGOING ERUPTION. ADVISORY
 TERMINATED.
 NXT ADVISORY: NO FURTHER ADVISORIES="""
 
 # An ordinary in-episode bulletin (2026/191 shape, abbreviated but complete).
-# DTG today + ~2 h old so it counts as CURRENT against the test's NOW.
-ACTIVE_BULLETIN = """FVAU01 ADRM 121200
+# DTG = B (~2 h old) so it counts as CURRENT against both the wall clock
+# dv.fetch() uses and the test's NOW.
+ACTIVE_BULLETIN = f"""FVAU01 ADRM {B:%d%H%M}
 VA ADVISORY
-DTG: 20260912/1200Z
+DTG: {B:%Y%m%d/%H%M}Z
 VAAC: DARWIN
 VOLCANO: KRAKATAU 262000
 PSN: S0606 E10525
@@ -85,15 +91,15 @@ AREA: INDONESIA
 SOURCE ELEV: 155M AMSL
 ADVISORY NR: 2026/218
 INFO SOURCE: HIMAWARI-9
-ERUPTION DETAILS: ERUPTION AT 12/1100Z
-OBS VA DTG: 12/1200Z
+ERUPTION DETAILS: ERUPTION AT {(B - timedelta(hours=1)):%d/%H%M}Z
+OBS VA DTG: {B:%d/%H%M}Z
 OBS VA CLD: SFC/FL050 OBS S0630 E10530 S0630 E10600 S0600 E10600 S0600 E10530
 MOV W 05KT
-FCST VA CLD +6 HR: 12/1800Z SFC/FL050 S0640 E10400 S0640 E10500 S0610 E10500 S0610 E10400
-FCST VA CLD +12 HR: 13/0000Z NO VA EXP
-FCST VA CLD +18 HR: 13/0600Z NO VA EXP
+FCST VA CLD +6 HR: {(B + timedelta(hours=6)):%d/%H%M}Z SFC/FL050 S0640 E10400 S0640 E10500 S0610 E10500 S0610 E10400
+FCST VA CLD +12 HR: {(B + timedelta(hours=12)):%d/%H%M}Z NO VA EXP
+FCST VA CLD +18 HR: {(B + timedelta(hours=18)):%d/%H%M}Z NO VA EXP
 RMK: VA IDENTIFIABLE ON SAT IMAGERY.
-NXT ADVISORY: 20260912/1800Z="""
+NXT ADVISORY: {(B + timedelta(hours=6)):%Y%m%d/%H%M}Z="""
 
 # The 2026-09-12 VONA list shape, VERBATIM MAGMA timestamps ("... UTC",
 # not ISO — a fresh VONA in this format must still flip the state to active):
@@ -164,7 +170,7 @@ a4 = ACT.assess_activity(ra, VONA_STALE, [], now=NOW, magma_ok=True)
 check("current non-terminated advisory => active", a4["state"] == "active")
 
 vona_fresh = [{"code": "ORANGE",
-               "issued_utc": "2026-09-12 12:00:00 UTC",
+               "issued_utc": f"{B:%Y-%m-%d %H:%M:%S} UTC",
                "ash_top_m": 800}]
 a5 = ACT.assess_activity({"state": "nil"}, vona_fresh, [], now=NOW, magma_ok=True)
 check("fresh VONA overrides nil VAAC => active",
@@ -220,7 +226,7 @@ check("ISO with +07:00 offset keeps its offset",
 check("naive ISO treated as UTC", p("2026-09-12T12:00:00") == datetime(2026, 9, 12, 12, tzinfo=timezone.utc))
 check("garbage is None", p("garbage") is None and p("") is None and p(None) is None)
 check("age math on MAGMA format (2 h)",
-      abs(ACT._age_h("2026-09-12 12:00:00 UTC", NOW) - 2.0) < 1e-6)
+      abs(ACT._age_h(f"{B:%Y-%m-%d %H:%M:%S} UTC", NOW) - 2.0) < 1e-6)
 check("mixed-format freshness: MAGMA-format fresh VONA flips state",
       ACT.assess_activity({"state": "nil"}, vona_fresh, [], now=NOW,
                          magma_ok=True)["state"] == "active")

@@ -63,9 +63,10 @@ GIBS = ("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{layer}/default/"
 GIBS_LAYERS = {"snpp": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
                "aqua": "MODIS_Aqua_CorrectedReflectance_TrueColor",
                "terra": "MODIS_Terra_CorrectedReflectance_TrueColor"}
-# region of interest for the daily picture
-SAT_BOX = (100.0, 112.0, -12.0, -1.0)   # lon0 lon1 lat0 lat1
-SAT_Z = 7
+# region of interest for the daily picture (overridden per volcano by the
+# registry's sat_box via framing_for(); module default mirrors the primary)
+SAT_BOX = (103.6, 107.2, -7.4, -4.8)   # lon0 lon1 lat0 lat1
+SAT_Z = 9                               # GIBS native max for VIIRS/MODIS true colour (~250 m/px)
 
 CREDIT_GIBS = ("NASA GIBS/Earthdata—{sensor} Corrected Reflectance (True Color), "
                "{date}. https://worldview.earthdata.nasa.gov")
@@ -510,7 +511,7 @@ def framing_for(volc: dict) -> tuple:
     centred on the vent. Registered volcanoes pin their framing explicitly
     so a rendered page never silently shifts."""
     lat, lon = volc["lat"], volc["lon"]
-    sat = volc.get("sat_box") or (lon - 6.0, lon + 6.0, lat - 5.5, lat + 5.5)
+    sat = volc.get("sat_box") or (lon - 1.8, lon + 1.8, lat - 1.3, lat + 1.3)
     box = volc.get("loop_box") or (lon - 5.5, lon + 5.5, lat - 5.5, lat + 5.5)
     crop = volc.get("loop_crop") or (lon - 5.1, lon + 5.1, lat - 5.0, lat + 5.0)
     return sat, box, crop
@@ -741,11 +742,8 @@ def build(args) -> int:
         vaac, snapshot_vona, eruptions, now=now,
         previous=prev_activity, magma_ok=not mon.get("error"))
     print(f"[build] activity: {activity['state']} ({activity['reason_code']})")
-    # The verdict lands in snapshot["activity"] below and is COMMITTED with
-    # the build — that file is what pg_cron's sync job
-    # (sync_model_scheduler_from_github, tmp/pg_cron_model6h.sql) reads to
-    # pause/resume the 6-hourly model dispatch. Pull, not push: no Edge
-    # Function, no service_role key, no shared token, no new secrets.
+    # The verdict lands in snapshot["activity"] below; the scheduler side
+    # reads that field to decide whether the 6-hourly model runs dispatch.
 
     def layer_json(ly):
         return {"base": ly.get("base"), "top": ly.get("top"),

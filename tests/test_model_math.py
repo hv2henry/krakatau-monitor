@@ -293,13 +293,13 @@ if _HAVE_BS:
           vm.KNOWN_CODES.get("anak krakatau") == "KRA"
           and vm.KNOWN_CODES.get("krakatau") == "KRA")
     _frm = bs.framing_for(VR.primary())
-    check("build_site framing: registry values reproduce the old constants",
-          tuple(_frm[0]) == (100.0, 112.0, -12.0, -1.0)
+    check("build_site framing: registry values match the Sunda Strait close-up",
+          tuple(_frm[0]) == (103.6, 107.2, -7.4, -4.8)   # z9 daily true-colour box
           and tuple(_frm[1]) == (100.0, 111.0, -11.0, 0.0)
           and tuple(_frm[2]) == (100.4, 110.4, -10.5, -2.5), str(_frm))
     _gen = bs.framing_for({"lat": 3.17, "lon": 98.392})   # a hypothetical 2nd volcano
     check("build_site framing: unregistered volcano gets vent-centred boxes",
-          abs(_gen[0][0] - (98.392 - 6.0)) < 1e-9
+          abs(_gen[0][0] - (98.392 - 1.8)) < 1e-9
           and abs(_gen[1][3] - (3.17 + 5.5)) < 1e-9, str(_gen))
     # Darwin advisory 2026/209 verbatim (10 Sep 2026, SFC/FL050, MOV NW) —
     # the event the envelope v2 parameters were calibrated on

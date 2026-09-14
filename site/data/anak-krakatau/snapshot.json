@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-14T20:00:21Z",
- "generated_wib": "15 Sep 2026, 03:00 WIB",
+ "generated_utc": "2026-09-14T20:15:16Z",
+ "generated_wib": "15 Sep 2026, 03:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-14T20:00:32Z",
-  "fetched_wib": "15 Sep 2026, 03:00 WIB",
+  "fetched_utc": "2026-09-14T20:15:22Z",
+  "fetched_wib": "15 Sep 2026, 03:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 22,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 159.4,
+   "vona_age_hours": 159.7,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-14T20:00Z"
+  "assessed_utc": "2026-09-14T20:15Z"
  },
  "report": {
   "period": "Senin - 14 September 2026 00:00-24:00 WIB",
@@ -58,7 +58,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "15 Sep 2026, 03:00 WIB"
+  "fetched_wib": "15 Sep 2026, 03:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -222,9 +222,14 @@
     "asset": "assets/loop/f09.jpg"
    },
    {
+    "t_utc": "2026-09-14T19:20:00Z",
+    "t_wib": "15 Sep 2026, 02:20 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
     "t_utc": "2026-09-14T19:30:00Z",
     "t_wib": "15 Sep 2026, 02:30 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -242,7 +247,7 @@
    "noaa_slot": "2026-09-14 19:30Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-14T19:30:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-14T20:01:13Z"
+  "built_utc": "2026-09-14T20:16:08Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

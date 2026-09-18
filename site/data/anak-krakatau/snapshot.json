@@ -1,60 +1,112 @@
 {
  "schema_version": 1,
- "source_errors": {
-  "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
- },
- "generated_utc": "2026-09-18T03:45:14Z",
- "generated_wib": "18 Sep 2026, 10:45 WIB",
+ "source_errors": {},
+ "generated_utc": "2026-09-18T04:00:12Z",
+ "generated_wib": "18 Sep 2026, 11:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
-  "province": "Sunda Strait (Lampung/Banten)",
+  "province": "Lampung",
   "lat": -6.102,
   "lon": 105.423
  },
  "status": {
-  "level": null,
-  "level_name": null,
+  "level": 3,
+  "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": null,
-  "fetched_wib": null,
-  "indonesia_counts": null
+  "fetched_utc": "2026-09-18T04:00:18Z",
+  "fetched_wib": "18 Sep 2026, 11:00 WIB",
+  "indonesia_counts": {
+   "Normal": 42,
+   "Waspada": 23,
+   "Siaga": 4,
+   "Awas": 0
+  }
  },
  "activity": {
   "version": "activity/1.0",
   "state": "quiet",
-  "reason_code": "held_magma_unreachable",
+  "reason_code": "no_realtime_data",
   "reason": {
-   "id": "MAGMA tidak terjangkau; status sebelumnya dipertahankan.",
-   "en": "MAGMA unreachable; previous state held."
+   "id": "Tidak ada data real-time dari MAGMA maupun Darwin VAAC—tidak ada episode abu yang berlangsung.",
+   "en": "No real-time data from either MAGMA or Darwin VAAC—no ash episode in progress."
   },
   "evidence": {
    "vaac_state": "stale",
    "vaac_terminated": null,
    "vaac_age_hours": null,
-   "newest_vona_utc": null,
-   "vona_age_hours": null,
-   "newest_eruption_age_hours": null,
-   "held": true
+   "newest_vona_utc": "2026-09-08 04:34:00 UTC",
+   "vona_age_hours": 239.4,
+   "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-18T03:45Z"
+  "assessed_utc": "2026-09-18T04:00Z"
  },
  "report": {
-  "period": null,
-  "author": null,
-  "visual": null,
-  "climate": null,
-  "seismic_counts": null,
-  "recommendation": null,
-  "seismogram_asset": null,
+  "period": "Jumat - 18 September 2026 00:00-06:00 WIB",
+  "author": "Rioboniek Situmorang",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah ke arah utara dan barat laut.",
+  "climate": "Cuaca berawan, angin lemah ke arah utara dan barat laut. Suhu udara sekitar 26-26.5°C. Kelembaban 85-86%.",
+  "seismic_counts": {
+   "Low Frequency": 1,
+   "Tektonik Jauh": 1,
+   "Tremor Menerus": 1
+  },
+  "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
+  "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": null
+  "fetched_wib": "18 Sep 2026, 11:00 WIB"
  },
  "eruptions": [],
- "vona": [],
+ "vona": [
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-09-08 04:34:00 UTC",
+   "wib": "08 Sep 2026, 11:34 WIB",
+   "text": "Eruption at 0434 UTC (1134 local). Ash-cloud is not observed. Ash-cloud is not observed..",
+   "url": "https://magma.esdm.go.id/v1/vona/22593?signature=db900e48d358430906f21bca19dc4d6743f4aa81d32146855f4e5d77dfcdb72c",
+   "ash_top_m": null,
+   "ash_top_ft": null
+  },
+  {
+   "code": "RED",
+   "issued_utc": "2026-09-05 02:00:00 UTC",
+   "wib": "05 Sep 2026, 09:00 WIB",
+   "text": "Eruption at 0200 UTC (0900 local). Ash-cloud is not observed. Ash-cloud is not observed..",
+   "url": "https://magma.esdm.go.id/v1/vona/22575?signature=4bce6aa9ba49588f081932c1c7f70bf9e2ec6e6159818c722d6bd692cfc19289",
+   "ash_top_m": null,
+   "ash_top_ft": null
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-24 08:24:00 UTC",
+   "wib": "24 Agu 2026, 15:24 WIB",
+   "text": "Eruption with volcanic ash cloud at 0824 UTC (1524 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving from north to northeast. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22420?signature=c95fefdd0ba0d7fdf09bf1f82aac1eaaa67c3ae03dec4914deb57806a0517248",
+   "ash_top_m": 557,
+   "ash_top_ft": 1782
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-22 13:07:00 UTC",
+   "wib": "22 Agu 2026, 20:07 WIB",
+   "text": "Eruption with volcanic ash cloud at 1307 UTC (2007 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving from southwest, west to northwest. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22408?signature=a64979ed0fbae6179f01ceea2a2ec7fd04e88d76848c63e4dbbe6cb0e7637179",
+   "ash_top_m": 557,
+   "ash_top_ft": 1782
+  },
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-08-17 02:22:00 UTC",
+   "wib": "17 Agu 2026, 09:22 WIB",
+   "text": "Eruption with volcanic ash cloud at 0222 UTC (0922 local). Best estimate of ash-cloud top is around 1782 FT (557 M) above sea level or 1280 FT (400 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving to northwest. Volcanic ash is observed to be gray to dark. The intensity of volcanic ash is observed to be thick..",
+   "url": "https://magma.esdm.go.id/v1/vona/22355?signature=bae0a1119c89b634c60febabcaf9619d4eba0812da9da184161c40a0c0ff1d32",
+   "ash_top_m": 557,
+   "ash_top_ft": 1782
+  }
+ ],
  "vaac": {
   "state": "stale",
   "advisory_nr": null,
@@ -120,63 +172,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-09-18T00:40:00Z",
-    "t_wib": "18 Sep 2026, 07:40 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
     "t_utc": "2026-09-18T00:50:00Z",
     "t_wib": "18 Sep 2026, 07:50 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-09-18T01:00:00Z",
     "t_wib": "18 Sep 2026, 08:00 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-09-18T01:10:00Z",
     "t_wib": "18 Sep 2026, 08:10 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-09-18T01:20:00Z",
     "t_wib": "18 Sep 2026, 08:20 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-09-18T01:30:00Z",
     "t_wib": "18 Sep 2026, 08:30 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-09-18T01:40:00Z",
     "t_wib": "18 Sep 2026, 08:40 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-09-18T01:50:00Z",
     "t_wib": "18 Sep 2026, 08:50 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-09-18T02:00:00Z",
     "t_wib": "18 Sep 2026, 09:00 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-09-18T02:10:00Z",
     "t_wib": "18 Sep 2026, 09:10 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-09-18T02:20:00Z",
     "t_wib": "18 Sep 2026, 09:20 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f09.jpg"
    },
    {
     "t_utc": "2026-09-18T02:30:00Z",
     "t_wib": "18 Sep 2026, 09:30 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-09-18T02:50:00Z",
+    "t_wib": "18 Sep 2026, 09:50 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -192,10 +244,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-09-18 02:30Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-18T02:30:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-09-18 02:50Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-18T02:50:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-18T03:47:07Z"
+  "built_utc": "2026-09-18T04:01:27Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

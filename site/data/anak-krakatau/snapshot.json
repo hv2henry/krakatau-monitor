@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-20T23:00:15Z",
- "generated_wib": "21 Sep 2026, 06:00 WIB",
+ "generated_utc": "2026-09-20T23:15:14Z",
+ "generated_wib": "21 Sep 2026, 06:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-20T23:00:22Z",
-  "fetched_wib": "21 Sep 2026, 06:00 WIB",
+  "fetched_utc": "2026-09-20T23:15:21Z",
+  "fetched_wib": "21 Sep 2026, 06:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 23,
@@ -37,26 +37,25 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 306.4,
+   "vona_age_hours": 306.7,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-20T23:00Z"
+  "assessed_utc": "2026-09-20T23:15Z"
  },
  "report": {
-  "period": "Minggu - 20 September 2026 00:00-24:00 WIB",
+  "period": "Senin - 21 September 2026 00:00-06:00 WIB",
   "author": "Deny Mardiono, A.Md.",
-  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah ke arah utara dan barat laut.",
-  "climate": "Cuaca berawan, angin lemah ke arah utara dan barat laut. Suhu udara sekitar 27-28°C. Kelembaban 74-84%.",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan, angin lemah ke arah barat laut.",
+  "climate": "Cuaca berawan, angin lemah ke arah barat laut. Suhu udara sekitar 26-27°C. Kelembaban 80-84%.",
   "seismic_counts": {
-   "Low Frequency": 1,
    "Tremor Menerus": 1
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 3 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "21 Sep 2026, 06:00 WIB"
+  "fetched_wib": "21 Sep 2026, 06:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -245,7 +244,7 @@
    "noaa_slot": "2026-09-20 22:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-20T22:10:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-20T23:01:00Z"
+  "built_utc": "2026-09-20T23:16:06Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

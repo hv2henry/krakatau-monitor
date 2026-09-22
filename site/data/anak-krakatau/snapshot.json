@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-22T17:00:14Z",
- "generated_wib": "23 Sep 2026, 00:00 WIB",
+ "generated_utc": "2026-09-22T17:15:14Z",
+ "generated_wib": "23 Sep 2026, 00:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-22T17:00:22Z",
-  "fetched_wib": "23 Sep 2026, 00:00 WIB",
+  "fetched_utc": "2026-09-22T17:15:22Z",
+  "fetched_wib": "23 Sep 2026, 00:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -37,26 +37,28 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 348.4,
+   "vona_age_hours": 348.7,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-22T17:00Z"
+  "assessed_utc": "2026-09-22T17:15Z"
  },
  "report": {
-  "period": "Senin - 21 September 2026 18:00-24:00 WIB",
-  "author": "Anggi Nuryo Saputro, A.Md.",
-  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca berawan hingga mendung, angin lemah ke arah barat laut.",
-  "climate": "Cuaca berawan hingga mendung, angin lemah ke arah barat laut. Suhu udara sekitar 27-28°C. Kelembaban 84%.",
+  "period": "Selasa - 22 September 2026 00:00-24:00 WIB",
+  "author": "Rioboniek Situmorang",
+  "visual": "Gunung api tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca cerah hingga mendung, angin lemah ke arah utara, timur laut dan barat laut.",
+  "climate": "Cuaca cerah hingga mendung, angin lemah ke arah utara, timur laut dan barat laut. Suhu udara sekitar 27-29°C. Kelembaban 67-84%.",
   "seismic_counts": {
    "Hybrid/Fase Banyak": 1,
+   "Vulkanik Dangkal": 1,
+   "Vulkanik Dalam": 1,
    "Tremor Menerus": 1
   },
   "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 2 km dari kawah aktif.",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "23 Sep 2026, 00:00 WIB"
+  "fetched_wib": "23 Sep 2026, 00:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -245,7 +247,7 @@
    "noaa_slot": "2026-09-22 16:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-09-22T16:10:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-09-22T17:01:11Z"
+  "built_utc": "2026-09-22T17:16:04Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

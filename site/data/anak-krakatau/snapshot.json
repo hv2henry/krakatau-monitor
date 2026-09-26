@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-26T08:00:12Z",
- "generated_wib": "26 Sep 2026, 15:00 WIB",
+ "generated_utc": "2026-09-26T08:15:15Z",
+ "generated_wib": "26 Sep 2026, 15:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-26T08:00:20Z",
-  "fetched_wib": "26 Sep 2026, 15:00 WIB",
+  "fetched_utc": "2026-09-26T08:15:23Z",
+  "fetched_wib": "26 Sep 2026, 15:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 435.4,
+   "vona_age_hours": 435.7,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-26T08:00Z"
+  "assessed_utc": "2026-09-26T08:15Z"
  },
  "report": {
   "period": "Jumat - 25 September 2026 00:00-24:00 WIB",
@@ -57,7 +57,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "26 Sep 2026, 15:00 WIB"
+  "fetched_wib": "26 Sep 2026, 15:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -246,7 +246,7 @@
    "noaa_slot": "2026-09-26 07:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-26T07:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-26T08:01:29Z"
+  "built_utc": "2026-09-26T08:16:35Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

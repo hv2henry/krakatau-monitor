@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-09-28T05:30:14Z",
- "generated_wib": "28 Sep 2026, 12:30 WIB",
+ "generated_utc": "2026-09-28T05:45:14Z",
+ "generated_wib": "28 Sep 2026, 12:45 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-09-28T05:30:23Z",
-  "fetched_wib": "28 Sep 2026, 12:30 WIB",
+  "fetched_utc": "2026-09-28T05:45:20Z",
+  "fetched_wib": "28 Sep 2026, 12:45 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-09-08 04:34:00 UTC",
-   "vona_age_hours": 480.9,
+   "vona_age_hours": 481.2,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-09-28T05:30Z"
+  "assessed_utc": "2026-09-28T05:45Z"
  },
  "report": {
   "period": "Minggu - 27 September 2026 00:00-24:00 WIB",
@@ -55,7 +55,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "28 Sep 2026, 12:30 WIB"
+  "fetched_wib": "28 Sep 2026, 12:45 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -132,7 +132,7 @@
   "snpp": {
    "sensor": "snpp",
    "gibs_layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-   "date": "2026-09-27",
+   "date": "2026-09-28",
    "asset": "assets/sat_snpp.jpg",
    "bbox": [
     103.6,
@@ -141,8 +141,8 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 0,
-   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-09-27. https://worldview.earthdata.nasa.gov"
+   "missing_tiles": 1,
+   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-09-28. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
    "sensor": "aqua",
@@ -158,7 +158,8 @@
    "zoom": 9,
    "missing_tiles": 0,
    "credit": "NASA GIBS/Earthdata—Aqua MODIS Corrected Reflectance (True Color), 2026-09-27. https://worldview.earthdata.nasa.gov",
-   "sensor_label": "Aqua (MODIS)"
+   "sensor_label": "Aqua (MODIS)",
+   "sensor_note": "No clean pass on 2026-09-28; showing 2026-09-27."
   }
  },
  "loop": {
@@ -244,7 +245,7 @@
    "noaa_slot": "2026-09-28 04:30Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-09-28T04:30:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-09-28T05:31:34Z"
+  "built_utc": "2026-09-28T05:46:29Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

@@ -3,8 +3,8 @@
  "source_errors": {
   "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
  },
- "generated_utc": "2026-10-03T07:00:20Z",
- "generated_wib": "03 Okt 2026, 14:00 WIB",
+ "generated_utc": "2026-10-03T07:15:14Z",
+ "generated_wib": "03 Okt 2026, 14:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -39,7 +39,7 @@
    "held": true
   },
   "since_utc": "2026-09-12T17:54Z",
-  "assessed_utc": "2026-10-03T07:00Z"
+  "assessed_utc": "2026-10-03T07:15Z"
  },
  "report": {
   "period": null,
@@ -76,7 +76,7 @@
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
-  "warning": "Darwin VAAC has 4 current advisories but none for KRAKATAU. Absence of an advisory is not an all-clear."
+  "warning": "Darwin VAAC has 5 current advisories but none for KRAKATAU. Absence of an advisory is not an all-clear."
  },
  "satellite": {
   "snpp": {
@@ -195,7 +195,7 @@
    "noaa_slot": "2026-10-03 06:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-03T06:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-03T07:02:16Z"
+  "built_utc": "2026-10-03T07:16:56Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

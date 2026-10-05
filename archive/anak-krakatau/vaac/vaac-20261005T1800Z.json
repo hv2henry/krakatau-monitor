@@ -1,0 +1,36 @@
+{
+ "t": "20261005T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/218",
+ "dtg_utc": "2026-10-05T14:07Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL090",
+   "base_km": null,
+   "top_km": 2.74,
+   "move_toward": "NW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1167,
+     "lon": 105.4333
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.2667
+    },
+    {
+     "lat": -5.95,
+     "lon": 105.35
+    },
+    {
+     "lat": -6.0833,
+     "lon": 105.45
+    }
+   ]
+  }
+ ],
+ "remarks": "VA OBS ON LATEST RGB SATELLITE IMAGERY. GROUND REPORT OF ERUPTION AT 05/1313Z. HEIGHT BASED ON VA IR TEMP OF 13C. FORECAST BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE."
+}

@@ -1,0 +1,48 @@
+{
+ "t": "20261006T0600Z",
+ "state": "advisory",
+ "advisory_nr": "2026/220",
+ "dtg_utc": "2026-10-06T02:38Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.1333,
+     "lon": 105.45
+    },
+    {
+     "lat": -6.1833,
+     "lon": 105.2167
+    },
+    {
+     "lat": -6.4333,
+     "lon": 105.0167
+    },
+    {
+     "lat": -6.4833,
+     "lon": 104.7167
+    },
+    {
+     "lat": -6.2,
+     "lon": 104.6
+    },
+    {
+     "lat": -5.9833,
+     "lon": 104.7667
+    },
+    {
+     "lat": -6.0667,
+     "lon": 105.45
+    }
+   ]
+  }
+ ],
+ "remarks": "VA IDENTIFIABLE ON CURRENT SATELLITE IMAGERY, MOVING W. VA HEIGHT AND MOVEMENT BASED ON SATELLITE IMAGE AND MODEL DATA."
+}

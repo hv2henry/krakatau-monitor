@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-06T02:00:13Z",
- "generated_wib": "06 Okt 2026, 09:00 WIB",
+ "generated_utc": "2026-10-06T02:15:14Z",
+ "generated_wib": "06 Okt 2026, 09:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-06T02:00:47Z",
-  "fetched_wib": "06 Okt 2026, 09:00 WIB",
+  "fetched_utc": "2026-10-06T02:15:20Z",
+  "fetched_wib": "06 Okt 2026, 09:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "fresh_vona",
   "reason": {
-   "id": "VONA MAGMA terbaru terbit 12.6 jam lalu.",
-   "en": "Latest MAGMA VONA was issued 12.6 h ago."
+   "id": "VONA MAGMA terbaru terbit 12.8 jam lalu.",
+   "en": "Latest MAGMA VONA was issued 12.8 h ago."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 6.0,
+   "vaac_age_hours": 6.3,
    "newest_vona_utc": "2026-10-05 13:25:00 UTC",
-   "vona_age_hours": 12.6,
-   "newest_eruption_age_hours": 12.5
+   "vona_age_hours": 12.8,
+   "newest_eruption_age_hours": 12.8
   },
   "since_utc": "2026-10-05T13:30Z",
-  "assessed_utc": "2026-10-06T02:00Z"
+  "assessed_utc": "2026-10-06T02:15Z"
  },
  "report": {
   "period": "Senin - 05 Oktober 2026 00:00-24:00 WIB",
@@ -60,7 +60,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "06 Okt 2026, 09:00 WIB"
+  "fetched_wib": "06 Okt 2026, 09:15 WIB"
  },
  "eruptions": [
   {
@@ -130,7 +130,7 @@
   "advisory_nr": "2026/219",
   "dtg_utc": "2026-10-05T20:00Z",
   "dtg_wib": "06 Okt 2026, 03:00 WIB",
-  "age_hours": 6.0,
+  "age_hours": 6.3,
   "is_current": true,
   "advisory_status": "terminated",
   "terminated": true,
@@ -168,7 +168,7 @@
   "snpp": {
    "sensor": "snpp",
    "gibs_layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-   "date": "2026-10-05",
+   "date": "2026-10-06",
    "asset": "assets/sat_snpp.jpg",
    "bbox": [
     103.6,
@@ -177,8 +177,8 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 0,
-   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-10-05. https://worldview.earthdata.nasa.gov"
+   "missing_tiles": 8,
+   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-10-06. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
    "sensor": "aqua",
@@ -194,7 +194,8 @@
    "zoom": 9,
    "missing_tiles": 0,
    "credit": "NASA GIBS/Earthdata—Aqua MODIS Corrected Reflectance (True Color), 2026-10-05. https://worldview.earthdata.nasa.gov",
-   "sensor_label": "Aqua (MODIS)"
+   "sensor_label": "Aqua (MODIS)",
+   "sensor_note": "No clean pass on 2026-10-06; showing 2026-10-05."
   }
  },
  "loop": {
@@ -280,7 +281,7 @@
    "noaa_slot": "2026-10-06 01:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-06T01:10:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-06T02:01:38Z"
+  "built_utc": "2026-10-06T02:16:26Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

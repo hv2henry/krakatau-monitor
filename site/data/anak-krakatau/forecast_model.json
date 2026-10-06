@@ -15359,9 +15359,9 @@
  },
  "vaac_motion": null,
  "backtest": {
-  "n": 48,
-  "mean_abs_deg": 39.7,
-  "median_abs_deg": 26.4
+  "n": 49,
+  "mean_abs_deg": 39.0,
+  "median_abs_deg": 25.9
  },
  "plume_top": {
   "km": 9.69,

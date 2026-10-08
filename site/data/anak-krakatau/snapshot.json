@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-08T13:00:14Z",
- "generated_wib": "08 Okt 2026, 20:00 WIB",
+ "generated_utc": "2026-10-08T13:15:13Z",
+ "generated_wib": "08 Okt 2026, 20:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-08T13:00:21Z",
-  "fetched_wib": "08 Okt 2026, 20:00 WIB",
+  "fetched_utc": "2026-10-08T13:15:19Z",
+  "fetched_wib": "08 Okt 2026, 20:15 WIB",
   "indonesia_counts": {
    "Normal": 41,
    "Waspada": 25,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "fresh_eruption",
   "reason": {
-   "id": "Erupsi tercatat MAGMA dalam 1.5 jam terakhir.",
-   "en": "MAGMA recorded an eruption within the last 1.5 h."
+   "id": "Erupsi tercatat MAGMA dalam 1.8 jam terakhir.",
+   "en": "MAGMA recorded an eruption within the last 1.8 h."
   },
   "evidence": {
    "vaac_state": "stale",
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-10-05 13:25:00 UTC",
-   "vona_age_hours": 71.6,
-   "newest_eruption_age_hours": 1.5
+   "vona_age_hours": 71.8,
+   "newest_eruption_age_hours": 1.8
   },
   "since_utc": "2026-10-08T11:45Z",
-  "assessed_utc": "2026-10-08T13:00Z"
+  "assessed_utc": "2026-10-08T13:15Z"
  },
  "report": {
   "period": "Rabu - 07 Oktober 2026 00:00-24:00 WIB",
@@ -56,7 +56,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "08 Okt 2026, 20:00 WIB"
+  "fetched_wib": "08 Okt 2026, 20:15 WIB"
  },
  "eruptions": [
   {
@@ -253,7 +253,7 @@
    "noaa_slot": "2026-10-08 12:00Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-08T12:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-08T13:00:58Z"
+  "built_utc": "2026-10-08T13:15:55Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

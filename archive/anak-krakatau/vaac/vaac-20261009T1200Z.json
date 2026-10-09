@@ -1,0 +1,40 @@
+{
+ "t": "20261009T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/224",
+ "dtg_utc": "2026-10-09T10:15Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL060",
+   "base_km": null,
+   "top_km": 1.83,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.0833,
+     "lon": 105.55
+    },
+    {
+     "lat": -6.4667,
+     "lon": 105.5333
+    },
+    {
+     "lat": -6.6667,
+     "lon": 105.0333
+    },
+    {
+     "lat": -5.9,
+     "lon": 104.8
+    },
+    {
+     "lat": -5.8333,
+     "lon": 105.3667
+    }
+   ]
+  }
+ ],
+ "remarks": "VA IDENTIFIABLE ON LATEST SATELLITE IMAGERY MOVING W. VA EXPECTED TO DISSIPATE WITHIN 6-12 HOURS. FORECAST BASED ON HIMAWARI-9, CVGHM AND MODEL GUIDANCE."
+}

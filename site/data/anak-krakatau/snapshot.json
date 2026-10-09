@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-09T12:45:18Z",
- "generated_wib": "09 Okt 2026, 19:45 WIB",
+ "generated_utc": "2026-10-09T13:00:13Z",
+ "generated_wib": "09 Okt 2026, 20:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-09T12:45:22Z",
-  "fetched_wib": "09 Okt 2026, 19:45 WIB",
+  "fetched_utc": "2026-10-09T13:00:21Z",
+  "fetched_wib": "09 Okt 2026, 20:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 2.5 jam).",
-   "en": "Darwin VAAC advisory still current (age 2.5 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 2.8 jam).",
+   "en": "Darwin VAAC advisory still current (age 2.8 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 2.5,
+   "vaac_age_hours": 2.8,
    "newest_vona_utc": "2026-10-09 11:44:00 UTC",
-   "vona_age_hours": 1.0,
-   "newest_eruption_age_hours": 0.6
+   "vona_age_hours": 1.3,
+   "newest_eruption_age_hours": 0.1
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-09T12:45Z"
+  "assessed_utc": "2026-10-09T13:00Z"
  },
  "report": {
   "period": "Kamis - 08 Oktober 2026 00:00-24:00 WIB",
@@ -61,9 +61,16 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "09 Okt 2026, 19:45 WIB"
+  "fetched_wib": "09 Okt 2026, 20:00 WIB"
  },
  "eruptions": [
+  {
+   "time_label_wib": "19:57 WIB",
+   "utc": "2026-10-09T12:57:00Z",
+   "wib": "09 Okt 2026, 19:57 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Jumat, 09 Oktober 2026, pukul 19:57 WIB. Visual letusan tidak teramati. Erupsi ini terekam di seismograf dengan amplitudo maksimum 53 mm dan durasi 12 detik.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/7063613d-c3e0-11f1-a61d-005056b54356/show"
+  },
   {
    "time_label_wib": "19:10 WIB",
    "utc": "2026-10-09T12:10:00Z",
@@ -180,7 +187,7 @@
   "advisory_nr": "2026/224",
   "dtg_utc": "2026-10-09T10:15Z",
   "dtg_wib": "09 Okt 2026, 17:15 WIB",
-  "age_hours": 2.5,
+  "age_hours": 2.8,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -400,7 +407,7 @@
    "noaa_slot": "2026-10-09 12:00Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-09T12:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-09T12:45:58Z"
+  "built_utc": "2026-10-09T13:01:06Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

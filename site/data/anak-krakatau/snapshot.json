@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-09T17:00:14Z",
- "generated_wib": "10 Okt 2026, 00:00 WIB",
+ "generated_utc": "2026-10-09T17:15:15Z",
+ "generated_wib": "10 Okt 2026, 00:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -11,16 +11,16 @@
   "lon": 105.423
  },
  "status": {
-  "level": 2,
-  "level_name": "Level II (Waspada)",
+  "level": 3,
+  "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-09T17:00:22Z",
-  "fetched_wib": "10 Okt 2026, 00:00 WIB",
+  "fetched_utc": "2026-10-09T17:15:20Z",
+  "fetched_wib": "10 Okt 2026, 00:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
-   "Waspada": 24,
-   "Siaga": 3,
+   "Waspada": 23,
+   "Siaga": 4,
    "Awas": 0
   }
  },
@@ -29,39 +29,38 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 0.8 jam).",
-   "en": "Darwin VAAC advisory still current (age 0.8 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 1.0 jam).",
+   "en": "Darwin VAAC advisory still current (age 1.0 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 0.8,
+   "vaac_age_hours": 1.0,
    "newest_vona_utc": "2026-10-09 11:44:00 UTC",
-   "vona_age_hours": 5.3,
-   "newest_eruption_age_hours": 2.7
+   "vona_age_hours": 5.5,
+   "newest_eruption_age_hours": 2.9
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-09T17:00Z"
+  "assessed_utc": "2026-10-09T17:15Z"
  },
  "report": {
-  "period": "Kamis - 08 Oktober 2026 00:00-24:00 WIB",
-  "author": "Gregorius Reza Alun Samudra",
-  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Teramati asap kawah utama berwarna putih dengan intensitas tipis hingga sedang tinggi sekitar 5-10 meter dari puncak. Cuaca cerah hingga berawan, angin lemah ke arah utara dan barat laut.",
-  "climate": "Cuaca cerah hingga berawan, angin lemah ke arah utara dan barat laut. Suhu udara sekitar 26.8-31°C. Kelembaban 65-83%.",
+  "period": "Jumat - 09 Oktober 2026 00:00-24:00 WIB",
+  "author": "Muhammad Dika Nurzaman",
+  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Asap kawah tidak teramati. Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut.",
+  "climate": "Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut. Suhu udara sekitar 27-31.5°C. Kelembaban 62-81%.",
   "seismic_counts": {
-   "Letusan/Erupsi": 1,
-   "Hembusan": 2,
-   "Hybrid/Fase Banyak": 20,
-   "Vulkanik Dangkal": 18,
-   "Vulkanik Dalam": 2,
-   "Tektonik Jauh": 1,
+   "Letusan/Erupsi": 26,
+   "Hembusan": 4,
+   "Low Frequency": 7,
+   "Hybrid/Fase Banyak": 28,
+   "Vulkanik Dangkal": 9,
    "Tremor Menerus": 1
   },
-  "recommendation": "Masyarakat/pengunjung/wisatawan/pendaki tidak mendekati G. Anak Krakatau atau beraktivitas dalam radius 2 km dari kawah aktif.",
+  "recommendation": "1. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan/pendaki tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 5 km dari pusat erupsi Anak Krakatau. 2. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 1 km dari pulau baru di sektor barat laut dan tenggara Gunungapi Anak Krakatau. 3. Meningkatkan kewaspadaan terhadap ancaman bahaya lontaran batu pijar, hujan abu lebat, aliran lava, dan potensi erupsi sekunder yang ditimbulkan oleh kontak panas lava, baik dengan air laut maupun air hujan dalam radius 5 km dari pusat erupsi Anak Krakatau. 4. Masyarakat di wilayah pantai Provinsi Banten dan Lampung harap tenang dan jangan mempercayai isu-isu tentang erupsi Gunungapi Anak Krakatau yang akan menyebabkan tsunami, serta dapat melakukan kegiatan seperti biasa dengan senantiasa mengikuti arahan BPBD setempat. 5. Untuk mengetahui informasi dapat menghubungi Pusat Vulkanologi dan Mitigasi Bencana Geologi, Badan Geologi (022) 7272606 di Bandung (Provinsi Jawa Barat) atau Pos Pengamatan Gunungapi Krakatau (0254) 651449 atau 085846324506 di Pasauran (Provinsi Banten).",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Okt 2026, 00:00 WIB"
+  "fetched_wib": "10 Okt 2026, 00:15 WIB"
  },
  "eruptions": [
   {
@@ -187,7 +186,7 @@
   "advisory_nr": "2026/225",
   "dtg_utc": "2026-10-09T16:15Z",
   "dtg_wib": "09 Okt 2026, 23:15 WIB",
-  "age_hours": 0.8,
+  "age_hours": 1.0,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -407,7 +406,7 @@
    "noaa_slot": "2026-10-09 16:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-09T16:10:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-09T17:01:18Z"
+  "built_utc": "2026-10-09T17:15:54Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

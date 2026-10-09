@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-09T22:00:13Z",
- "generated_wib": "10 Okt 2026, 05:00 WIB",
+ "generated_utc": "2026-10-09T22:15:15Z",
+ "generated_wib": "10 Okt 2026, 05:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-09T22:00:18Z",
-  "fetched_wib": "10 Okt 2026, 05:00 WIB",
+  "fetched_utc": "2026-10-09T22:15:22Z",
+  "fetched_wib": "10 Okt 2026, 05:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 23,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 5.8 jam).",
-   "en": "Darwin VAAC advisory still current (age 5.8 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 0.1 jam).",
+   "en": "Darwin VAAC advisory still current (age 0.1 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 5.8,
+   "vaac_age_hours": 0.1,
    "newest_vona_utc": "2026-10-09 11:44:00 UTC",
-   "vona_age_hours": 10.3,
-   "newest_eruption_age_hours": 7.7
+   "vona_age_hours": 10.5,
+   "newest_eruption_age_hours": 7.9
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-09T22:00Z"
+  "assessed_utc": "2026-10-09T22:15Z"
  },
  "report": {
   "period": "Jumat - 09 Oktober 2026 00:00-24:00 WIB",
@@ -60,7 +60,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Okt 2026, 05:00 WIB"
+  "fetched_wib": "10 Okt 2026, 05:15 WIB"
  },
  "eruptions": [
   {
@@ -176,14 +176,14 @@
  ],
  "vaac": {
   "state": "advisory",
-  "advisory_nr": "2026/225",
-  "dtg_utc": "2026-10-09T16:15Z",
-  "dtg_wib": "09 Okt 2026, 23:15 WIB",
-  "age_hours": 5.8,
+  "advisory_nr": "2026/226",
+  "dtg_utc": "2026-10-09T22:10Z",
+  "dtg_wib": "10 Okt 2026, 05:10 WIB",
+  "age_hours": 0.1,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
-  "eruption_details": "VA TO FL060 OBS AT 09/1550Z MOV W",
+  "eruption_details": "VA TO FL060 LAST OBS AT 09/1550Z MOV W",
   "info_source": "HIMAWARI-9, CVGHM",
   "observed_layers": [
    {
@@ -194,17 +194,17 @@
     "top_human_en": "FL060 = 6,000 ft ≈ 1.8 km asl",
     "base_human_id": "permukaan tanah (SFC)",
     "base_human_en": "ground level (SFC)",
-    "move_toward": "W",
+    "move_toward": "SW",
     "speed_kt": 5,
     "speed_ms": 2.6,
     "polygon": [
      [
-      105.3833,
-      -5.8
+      105.4,
+      -5.7667
      ],
      [
-      105.7167,
-      -6.0333
+      105.75,
+      -6.0
      ],
      [
       105.6667,
@@ -212,72 +212,37 @@
      ],
      [
       105.1833,
-      -6.4333
+      -6.45
      ],
      [
-      104.9333,
-      -5.9833
+      104.9167,
+      -5.95
      ]
     ]
    }
   ],
   "forecasts": {
    "+6h": {
-    "valid_utc": "2026-10-09T21:50Z",
-    "valid_wib": "10 Okt 2026, 04:50 WIB",
-    "layers": [
-     {
-      "base": "SFC",
-      "top": "FL060",
-      "top_km": 1.83,
-      "top_human_id": "FL060 = 6.000 ft ≈ 1.8 km dpl",
-      "top_human_en": "FL060 = 6,000 ft ≈ 1.8 km asl",
-      "base_human_id": "permukaan tanah (SFC)",
-      "base_human_en": "ground level (SFC)",
-      "move_toward": null,
-      "speed_kt": null,
-      "speed_ms": null,
-      "polygon": [
-       [
-        105.4,
-        -5.7667
-       ],
-       [
-        105.75,
-        -6.0
-       ],
-       [
-        105.6667,
-        -6.4167
-       ],
-       [
-        105.1833,
-        -6.45
-       ],
-       [
-        104.9167,
-        -5.95
-       ]
-      ]
-     }
-    ]
-   },
-   "+12h": {
     "valid_utc": "2026-10-10T03:50Z",
     "valid_wib": "10 Okt 2026, 10:50 WIB",
     "layers": []
    },
-   "+18h": {
+   "+12h": {
     "valid_utc": "2026-10-10T09:50Z",
     "valid_wib": "10 Okt 2026, 16:50 WIB",
     "layers": []
+   },
+   "+18h": {
+    "valid_utc": "2026-10-10T15:50Z",
+    "valid_wib": "10 Okt 2026, 22:50 WIB",
+    "layers": []
    }
   },
-  "remarks": "VA IDENTIFIABLE ON LATEST SATELLITE IMAGERY MOVING W. VA EXPECTED TO DISSIPATE WITHIN 6-12 HOURS. FORECAST BASED ON HIMAWARI-9, CVGHM AND MODEL GUIDANCE.",
-  "next_advisory_by_utc": "2026-10-09T22:15Z",
-  "next_advisory_by_wib": "10 Okt 2026, 05:15 WIB",
+  "remarks": "VA NOT IDENTIFIABLE ON LATEST SATELLITE IMAGERY. AREA OBSC BY MET CLD. VA EXPECTED TO DISSIPATE WITHIN 6 HOURS. FORECAST BASED ON HIMAWARI-9, CVGHM AND MODEL GUIDANCE.",
+  "next_advisory_by_utc": "2026-10-10T04:10Z",
+  "next_advisory_by_wib": "10 Okt 2026, 11:10 WIB",
   "graphic_asset": "assets/vaac_graphic.png",
-  "bulletin_text": "FVAU04 ADRM 091615\nVA ADVISORY\nDTG: 20261009/1615Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/225\nINFO SOURCE: HIMAWARI-9, CVGHM\nERUPTION DETAILS: VA TO FL060 OBS AT 09/1550Z MOV W\nOBS VA DTG: 09/1550Z\nOBS VA CLD: SFC/FL060 S0548 E10523 - S0602 E10543 - S0625\nE10540 - S0626 E10511 - S0559 E10456 MOV W 05KT\nFCST VA CLD +6 HR: 09/2150Z SFC/FL060 S0546 E10524 - S0600\nE10545 - S0625 E10540 - S0627 E10511 - S0557 E10455\nFCST VA CLD +12 HR: 10/0350Z NO VA EXP\nFCST VA CLD +18 HR: 10/0950Z NO VA EXP\nRMK: VA IDENTIFIABLE ON LATEST SATELLITE IMAGERY MOVING W.\nVA EXPECTED TO DISSIPATE WITHIN 6-12 HOURS. FORECAST BASED\nON HIMAWARI-9, CVGHM AND MODEL GUIDANCE.\nNXT ADVISORY: NO LATER THAN 20261009/2215Z=",
+  "bulletin_text": "FVAU04 ADRM 092210\nVA ADVISORY\nDTG: 20261009/2210Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/226\nINFO SOURCE: HIMAWARI-9, CVGHM\nERUPTION DETAILS: VA TO FL060 LAST OBS AT 09/1550Z MOV W\nEST VA DTG: 09/2150Z\nEST VA CLD: SFC/FL060 S0546 E10524 - S0600 E10545 - S0625\nE10540 - S0627 E10511 - S0557 E10455 MOV SW 05KT\nFCST VA CLD +6 HR: 10/0350Z NO VA EXP\nFCST VA CLD +12 HR: 10/0950Z NO VA EXP\nFCST VA CLD +18 HR: 10/1550Z NO VA EXP\nRMK: VA NOT IDENTIFIABLE ON LATEST SATELLITE IMAGERY. AREA\nOBSC BY MET CLD. VA EXPECTED TO DISSIPATE WITHIN 6 HOURS.\nFORECAST BASED ON HIMAWARI-9, CVGHM AND MODEL GUIDANCE.\nNXT ADVISORY: NO LATER THAN 20261010/0410Z=",
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
@@ -399,7 +364,7 @@
    "noaa_slot": "2026-10-09 21:00Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-09T21:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-09T22:00:53Z"
+  "built_utc": "2026-10-09T22:16:10Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-09T09:30:14Z",
- "generated_wib": "09 Okt 2026, 16:30 WIB",
+ "generated_utc": "2026-10-09T09:46:25Z",
+ "generated_wib": "09 Okt 2026, 16:46 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level II (Waspada)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-09T09:30:20Z",
-  "fetched_wib": "09 Okt 2026, 16:30 WIB",
+  "fetched_utc": "2026-10-09T09:46:31Z",
+  "fetched_wib": "09 Okt 2026, 16:46 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "fresh_eruption",
   "reason": {
-   "id": "Erupsi tercatat MAGMA dalam 0.2 jam terakhir.",
-   "en": "MAGMA recorded an eruption within the last 0.2 h."
+   "id": "Erupsi tercatat MAGMA dalam 0.3 jam terakhir.",
+   "en": "MAGMA recorded an eruption within the last 0.3 h."
   },
   "evidence": {
    "vaac_state": "stale",
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-10-05 13:25:00 UTC",
-   "vona_age_hours": 92.1,
-   "newest_eruption_age_hours": 0.2
+   "vona_age_hours": 92.4,
+   "newest_eruption_age_hours": 0.3
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-09T09:30Z"
+  "assessed_utc": "2026-10-09T09:46Z"
  },
  "report": {
   "period": "Kamis - 08 Oktober 2026 00:00-24:00 WIB",
@@ -61,9 +61,16 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "09 Okt 2026, 16:30 WIB"
+  "fetched_wib": "09 Okt 2026, 16:46 WIB"
  },
  "eruptions": [
+  {
+   "time_label_wib": "16:30 WIB",
+   "utc": "2026-10-09T09:30:00Z",
+   "wib": "09 Okt 2026, 16:30 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Jumat, 09 Oktober 2026, pukul 16:30 WIB dengan tinggi kolom abu teramati ± 150 m di atas puncak (± 307 m di atas permukaan laut). Kolom abu teramati berwarna kelabu, coklat hingga hitam dengan intensitas tebal ke arah utara, timur laut dan barat. Erupsi ini terekam di seismograf dengan amplitudo maksimum 56 mm dan durasi 36 detik.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/d34053d8-c3c3-11f1-a61d-005056b54356/show"
+  },
   {
    "time_label_wib": "16:17 WIB",
    "utc": "2026-10-09T09:17:00Z",
@@ -258,7 +265,7 @@
    "noaa_slot": "2026-10-09 08:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-09T08:40:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-09T09:31:47Z"
+  "built_utc": "2026-10-09T09:47:27Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

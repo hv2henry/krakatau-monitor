@@ -108,3 +108,4 @@
 {"t": "2026-10-10T04:00Z", "model_toward": 272.3, "model_unc": 60.0, "vaac_toward": 225, "obs_width_km": 95.4, "emission_age_h": 10.11, "emission_source": "OBS polygon (Darwin advisory)"}
 {"t": "2026-10-10T05:00Z", "model_toward": 232.8, "model_unc": 60.0, "vaac_toward": 225, "obs_width_km": 62.6, "emission_age_h": 2.5, "emission_source": "OBS polygon (Darwin advisory)", "fcst_widths": [{"h": 6, "vaac_km": 73.2, "model_km": 91.2}]}
 {"t": "2026-10-10T06:00Z", "model_toward": 268.1, "model_unc": 60.0, "vaac_toward": 225, "obs_width_km": 62.6, "emission_age_h": 2.5, "emission_source": "OBS polygon (Darwin advisory)", "fcst_widths": [{"h": 6, "vaac_km": 73.2, "model_km": 91.4}]}
+{"t": "2026-10-10T07:00Z", "model_toward": 247.5, "model_unc": 60.0, "vaac_toward": 225, "obs_width_km": 62.6, "emission_age_h": 2.5, "emission_source": "OBS polygon (Darwin advisory)", "fcst_widths": [{"h": 6, "vaac_km": 73.2, "model_km": 91.2}]}

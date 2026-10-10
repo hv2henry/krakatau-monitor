@@ -1,10 +1,10 @@
 {
  "schema_version": 1,
  "source_errors": {
-  "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
+  "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: The read operation timed out"
  },
- "generated_utc": "2026-10-10T16:15:19Z",
- "generated_wib": "10 Okt 2026, 23:15 WIB",
+ "generated_utc": "2026-10-10T16:30:15Z",
+ "generated_wib": "10 Okt 2026, 23:30 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -32,14 +32,14 @@
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 6.3,
+   "vaac_age_hours": 6.5,
    "newest_vona_utc": null,
    "vona_age_hours": null,
    "newest_eruption_age_hours": null,
    "held": true
   },
   "since_utc": "2026-10-10T11:45Z",
-  "assessed_utc": "2026-10-10T16:15Z"
+  "assessed_utc": "2026-10-10T16:30Z"
  },
  "report": {
   "period": null,
@@ -60,7 +60,7 @@
   "advisory_nr": "2026/228",
   "dtg_utc": "2026-10-10T10:00Z",
   "dtg_wib": "10 Okt 2026, 17:00 WIB",
-  "age_hours": 6.3,
+  "age_hours": 6.5,
   "is_current": true,
   "advisory_status": "terminated",
   "terminated": true,
@@ -210,7 +210,7 @@
    "noaa_slot": "2026-10-10 15:30Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-10T15:30:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-10T16:17:06Z"
+  "built_utc": "2026-10-10T16:32:41Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

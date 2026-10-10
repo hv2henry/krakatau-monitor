@@ -1,0 +1,36 @@
+{
+ "t": "20261010T0600Z",
+ "state": "advisory",
+ "advisory_nr": "2026/227",
+ "dtg_utc": "2026-10-10T04:10Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL060",
+   "base_km": null,
+   "top_km": 1.83,
+   "move_toward": "SW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1167,
+     "lon": 105.5
+    },
+    {
+     "lat": -6.4667,
+     "lon": 104.8833
+    },
+    {
+     "lat": -6.05,
+     "lon": 104.7667
+    },
+    {
+     "lat": -6.0,
+     "lon": 105.4667
+    }
+   ]
+  }
+ ],
+ "remarks": "POSSIBLE VA OBS ON SATELLITE EXTD WSW. VA EXPECTED TO DISSIPATE WITHIN 6-12 HOURS. FORECAST BASED ON HIMAWARI-9 AND MODEL GUIDANCE."
+}

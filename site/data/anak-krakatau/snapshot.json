@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-10T05:00:12Z",
- "generated_wib": "10 Okt 2026, 12:00 WIB",
+ "generated_utc": "2026-10-10T05:15:14Z",
+ "generated_wib": "10 Okt 2026, 12:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-10T05:00:19Z",
-  "fetched_wib": "10 Okt 2026, 12:00 WIB",
+  "fetched_utc": "2026-10-10T05:15:22Z",
+  "fetched_wib": "10 Okt 2026, 12:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 23,
@@ -29,35 +29,36 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 0.8 jam).",
-   "en": "Darwin VAAC advisory still current (age 0.8 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 1.1 jam).",
+   "en": "Darwin VAAC advisory still current (age 1.1 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 0.8,
+   "vaac_age_hours": 1.1,
    "newest_vona_utc": "2026-10-09 11:44:00 UTC",
-   "vona_age_hours": 17.3,
-   "newest_eruption_age_hours": 14.7
+   "vona_age_hours": 17.5,
+   "newest_eruption_age_hours": 14.9
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-10T05:00Z"
+  "assessed_utc": "2026-10-10T05:15Z"
  },
  "report": {
-  "period": "Sabtu - 10 Oktober 2026 00:00-06:00 WIB",
-  "author": "Muhammad Dika Nurzaman",
-  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Teramati asap kawah utama berwarna putih dan kelabu dengan intensitas tipis, sedang hingga tebal tinggi sekitar 20-100 meter dari puncak. Cuaca berawan, angin lemah hingga sedang ke arah barat laut.",
-  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah barat laut. Suhu udara sekitar 26.5-27°C. Kelembaban 75-78%.",
+  "period": "Sabtu - 10 Oktober 2026 06:00-12:00 WIB",
+  "author": "Amri Puji Hidayatul Muslikhin",
+  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Teramati asap kawah utama berwarna putih dengan intensitas tipis, sedang hingga tebal tinggi sekitar 10-100 meter dari puncak. Cuaca berawan, angin lemah hingga sedang ke arah timur laut dan barat laut.",
+  "climate": "Cuaca berawan, angin lemah hingga sedang ke arah timur laut dan barat laut. Suhu udara sekitar 26.5-32.5°C. Kelembaban 61-78%.",
   "seismic_counts": {
-   "Low Frequency": 2,
-   "Hybrid/Fase Banyak": 3,
+   "Hembusan": 1,
+   "Hybrid/Fase Banyak": 8,
+   "Vulkanik Dangkal": 1,
    "Tremor Menerus": 1
   },
   "recommendation": "1. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan/pendaki tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 5 km dari pusat erupsi Anak Krakatau. 2. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 1 km dari pulau baru di sektor barat laut dan tenggara Gunungapi Anak Krakatau. 3. Meningkatkan kewaspadaan terhadap ancaman bahaya lontaran batu pijar, hujan abu lebat, aliran lava, dan potensi erupsi sekunder yang ditimbulkan oleh kontak panas lava, baik dengan air laut maupun air hujan dalam radius 5 km dari pusat erupsi Anak Krakatau. 4. Masyarakat di wilayah pantai Provinsi Banten dan Lampung harap tenang dan jangan mempercayai isu-isu tentang erupsi Gunungapi Anak Krakatau yang akan menyebabkan tsunami, serta dapat melakukan kegiatan seperti biasa dengan senantiasa mengikuti arahan BPBD setempat. 5. Untuk mengetahui informasi dapat menghubungi Pusat Vulkanologi dan Mitigasi Bencana Geologi, Badan Geologi (022) 7272606 di Bandung (Provinsi Jawa Barat) atau Pos Pengamatan Gunungapi Krakatau (0254) 651449 atau 085846324506 di Pasauran (Provinsi Banten).",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Okt 2026, 12:00 WIB"
+  "fetched_wib": "10 Okt 2026, 12:15 WIB"
  },
  "eruptions": [
   {
@@ -141,7 +142,7 @@
   "advisory_nr": "2026/227",
   "dtg_utc": "2026-10-10T04:10Z",
   "dtg_wib": "10 Okt 2026, 11:10 WIB",
-  "age_hours": 0.8,
+  "age_hours": 1.1,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -357,7 +358,7 @@
    "noaa_slot": "2026-10-10 04:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-10T04:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-10T05:01:40Z"
+  "built_utc": "2026-10-10T05:16:34Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

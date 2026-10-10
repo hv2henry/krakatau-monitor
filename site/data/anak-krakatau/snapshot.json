@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-10T00:45:15Z",
- "generated_wib": "10 Okt 2026, 07:45 WIB",
+ "generated_utc": "2026-10-10T01:00:18Z",
+ "generated_wib": "10 Okt 2026, 08:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-10T00:45:21Z",
-  "fetched_wib": "10 Okt 2026, 07:45 WIB",
+  "fetched_utc": "2026-10-10T01:00:25Z",
+  "fetched_wib": "10 Okt 2026, 08:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 23,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 2.6 jam).",
-   "en": "Darwin VAAC advisory still current (age 2.6 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 2.8 jam).",
+   "en": "Darwin VAAC advisory still current (age 2.8 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 2.6,
+   "vaac_age_hours": 2.8,
    "newest_vona_utc": "2026-10-09 11:44:00 UTC",
-   "vona_age_hours": 13.0,
-   "newest_eruption_age_hours": 10.4
+   "vona_age_hours": 13.3,
+   "newest_eruption_age_hours": 10.7
   },
   "since_utc": "2026-10-09T09:30Z",
-  "assessed_utc": "2026-10-10T00:45Z"
+  "assessed_utc": "2026-10-10T01:00Z"
  },
  "report": {
   "period": "Sabtu - 10 Oktober 2026 00:00-06:00 WIB",
@@ -57,7 +57,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "10 Okt 2026, 07:45 WIB"
+  "fetched_wib": "10 Okt 2026, 08:00 WIB"
  },
  "eruptions": [
   {
@@ -101,13 +101,6 @@
    "wib": "09 Okt 2026, 19:07 WIB",
    "text": "Terjadi erupsi G. Anak Krakatau pada hari Jumat, 09 Oktober 2026, pukul 19:07 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
    "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/ac40c5b1-c3d9-11f1-a61d-005056b54356/show"
-  },
-  {
-   "time_label_wib": "18:45 WIB",
-   "utc": "2026-10-09T11:45:00Z",
-   "wib": "09 Okt 2026, 18:45 WIB",
-   "text": "Terjadi erupsi G. Anak Krakatau pada hari Jumat, 09 Oktober 2026, pukul 18:45 WIB. Visual letusan tidak teramati. Erupsi ini terekam di seismograf dengan amplitudo maksimum 54 mm dan durasi 22 detik.",
-   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/26ca74b4-c3d7-11f1-a61d-005056b54356/show"
   }
  ],
  "vona": [
@@ -162,7 +155,7 @@
   "advisory_nr": "2026/226",
   "dtg_utc": "2026-10-09T22:10Z",
   "dtg_wib": "10 Okt 2026, 05:10 WIB",
-  "age_hours": 2.6,
+  "age_hours": 2.8,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -347,7 +340,7 @@
    "noaa_slot": "2026-10-09 23:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-09T23:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-10T00:46:07Z"
+  "built_utc": "2026-10-10T01:01:08Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

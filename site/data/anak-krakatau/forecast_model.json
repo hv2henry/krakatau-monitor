@@ -15756,8 +15756,8 @@
   "deg": 225
  },
  "backtest": {
-  "n": 89,
-  "mean_abs_deg": 40.9,
+  "n": 90,
+  "mean_abs_deg": 40.6,
   "median_abs_deg": 27.3
  },
  "plume_top": {

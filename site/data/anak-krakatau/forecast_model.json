@@ -16129,8 +16129,8 @@
  },
  "vaac_motion": null,
  "backtest": {
-  "n": 104,
-  "mean_abs_deg": 38.0,
+  "n": 105,
+  "mean_abs_deg": 37.9,
   "median_abs_deg": 25.7
  },
  "plume_top": {

@@ -3,8 +3,8 @@
  "source_errors": {
   "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
  },
- "generated_utc": "2026-10-18T03:45:16Z",
- "generated_wib": "18 Okt 2026, 10:45 WIB",
+ "generated_utc": "2026-10-18T04:00:14Z",
+ "generated_wib": "18 Okt 2026, 11:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -30,7 +30,7 @@
    "en": "MAGMA unreachable; previous state held."
   },
   "evidence": {
-   "vaac_state": "nil",
+   "vaac_state": "stale",
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": null,
@@ -39,7 +39,7 @@
    "held": true
   },
   "since_utc": "2026-10-17T19:45Z",
-  "assessed_utc": "2026-10-18T03:45Z"
+  "assessed_utc": "2026-10-18T04:00Z"
  },
  "report": {
   "period": null,
@@ -56,7 +56,7 @@
  "eruptions": [],
  "vona": [],
  "vaac": {
-  "state": "nil",
+  "state": "stale",
   "advisory_nr": null,
   "dtg_utc": null,
   "dtg_wib": null,
@@ -75,14 +75,14 @@
   "bulletin_text": null,
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
-  "via": "GET https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml (degraded: cannot prove nil)",
-  "warning": "Darwin VAAC endpoint returned zero current advisories. This does NOT mean no hazard - a VAA is only issued when ash is identifiable and relevant to aviation. Check MAGMA/CVGHM for eruption status."
+  "via": "POST https://www.bom.gov.au/aviation/php/process.php",
+  "warning": "Darwin VAAC has 3 current advisories but none for KRAKATAU. Absence of an advisory is not an all-clear."
  },
  "satellite": {
   "snpp": {
    "sensor": "snpp",
    "gibs_layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-   "date": "2026-10-17",
+   "date": "2026-10-18",
    "asset": "assets/sat_snpp.jpg",
    "bbox": [
     103.6,
@@ -92,7 +92,7 @@
    ],
    "zoom": 9,
    "missing_tiles": 0,
-   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-10-17. https://worldview.earthdata.nasa.gov"
+   "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-10-18. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
    "sensor": "terra",
@@ -108,7 +108,8 @@
    "zoom": 9,
    "missing_tiles": 0,
    "credit": "NASA GIBS/Earthdata—Terra MODIS Corrected Reflectance (True Color), 2026-10-17. https://worldview.earthdata.nasa.gov",
-   "sensor_label": "Terra (MODIS)"
+   "sensor_label": "Terra (MODIS)",
+   "sensor_note": "No clean pass on 2026-10-18; showing 2026-10-17."
   }
  },
  "loop": {
@@ -119,63 +120,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-10-18T00:40:00Z",
-    "t_wib": "18 Okt 2026, 07:40 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-10-18T00:50:00Z",
-    "t_wib": "18 Okt 2026, 07:50 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-10-18T01:00:00Z",
-    "t_wib": "18 Okt 2026, 08:00 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
     "t_utc": "2026-10-18T01:10:00Z",
     "t_wib": "18 Okt 2026, 08:10 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-10-18T01:20:00Z",
     "t_wib": "18 Okt 2026, 08:20 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-10-18T01:30:00Z",
     "t_wib": "18 Okt 2026, 08:30 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-10-18T01:40:00Z",
     "t_wib": "18 Okt 2026, 08:40 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-10-18T01:50:00Z",
     "t_wib": "18 Okt 2026, 08:50 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-10-18T02:00:00Z",
     "t_wib": "18 Okt 2026, 09:00 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-10-18T02:10:00Z",
     "t_wib": "18 Okt 2026, 09:10 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-10-18T02:20:00Z",
     "t_wib": "18 Okt 2026, 09:20 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-10-18T02:30:00Z",
     "t_wib": "18 Okt 2026, 09:30 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-10-18T02:50:00Z",
+    "t_wib": "18 Okt 2026, 09:50 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-10-18T03:00:00Z",
+    "t_wib": "18 Okt 2026, 10:00 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-18T03:10:00Z",
+    "t_wib": "18 Okt 2026, 10:10 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -191,10 +192,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-18 02:30Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-18T02:30:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-10-18 03:10Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-18T03:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-18T03:47:43Z"
+  "built_utc": "2026-10-18T04:01:40Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

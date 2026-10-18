@@ -1,10 +1,10 @@
 {
  "schema_version": 1,
  "source_errors": {
-  "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
+  "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: <urlopen error timed out>"
  },
- "generated_utc": "2026-10-18T04:00:14Z",
- "generated_wib": "18 Okt 2026, 11:00 WIB",
+ "generated_utc": "2026-10-18T04:15:15Z",
+ "generated_wib": "18 Okt 2026, 11:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -39,7 +39,7 @@
    "held": true
   },
   "since_utc": "2026-10-17T19:45Z",
-  "assessed_utc": "2026-10-18T04:00Z"
+  "assessed_utc": "2026-10-18T04:15Z"
  },
  "report": {
   "period": null,
@@ -195,7 +195,7 @@
    "noaa_slot": "2026-10-18 03:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-18T03:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-18T04:01:40Z"
+  "built_utc": "2026-10-18T04:19:25Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

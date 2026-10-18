@@ -1,0 +1,40 @@
+{
+ "t": "20261018T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/233",
+ "dtg_utc": "2026-10-18T17:30Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL030",
+   "base_km": null,
+   "top_km": 0.91,
+   "move_toward": "W",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1667,
+     "lon": 105.4833
+    },
+    {
+     "lat": -6.3333,
+     "lon": 104.9667
+    },
+    {
+     "lat": -5.8833,
+     "lon": 104.95
+    },
+    {
+     "lat": -5.8333,
+     "lon": 105.4
+    },
+    {
+     "lat": -6.05,
+     "lon": 105.5167
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT IDENTIFIABLE ON CURRENT SATELLITE IMAGE DUE TO MET CLOUD. VA HEIGHT AND MOVEMENT BASED ON HIMAWARI-9 IMAGERY, GROUND REPORT AND MODEL GUIDANCE. LOW CONFIDENCE IN FORECAST DUE TO LIGHT AND VARIABLE WINDS."
+}

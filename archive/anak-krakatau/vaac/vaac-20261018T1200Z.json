@@ -1,0 +1,36 @@
+{
+ "t": "20261018T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/231",
+ "dtg_utc": "2026-10-18T06:20Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.1167,
+     "lon": 105.4333
+    },
+    {
+     "lat": -6.1833,
+     "lon": 105.1167
+    },
+    {
+     "lat": -6.0167,
+     "lon": 105.1167
+    },
+    {
+     "lat": -6.0833,
+     "lon": 105.4333
+    }
+   ]
+  }
+ ],
+ "remarks": "VA HEIGHT AND MOVEMENT BASED ON HIMAWARI-9 IMAGERY, GROUND REPORT AND MODEL GUIDANCE."
+}

@@ -1,0 +1,44 @@
+{
+ "t": "20261019T0600Z",
+ "state": "advisory",
+ "advisory_nr": "2026/235",
+ "dtg_utc": "2026-10-19T03:40Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL170",
+   "base_km": null,
+   "top_km": 5.18,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.0667,
+     "lon": 105.5667
+    },
+    {
+     "lat": -6.2,
+     "lon": 105.55
+    },
+    {
+     "lat": -6.3667,
+     "lon": 105.35
+    },
+    {
+     "lat": -6.4167,
+     "lon": 104.9
+    },
+    {
+     "lat": -5.8667,
+     "lon": 104.8667
+    },
+    {
+     "lat": -5.8167,
+     "lon": 105.35
+    }
+   ]
+  }
+ ],
+ "remarks": "VA CLEARLY IDENTIFIABLE ON CURRENT SATELLITE IMAGE EXTENDING W OF SUMMIT. VA HEIGHT AND MOVEMENT BASED ON HIMAWARI-9 IMAGERY, GROUND REPORT AND MODEL GUIDANCE.***VA RE-ISSUED WITH RE-ASSESSED HEIGHT***"
+}

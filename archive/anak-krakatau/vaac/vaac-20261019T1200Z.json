@@ -1,0 +1,40 @@
+{
+ "t": "20261019T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/236",
+ "dtg_utc": "2026-10-19T09:40Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL170",
+   "base_km": null,
+   "top_km": 5.18,
+   "move_toward": "W",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.0333,
+     "lon": 105.5
+    },
+    {
+     "lat": -6.4833,
+     "lon": 105.45
+    },
+    {
+     "lat": -6.6,
+     "lon": 104.9167
+    },
+    {
+     "lat": -6.15,
+     "lon": 104.7
+    },
+    {
+     "lat": -5.75,
+     "lon": 104.9833
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NO LONGER IDENTIFIABLE ON CURRENT SAT IMG. NO FURTHER GROUND REPORTS INDICATING ONGOING ERUPTION. ASH FROM PREVIOUS ERUPTION EXPECTED TO DISSIPATE WITHIN 3-6 HOURS. VA HEIGHT AND MOV BASED ON GROUND REPORTS, SAT IMG, AND MODEL GUIDANCE."
+}

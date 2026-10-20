@@ -1,0 +1,40 @@
+{
+ "t": "20261020T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/241",
+ "dtg_utc": "2026-10-20T17:34Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL090",
+   "base_km": null,
+   "top_km": 2.74,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.1333,
+     "lon": 105.5167
+    },
+    {
+     "lat": -6.4167,
+     "lon": 104.9
+    },
+    {
+     "lat": -6.1833,
+     "lon": 104.6667
+    },
+    {
+     "lat": -5.9667,
+     "lon": 104.9333
+    },
+    {
+     "lat": -6.0333,
+     "lon": 105.5
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT SEEN ON RECENT SATELLITE IMAGERY DUE TO MET CLOUD COVERAGE AND DARKNESS. EMISSIONS ARE ASSUMED TO BE ONGOING. VA HEIGHT AND FORECAST BASED ON PAST SATELLITE IMAGERY, GROUND REPORTS AND MODEL GUIDANCE."
+}

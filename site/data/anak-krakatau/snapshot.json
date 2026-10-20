@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-20T03:45:14Z",
- "generated_wib": "20 Okt 2026, 10:45 WIB",
+ "generated_utc": "2026-10-20T04:00:16Z",
+ "generated_wib": "20 Okt 2026, 11:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-20T03:45:23Z",
-  "fetched_wib": "20 Okt 2026, 10:45 WIB",
+  "fetched_utc": "2026-10-20T04:00:28Z",
+  "fetched_wib": "20 Okt 2026, 11:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 3.4 jam).",
-   "en": "Darwin VAAC advisory still current (age 3.4 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 3.7 jam).",
+   "en": "Darwin VAAC advisory still current (age 3.7 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 3.4,
+   "vaac_age_hours": 3.7,
    "newest_vona_utc": "2026-10-19 23:41:00 UTC",
-   "vona_age_hours": 4.1,
-   "newest_eruption_age_hours": 3.8
+   "vona_age_hours": 4.3,
+   "newest_eruption_age_hours": 4.1
   },
   "since_utc": "2026-10-19T23:45Z",
-  "assessed_utc": "2026-10-20T03:45Z"
+  "assessed_utc": "2026-10-20T04:00Z"
  },
  "report": {
   "period": "Selasa - 20 Oktober 2026 00:00-06:00 WIB",
@@ -60,7 +60,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "20 Okt 2026, 10:45 WIB"
+  "fetched_wib": "20 Okt 2026, 11:00 WIB"
  },
  "eruptions": [
   {
@@ -137,7 +137,7 @@
   "advisory_nr": "2026/238",
   "dtg_utc": "2026-10-20T00:20Z",
   "dtg_wib": "20 Okt 2026, 07:20 WIB",
-  "age_hours": 3.4,
+  "age_hours": 3.7,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -360,7 +360,7 @@
    "noaa_slot": "2026-10-20 02:50Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-20T02:50:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-20T03:46:49Z"
+  "built_utc": "2026-10-20T04:01:43Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

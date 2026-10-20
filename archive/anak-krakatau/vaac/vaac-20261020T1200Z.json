@@ -1,0 +1,44 @@
+{
+ "t": "20261020T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/239",
+ "dtg_utc": "2026-10-20T06:00Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL090",
+   "base_km": null,
+   "top_km": 2.74,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.1,
+     "lon": 105.5167
+    },
+    {
+     "lat": -6.2167,
+     "lon": 105.45
+    },
+    {
+     "lat": -6.35,
+     "lon": 105.0833
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.0167
+    },
+    {
+     "lat": -5.8833,
+     "lon": 105.1333
+    },
+    {
+     "lat": -6.0167,
+     "lon": 105.5
+    }
+   ]
+  }
+ ],
+ "remarks": "VA CLEARLY DISCERNIBLE ON LATEST SAT IMG. LATEST GROUND REPORT ALSO INDICATES ONGOING ERUPTION. VA HEIGHT AND FORECAST BASED ON LATEST SAT IMG, GROUND REPORT AND MODEL GUIDANCE."
+}

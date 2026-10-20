@@ -8,10 +8,11 @@
   "direction_agreement": "corroborated",
   "worst_disagreement_deg": 16.0,
   "occurrence_sources": [
+   "magma_letusan",
    "magma_vona",
    "darwin_vaac"
   ],
-  "content_hash": "a23bdaf09982af34"
+  "content_hash": "86fee3ed3fed4f7e"
  },
  "layers": [
   {

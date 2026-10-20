@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-20T04:00:16Z",
- "generated_wib": "20 Okt 2026, 11:00 WIB",
+ "generated_utc": "2026-10-20T04:15:16Z",
+ "generated_wib": "20 Okt 2026, 11:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-20T04:00:28Z",
-  "fetched_wib": "20 Okt 2026, 11:00 WIB",
+  "fetched_utc": "2026-10-20T04:15:26Z",
+  "fetched_wib": "20 Okt 2026, 11:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 3.7 jam).",
-   "en": "Darwin VAAC advisory still current (age 3.7 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 3.9 jam).",
+   "en": "Darwin VAAC advisory still current (age 3.9 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 3.7,
+   "vaac_age_hours": 3.9,
    "newest_vona_utc": "2026-10-19 23:41:00 UTC",
-   "vona_age_hours": 4.3,
-   "newest_eruption_age_hours": 4.1
+   "vona_age_hours": 4.6,
+   "newest_eruption_age_hours": 4.3
   },
   "since_utc": "2026-10-19T23:45Z",
-  "assessed_utc": "2026-10-20T04:00Z"
+  "assessed_utc": "2026-10-20T04:15Z"
  },
  "report": {
   "period": "Selasa - 20 Oktober 2026 00:00-06:00 WIB",
@@ -60,7 +60,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "20 Okt 2026, 11:00 WIB"
+  "fetched_wib": "20 Okt 2026, 11:15 WIB"
  },
  "eruptions": [
   {
@@ -137,7 +137,7 @@
   "advisory_nr": "2026/238",
   "dtg_utc": "2026-10-20T00:20Z",
   "dtg_wib": "20 Okt 2026, 07:20 WIB",
-  "age_hours": 3.7,
+  "age_hours": 3.9,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -343,6 +343,11 @@
     "t_utc": "2026-10-20T02:50:00Z",
     "t_wib": "20 Okt 2026, 09:50 WIB",
     "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-20T03:00:00Z",
+    "t_wib": "20 Okt 2026, 10:00 WIB",
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -357,10 +362,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-20 02:50Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-20T02:50:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-10-20 03:00Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-20T03:00:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-20T04:01:43Z"
+  "built_utc": "2026-10-20T04:16:39Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

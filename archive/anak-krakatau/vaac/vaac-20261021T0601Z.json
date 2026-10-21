@@ -1,0 +1,36 @@
+{
+ "t": "20261021T0601Z",
+ "state": "advisory",
+ "advisory_nr": "2026/243",
+ "dtg_utc": "2026-10-21T05:25Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "W",
+   "speed_kt": 20,
+   "speed_ms": 10.3,
+   "polygon": [
+    {
+     "lat": -6.0667,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.15,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.25,
+     "lon": 105.25
+    },
+    {
+     "lat": -6.0333,
+     "lon": 105.1833
+    }
+   ]
+  }
+ ],
+ "remarks": "VA ERUPTION IDENTIFIABLE ON SATELLITE IMAGERY. HEIGHT BASED ON IR TEMP OF 15.6 DEGREES CELSIUS. MOVEMENT BASED ON CONSENSUS MODEL GUIDANCE."
+}

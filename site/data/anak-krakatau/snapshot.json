@@ -3,8 +3,8 @@
  "source_errors": {
   "magma": "failed to fetch https://magma.vsi.esdm.go.id/v1/gunung-api/tingkat-aktivitas: HTTP Error 404: Not Found"
  },
- "generated_utc": "2026-10-21T10:00:16Z",
- "generated_wib": "21 Okt 2026, 17:00 WIB",
+ "generated_utc": "2026-10-21T10:15:15Z",
+ "generated_wib": "21 Okt 2026, 17:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -26,19 +26,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 4.6 jam).",
-   "en": "Darwin VAAC advisory still current (age 4.6 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 4.8 jam).",
+   "en": "Darwin VAAC advisory still current (age 4.8 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 4.6,
+   "vaac_age_hours": 4.8,
    "newest_vona_utc": null,
    "vona_age_hours": null,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-10-21T05:30Z",
-  "assessed_utc": "2026-10-21T10:00Z"
+  "assessed_utc": "2026-10-21T10:15Z"
  },
  "report": {
   "period": null,
@@ -59,7 +59,7 @@
   "advisory_nr": "2026/243",
   "dtg_utc": "2026-10-21T05:25Z",
   "dtg_wib": "21 Okt 2026, 12:25 WIB",
-  "age_hours": 4.6,
+  "age_hours": 4.8,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -357,7 +357,7 @@
    "noaa_slot": "2026-10-21 09:10Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-21T09:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-21T10:02:23Z"
+  "built_utc": "2026-10-21T10:17:10Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

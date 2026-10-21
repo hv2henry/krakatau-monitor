@@ -1,0 +1,40 @@
+{
+ "t": "20261021T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/244",
+ "dtg_utc": "2026-10-21T11:25Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "SW",
+   "speed_kt": 20,
+   "speed_ms": 10.3,
+   "polygon": [
+    {
+     "lat": -6.15,
+     "lon": 105.5167
+    },
+    {
+     "lat": -7.0833,
+     "lon": 103.7667
+    },
+    {
+     "lat": -6.5667,
+     "lon": 103.1333
+    },
+    {
+     "lat": -5.8667,
+     "lon": 103.45
+    },
+    {
+     "lat": -5.95,
+     "lon": 105.4833
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT IDENTIFIABLE ON LATEST SATELLITE IMAGERY DUE TO DARKNESS. VA EMISSION IS EXPECTED TO BE ONGOING. HEIGHT AND MOVEMENT BASED ON CONSENSUS MODEL GUIDANCE AND HIMAWARI-9 SAT."
+}

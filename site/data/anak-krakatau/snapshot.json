@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-22T10:15:19Z",
- "generated_wib": "22 Okt 2026, 17:15 WIB",
+ "generated_utc": "2026-10-22T10:30:15Z",
+ "generated_wib": "22 Okt 2026, 17:30 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-22T10:15:37Z",
-  "fetched_wib": "22 Okt 2026, 17:15 WIB",
+  "fetched_utc": "2026-10-22T10:30:23Z",
+  "fetched_wib": "22 Okt 2026, 17:30 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -35,13 +35,13 @@
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 5.3,
+   "vaac_age_hours": 5.5,
    "newest_vona_utc": "2026-10-21 04:45:00 UTC",
-   "vona_age_hours": 29.5,
+   "vona_age_hours": 29.8,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-10-22T05:15Z",
-  "assessed_utc": "2026-10-22T10:15Z"
+  "assessed_utc": "2026-10-22T10:30Z"
  },
  "report": {
   "period": "Kamis - 22 Oktober 2026 06:00-12:00 WIB",
@@ -57,7 +57,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "22 Okt 2026, 17:15 WIB"
+  "fetched_wib": "22 Okt 2026, 17:30 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -112,7 +112,7 @@
   "advisory_nr": "2026/247",
   "dtg_utc": "2026-10-22T05:00Z",
   "dtg_wib": "22 Okt 2026, 12:00 WIB",
-  "age_hours": 5.3,
+  "age_hours": 5.5,
   "is_current": true,
   "advisory_status": "terminated",
   "terminated": true,
@@ -240,6 +240,11 @@
     "t_utc": "2026-10-22T09:20:00Z",
     "t_wib": "22 Okt 2026, 16:20 WIB",
     "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-22T09:30:00Z",
+    "t_wib": "22 Okt 2026, 16:30 WIB",
+    "asset": "assets/loop/f11.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -254,10 +259,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-22 09:20Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-22T09:20:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-10-22 09:30Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-22T09:30:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-22T10:16:39Z"
+  "built_utc": "2026-10-22T10:31:43Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

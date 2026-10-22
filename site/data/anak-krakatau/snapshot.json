@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-22T05:00:18Z",
- "generated_wib": "22 Okt 2026, 12:00 WIB",
+ "generated_utc": "2026-10-22T05:15:15Z",
+ "generated_wib": "22 Okt 2026, 12:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-22T05:00:25Z",
-  "fetched_wib": "22 Okt 2026, 12:00 WIB",
+  "fetched_utc": "2026-10-22T05:15:20Z",
+  "fetched_wib": "22 Okt 2026, 12:15 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -26,22 +26,22 @@
  },
  "activity": {
   "version": "activity/1.0",
-  "state": "active",
-  "reason_code": "vaac_current",
+  "state": "quiet",
+  "reason_code": "vaac_terminated",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 5.6 jam).",
-   "en": "Darwin VAAC advisory still current (age 5.6 h)."
+   "id": "Darwin VAAC telah menghentikan advisori—abu tidak lagi teridentifikasi; tidak ada VONA/erupsi baru dari MAGMA.",
+   "en": "Darwin VAAC has terminated its advisory—ash no longer identifiable; no fresh VONA/eruption from MAGMA."
   },
   "evidence": {
    "vaac_state": "advisory",
-   "vaac_terminated": null,
-   "vaac_age_hours": 5.6,
+   "vaac_terminated": true,
+   "vaac_age_hours": 0.3,
    "newest_vona_utc": "2026-10-21 04:45:00 UTC",
-   "vona_age_hours": 24.3,
-   "newest_eruption_age_hours": 24.3
+   "vona_age_hours": 24.5,
+   "newest_eruption_age_hours": null
   },
-  "since_utc": "2026-10-21T05:30Z",
-  "assessed_utc": "2026-10-22T05:00Z"
+  "since_utc": "2026-10-22T05:15Z",
+  "assessed_utc": "2026-10-22T05:15Z"
  },
  "report": {
   "period": "Kamis - 22 Oktober 2026 06:00-12:00 WIB",
@@ -57,17 +57,9 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "22 Okt 2026, 12:00 WIB"
+  "fetched_wib": "22 Okt 2026, 12:15 WIB"
  },
- "eruptions": [
-  {
-   "time_label_wib": "11:45 WIB",
-   "utc": "2026-10-21T04:45:00Z",
-   "wib": "21 Okt 2026, 11:45 WIB",
-   "text": "Terjadi erupsi G. Anak Krakatau pada hari Rabu, 21 Oktober 2026, pukul 11:45 WIB dengan tinggi kolom abu teramati ± 500 m di atas puncak (± 657 m di atas permukaan laut). Kolom abu teramati berwarna hitam dengan intensitas tebal ke arah barat laut. Saat laporan ini dibuat, erupsi masih berlangsung.",
-   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/0320c0aa-cd0a-11f1-a61d-005056b54356/show"
-  }
- ],
+ "eruptions": [],
  "vona": [
   {
    "code": "ORANGE",
@@ -117,182 +109,42 @@
  ],
  "vaac": {
   "state": "advisory",
-  "advisory_nr": "2026/246",
-  "dtg_utc": "2026-10-21T23:25Z",
-  "dtg_wib": "22 Okt 2026, 06:25 WIB",
-  "age_hours": 5.6,
+  "advisory_nr": "2026/247",
+  "dtg_utc": "2026-10-22T05:00Z",
+  "dtg_wib": "22 Okt 2026, 12:00 WIB",
+  "age_hours": 0.3,
   "is_current": true,
-  "advisory_status": "active",
-  "terminated": false,
-  "eruption_details": "VA TO FL050 OBS AT 21/2300Z MOV W",
+  "advisory_status": "terminated",
+  "terminated": true,
+  "eruption_details": "VA TO FL050 LAST OBS AT 22/0330Z MOV W",
   "info_source": "CVGHM, HIMAWARI-9",
-  "observed_layers": [
-   {
-    "base": "SFC",
-    "top": "FL050",
-    "top_km": 1.52,
-    "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km dpl",
-    "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km asl",
-    "base_human_id": "permukaan tanah (SFC)",
-    "base_human_en": "ground level (SFC)",
-    "move_toward": "W",
-    "speed_kt": 15,
-    "speed_ms": 7.7,
-    "polygon": [
-     [
-      105.5,
-      -6.15
-     ],
-     [
-      104.7167,
-      -6.3
-     ],
-     [
-      104.5333,
-      -6.1833
-     ],
-     [
-      104.6667,
-      -6.0167
-     ],
-     [
-      105.4833,
-      -6.0333
-     ]
-    ]
-   }
-  ],
+  "observed_layers": [],
   "forecasts": {
    "+6h": {
-    "valid_utc": "2026-10-22T05:00Z",
-    "valid_wib": "22 Okt 2026, 12:00 WIB",
-    "layers": [
-     {
-      "base": "SFC",
-      "top": "FL050",
-      "top_km": 1.52,
-      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km dpl",
-      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km asl",
-      "base_human_id": "permukaan tanah (SFC)",
-      "base_human_en": "ground level (SFC)",
-      "move_toward": null,
-      "speed_kt": null,
-      "speed_ms": null,
-      "polygon": [
-       [
-        105.5,
-        -6.15
-       ],
-       [
-        104.6,
-        -6.5667
-       ],
-       [
-        104.25,
-        -6.2
-       ],
-       [
-        104.55,
-        -5.8
-       ],
-       [
-        105.4833,
-        -6.0333
-       ]
-      ]
-     }
-    ]
+    "valid_utc": "2026-10-22T10:40Z",
+    "valid_wib": "22 Okt 2026, 17:40 WIB",
+    "layers": []
    },
    "+12h": {
-    "valid_utc": "2026-10-22T11:00Z",
-    "valid_wib": "22 Okt 2026, 18:00 WIB",
-    "layers": [
-     {
-      "base": "SFC",
-      "top": "FL050",
-      "top_km": 1.52,
-      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km dpl",
-      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km asl",
-      "base_human_id": "permukaan tanah (SFC)",
-      "base_human_en": "ground level (SFC)",
-      "move_toward": null,
-      "speed_kt": null,
-      "speed_ms": null,
-      "polygon": [
-       [
-        105.4833,
-        -6.0333
-       ],
-       [
-        105.65,
-        -6.3833
-       ],
-       [
-        105.2333,
-        -7.0333
-       ],
-       [
-        104.5167,
-        -6.8167
-       ],
-       [
-        104.6833,
-        -6.0667
-       ]
-      ]
-     }
-    ]
+    "valid_utc": "2026-10-22T16:40Z",
+    "valid_wib": "22 Okt 2026, 23:40 WIB",
+    "layers": []
    },
    "+18h": {
-    "valid_utc": "2026-10-22T17:00Z",
-    "valid_wib": "23 Okt 2026, 00:00 WIB",
-    "layers": [
-     {
-      "base": "SFC",
-      "top": "FL050",
-      "top_km": 1.52,
-      "top_human_id": "FL050 = 5.000 ft ≈ 1.5 km dpl",
-      "top_human_en": "FL050 = 5,000 ft ≈ 1.5 km asl",
-      "base_human_id": "permukaan tanah (SFC)",
-      "base_human_en": "ground level (SFC)",
-      "move_toward": null,
-      "speed_kt": null,
-      "speed_ms": null,
-      "polygon": [
-       [
-        105.6167,
-        -5.9167
-       ],
-       [
-        105.7333,
-        -6.55
-       ],
-       [
-        105.1333,
-        -6.75
-       ],
-       [
-        104.7,
-        -6.25
-       ],
-       [
-        105.0,
-        -5.6833
-       ]
-      ]
-     }
-    ]
+    "valid_utc": "2026-10-22T22:40Z",
+    "valid_wib": "23 Okt 2026, 05:40 WIB",
+    "layers": []
    }
   },
-  "remarks": "CONTINUOUS VA EMISSIONS IDENTIFIABLE ON SATELLITE IMAGERY. VA HEIGHT AND MOVEMENT BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE.",
-  "next_advisory_by_utc": "2026-10-22T05:25Z",
-  "next_advisory_by_wib": "22 Okt 2026, 12:25 WIB",
+  "remarks": "CURRENT SATELLITE IMAGERY INDICATES THAT VA HAS NOW DISSIPATED, HOWEVER STEAM/SMOKE PLUME IS STILL EXTENDING WEST FROM SUMMIT. NO FURTHER REPORTS OF NEW OR ONGOING ERUPTION. ADVISORY TERMINATED.",
+  "next_advisory_by_utc": null,
+  "next_advisory_by_wib": null,
   "graphic_asset": "assets/vaac_graphic.png",
-  "bulletin_text": "FVAU04 ADRM 212325\nVA ADVISORY\nDTG: 20261021/2325Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/246\nINFO SOURCE: CVGHM, HIMAWARI-9\nERUPTION DETAILS: VA TO FL050 OBS AT 21/2300Z MOV W\nOBS VA DTG: 21/2300Z\nOBS VA CLD: SFC/FL050 S0609 E10530 - S0618 E10443 - S0611\nE10432 - S0601 E10440 - S0602 E10529 MOV W 15KT\nFCST VA CLD +6 HR: 22/0500Z SFC/FL050 S0609 E10530 - S0634\nE10436 - S0612 E10415 - S0548 E10433 - S0602 E10529\nFCST VA CLD +12 HR: 22/1100Z SFC/FL050 S0602 E10529 - S0623\nE10539 - S0702 E10514 - S0649 E10431 - S0604 E10441\nFCST VA CLD +18 HR: 22/1700Z SFC/FL050 S0555 E10537 - S0633\nE10544 - S0645 E10508 - S0615 E10442 - S0541 E10500\nRMK: CONTINUOUS VA EMISSIONS IDENTIFIABLE ON SATELLITE\nIMAGERY. VA HEIGHT AND MOVEMENT BASED ON SATELLITE IMAGERY\nAND MODEL GUIDANCE.\nNXT ADVISORY: NO LATER THAN 20261022/0525Z=",
+  "bulletin_text": "FVAU04 ADRM 220500\nVA ADVISORY\nDTG: 20261022/0500Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/247\nINFO SOURCE: CVGHM, HIMAWARI-9\nERUPTION DETAILS: VA TO FL050 LAST OBS AT 22/0330Z MOV W\nOBS VA DTG: 22/0440Z\nOBS VA CLD: VA NOT IDENTIFIABLE FM SATELLITE DATA WIND\nSFC/FL050 100/10KT\nFCST VA CLD +6 HR: 22/1040Z NO VA EXP\nFCST VA CLD +12 HR: 22/1640Z NO VA EXP\nFCST VA CLD +18 HR: 22/2240Z NO VA EXP\nRMK: CURRENT SATELLITE IMAGERY INDICATES THAT VA HAS NOW\nDISSIPATED, HOWEVER STEAM/SMOKE PLUME IS STILL EXTENDING\nWEST FROM SUMMIT. NO FURTHER REPORTS OF NEW OR ONGOING\nERUPTION. ADVISORY TERMINATED.\nNXT ADVISORY: NO FURTHER ADVISORIES=",
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
-  "warning": null
+  "warning": "This bulletin TERMINATES the episode (VAAC wording: terminated). Treat the ash picture as closed unless a new advisory or VONA appears."
  },
  "satellite": {
   "snpp": {
@@ -410,7 +262,7 @@
    "noaa_slot": "2026-10-22 04:00Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-22T04:00:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-22T05:01:25Z"
+  "built_utc": "2026-10-22T05:16:18Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

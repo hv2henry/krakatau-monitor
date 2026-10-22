@@ -1,0 +1,40 @@
+{
+ "t": "20261022T0000Z",
+ "state": "advisory",
+ "advisory_nr": "2026/246",
+ "dtg_utc": "2026-10-21T23:25Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL050",
+   "base_km": null,
+   "top_km": 1.52,
+   "move_toward": "W",
+   "speed_kt": 15,
+   "speed_ms": 7.7,
+   "polygon": [
+    {
+     "lat": -6.15,
+     "lon": 105.5
+    },
+    {
+     "lat": -6.3,
+     "lon": 104.7167
+    },
+    {
+     "lat": -6.1833,
+     "lon": 104.5333
+    },
+    {
+     "lat": -6.0167,
+     "lon": 104.6667
+    },
+    {
+     "lat": -6.0333,
+     "lon": 105.4833
+    }
+   ]
+  }
+ ],
+ "remarks": "CONTINUOUS VA EMISSIONS IDENTIFIABLE ON SATELLITE IMAGERY. VA HEIGHT AND MOVEMENT BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE."
+}

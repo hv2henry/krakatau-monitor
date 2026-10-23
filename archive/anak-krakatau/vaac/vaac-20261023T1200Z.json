@@ -1,0 +1,36 @@
+{
+ "t": "20261023T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/248",
+ "dtg_utc": "2026-10-23T06:27Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL070",
+   "base_km": null,
+   "top_km": 2.13,
+   "move_toward": "NE",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.15,
+     "lon": 105.45
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.3667
+    },
+    {
+     "lat": -5.7833,
+     "lon": 105.4167
+    },
+    {
+     "lat": -5.8667,
+     "lon": 105.6667
+    }
+   ]
+  }
+ ],
+ "remarks": "CONTINOUS VA EMISSION DETECTED ON LATEST SATELLITE IMAGERY MOVING NE. HEIGHT AND MOVEMENT BASED ON SATELLITE AND MODEL GUIDANCE."
+}

@@ -11,7 +11,7 @@
    "magma_vona",
    "darwin_vaac"
   ],
-  "content_hash": "47c9dc7392078d7d"
+  "content_hash": "2addf0c6769e0ba4"
  },
  "layers": [
   {
@@ -11500,19 +11500,19 @@
    "alt_km": 9.7,
    "alt_human_id": "± 9.7 km dpl",
    "alt_human_en": "± 9.7 km asl",
-   "from_deg": 310.46410640246256,
+   "from_deg": 310.4764196941958,
    "from_compass": "NW",
-   "toward_deg": 130.4641064024626,
+   "toward_deg": 130.47641969419578,
    "toward_compass": "SE",
    "speed_ms": 14.3,
-   "consistency_R": 0.988,
-   "n_vectors": 2185,
-   "nearest_vector_km": 4.7,
+   "consistency_R": 0.989,
+   "n_vectors": 2142,
+   "nearest_vector_km": 1.1,
    "confidence": "high",
    "uncertainty_deg": 5.0,
    "ensemble_spread_deg": null,
-   "n_eff": 453.6,
-   "blended_toward_deg": 129.33874082375544,
+   "n_eff": 459.7,
+   "blended_toward_deg": 129.34296367831814,
    "blended_u_ms": 9.46,
    "blended_v_ms": -7.75,
    "trajectory": [

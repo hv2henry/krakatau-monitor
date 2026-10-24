@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-24T09:45:14Z",
- "generated_wib": "24 Okt 2026, 16:45 WIB",
+ "generated_utc": "2026-10-24T10:00:18Z",
+ "generated_wib": "24 Okt 2026, 17:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-24T09:45:21Z",
-  "fetched_wib": "24 Okt 2026, 16:45 WIB",
+  "fetched_utc": "2026-10-24T10:00:24Z",
+  "fetched_wib": "24 Okt 2026, 17:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 3.4 jam).",
-   "en": "Darwin VAAC advisory still current (age 3.4 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 3.7 jam).",
+   "en": "Darwin VAAC advisory still current (age 3.7 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 3.4,
+   "vaac_age_hours": 3.7,
    "newest_vona_utc": "2026-10-21 04:45:00 UTC",
-   "vona_age_hours": 77.0,
+   "vona_age_hours": 77.3,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-10-23T06:30Z",
-  "assessed_utc": "2026-10-24T09:45Z"
+  "assessed_utc": "2026-10-24T10:00Z"
  },
  "report": {
   "period": "Sabtu - 24 Oktober 2026 06:00-12:00 WIB",
@@ -55,7 +55,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "24 Okt 2026, 16:45 WIB"
+  "fetched_wib": "24 Okt 2026, 17:00 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -110,7 +110,7 @@
   "advisory_nr": "2026/252",
   "dtg_utc": "2026-10-24T06:20Z",
   "dtg_wib": "24 Okt 2026, 13:20 WIB",
-  "age_hours": 3.4,
+  "age_hours": 3.7,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -325,64 +325,59 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-10-24T06:50:00Z",
-    "t_wib": "24 Okt 2026, 13:50 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-10-24T07:00:00Z",
-    "t_wib": "24 Okt 2026, 14:00 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-10-24T07:10:00Z",
-    "t_wib": "24 Okt 2026, 14:10 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
-    "t_utc": "2026-10-24T07:20:00Z",
-    "t_wib": "24 Okt 2026, 14:20 WIB",
-    "asset": "assets/loop/f03.jpg"
-   },
-   {
-    "t_utc": "2026-10-24T07:30:00Z",
-    "t_wib": "24 Okt 2026, 14:30 WIB",
-    "asset": "assets/loop/f04.jpg"
-   },
-   {
     "t_utc": "2026-10-24T07:40:00Z",
     "t_wib": "24 Okt 2026, 14:40 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-10-24T07:50:00Z",
     "t_wib": "24 Okt 2026, 14:50 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-10-24T08:00:00Z",
     "t_wib": "24 Okt 2026, 15:00 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-10-24T08:10:00Z",
     "t_wib": "24 Okt 2026, 15:10 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-10-24T08:20:00Z",
     "t_wib": "24 Okt 2026, 15:20 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-10-24T08:30:00Z",
     "t_wib": "24 Okt 2026, 15:30 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-10-24T08:40:00Z",
     "t_wib": "24 Okt 2026, 15:40 WIB",
-    "asset": "assets/loop/f11.jpg"
+    "asset": "assets/loop/f06.jpg"
+   },
+   {
+    "t_utc": "2026-10-24T08:50:00Z",
+    "t_wib": "24 Okt 2026, 15:50 WIB",
+    "asset": "assets/loop/f07.jpg"
+   },
+   {
+    "t_utc": "2026-10-24T09:00:00Z",
+    "t_wib": "24 Okt 2026, 16:00 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-10-24T09:10:00Z",
+    "t_wib": "24 Okt 2026, 16:10 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-10-24T09:20:00Z",
+    "t_wib": "24 Okt 2026, 16:20 WIB",
+    "asset": "assets/loop/f10.jpg"
    }
   ],
   "credit": "Himawari-9 AHI Band 13 (10.4 um) clean infrared, 10-min cadence, via NASA GIBS (JMA/NOAA open data). IR brightness: cold/high cloud = white.",
@@ -397,10 +392,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-24 08:40Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-24T08:40:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-10-24 09:20Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-24T09:20:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-24T09:46:32Z"
+  "built_utc": "2026-10-24T10:01:48Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

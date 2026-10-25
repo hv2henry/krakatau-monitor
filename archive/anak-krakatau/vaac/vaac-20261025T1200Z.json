@@ -1,0 +1,44 @@
+{
+ "t": "20261025T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/256",
+ "dtg_utc": "2026-10-25T06:20Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL040",
+   "base_km": null,
+   "top_km": 1.22,
+   "move_toward": "NW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1667,
+     "lon": 105.4833
+    },
+    {
+     "lat": -6.1833,
+     "lon": 105.35
+    },
+    {
+     "lat": -6.0,
+     "lon": 104.8833
+    },
+    {
+     "lat": -5.7833,
+     "lon": 104.85
+    },
+    {
+     "lat": -5.6333,
+     "lon": 105.3667
+    },
+    {
+     "lat": -5.8,
+     "lon": 105.6833
+    }
+   ]
+  }
+ ],
+ "remarks": "VA NOT IDENTIFIABLE ON SATELLITE IMAGERY DUE TO MET CLOUD. ERUPTION EXPECTED TO BE ONGOING. HEIGHT AND MOVEMENT BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE. LOW CONFIDENCE IN FCST DUE TO VARIABLE WINDS IN THE AREA."
+}

@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-27T07:45:17Z",
- "generated_wib": "27 Okt 2026, 14:45 WIB",
+ "generated_utc": "2026-10-27T08:00:16Z",
+ "generated_wib": "27 Okt 2026, 15:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-27T07:45:24Z",
-  "fetched_wib": "27 Okt 2026, 14:45 WIB",
+  "fetched_utc": "2026-10-27T08:00:23Z",
+  "fetched_wib": "27 Okt 2026, 15:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 5.6 jam).",
-   "en": "Darwin VAAC advisory still current (age 5.6 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 0.0 jam).",
+   "en": "Darwin VAAC advisory still current (age 0.0 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 5.6,
+   "vaac_age_hours": 0.0,
    "newest_vona_utc": "2026-10-21 04:45:00 UTC",
-   "vona_age_hours": 147.0,
+   "vona_age_hours": 147.3,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-10-27T02:15Z",
-  "assessed_utc": "2026-10-27T07:45Z"
+  "assessed_utc": "2026-10-27T08:00Z"
  },
  "report": {
   "period": "Selasa - 27 Oktober 2026 06:00-12:00 WIB",
@@ -58,7 +58,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "27 Okt 2026, 14:45 WIB"
+  "fetched_wib": "27 Okt 2026, 15:00 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -110,46 +110,16 @@
  ],
  "vaac": {
   "state": "advisory",
-  "advisory_nr": "2026/258",
-  "dtg_utc": "2026-10-27T02:12Z",
-  "dtg_wib": "27 Okt 2026, 09:12 WIB",
-  "age_hours": 5.6,
+  "advisory_nr": "2026/259",
+  "dtg_utc": "2026-10-27T08:00Z",
+  "dtg_wib": "27 Okt 2026, 15:00 WIB",
+  "age_hours": 0.0,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
-  "eruption_details": "VA TO FL080 MOV SSW AND VA TO FL020 MOV NE",
+  "eruption_details": "VA TO FL080 MOV S TO SW OBS AT 27/0740Z",
   "info_source": "HIMAWARI-9",
   "observed_layers": [
-   {
-    "base": "SFC",
-    "top": "FL020",
-    "top_km": 0.61,
-    "top_human_id": "FL020 = 2.000 ft ≈ 0.6 km dpl",
-    "top_human_en": "FL020 = 2,000 ft ≈ 0.6 km asl",
-    "base_human_id": "permukaan tanah (SFC)",
-    "base_human_en": "ground level (SFC)",
-    "move_toward": "NE",
-    "speed_kt": 5,
-    "speed_ms": 2.6,
-    "polygon": [
-     [
-      105.2833,
-      -6.0833
-     ],
-     [
-      105.7,
-      -5.8667
-     ],
-     [
-      105.8167,
-      -6.1333
-     ],
-     [
-      105.35,
-      -6.2667
-     ]
-    ]
-   },
    {
     "base": "SFC",
     "top": "FL080",
@@ -163,63 +133,33 @@
     "speed_ms": 2.6,
     "polygon": [
      [
+      105.6833,
+      -6.0
+     ],
+     [
+      105.6,
+      -7.0667
+     ],
+     [
+      105.0,
+      -7.0667
+     ],
+     [
+      104.35,
+      -6.45
+     ],
+     [
       105.35,
-      -5.9833
-     ],
-     [
-      105.55,
-      -6.05
-     ],
-     [
-      105.4833,
-      -7.0833
-     ],
-     [
-      104.6333,
-      -6.7667
+      -5.8
      ]
     ]
    }
   ],
   "forecasts": {
    "+6h": {
-    "valid_utc": "2026-10-27T07:50Z",
-    "valid_wib": "27 Okt 2026, 14:50 WIB",
+    "valid_utc": "2026-10-27T13:40Z",
+    "valid_wib": "27 Okt 2026, 20:40 WIB",
     "layers": [
-     {
-      "base": "SFC",
-      "top": "FL020",
-      "top_km": 0.61,
-      "top_human_id": "FL020 = 2.000 ft ≈ 0.6 km dpl",
-      "top_human_en": "FL020 = 2,000 ft ≈ 0.6 km asl",
-      "base_human_id": "permukaan tanah (SFC)",
-      "base_human_en": "ground level (SFC)",
-      "move_toward": null,
-      "speed_kt": null,
-      "speed_ms": null,
-      "polygon": [
-       [
-        105.4,
-        -6.35
-       ],
-       [
-        104.9667,
-        -6.0
-       ],
-       [
-        105.2,
-        -5.6667
-       ],
-       [
-        105.6333,
-        -5.65
-       ],
-       [
-        105.8,
-        -6.1167
-       ]
-      ]
-     },
      {
       "base": "SFC",
       "top": "FL080",
@@ -233,32 +173,32 @@
       "speed_ms": null,
       "polygon": [
        [
-        105.55,
+        105.6833,
         -6.0167
        ],
        [
-        105.4833,
-        -7.3
+        105.25,
+        -7.1333
        ],
        [
-        104.8333,
-        -7.1
+        104.5833,
+        -6.9667
        ],
        [
-        104.3833,
-        -6.7167
+        104.2833,
+        -6.5167
        ],
        [
-        105.4,
-        -5.9333
+        105.35,
+        -5.8
        ]
       ]
      }
     ]
    },
    "+12h": {
-    "valid_utc": "2026-10-27T13:50Z",
-    "valid_wib": "27 Okt 2026, 20:50 WIB",
+    "valid_utc": "2026-10-27T19:40Z",
+    "valid_wib": "28 Okt 2026, 02:40 WIB",
     "layers": [
      {
       "base": "SFC",
@@ -273,32 +213,32 @@
       "speed_ms": null,
       "polygon": [
        [
-        105.4,
-        -5.95
+        105.6833,
+        -6.0
        ],
        [
-        105.5667,
-        -6.0167
+        105.25,
+        -7.1333
        ],
        [
-        105.4833,
-        -7.3
+        104.5833,
+        -6.95
        ],
        [
-        104.8333,
-        -7.1
+        104.2667,
+        -6.5167
        ],
        [
-        104.3833,
-        -6.7167
+        105.35,
+        -5.8
        ]
       ]
      }
     ]
    },
    "+18h": {
-    "valid_utc": "2026-10-27T19:50Z",
-    "valid_wib": "28 Okt 2026, 02:50 WIB",
+    "valid_utc": "2026-10-28T01:40Z",
+    "valid_wib": "28 Okt 2026, 08:40 WIB",
     "layers": [
      {
       "base": "SFC",
@@ -313,35 +253,35 @@
       "speed_ms": null,
       "polygon": [
        [
-        105.5667,
-        -6.0
+        105.6833,
+        -6.0167
        ],
        [
-        105.4833,
-        -7.3
+        105.25,
+        -7.1333
        ],
        [
-        104.8333,
-        -7.0833
+        104.5833,
+        -6.9667
        ],
        [
-        104.3833,
-        -6.7
+        104.2833,
+        -6.5167
        ],
        [
-        105.3833,
-        -5.9333
+        105.35,
+        -5.8167
        ]
       ]
      }
     ]
    }
   },
-  "remarks": "CONTINUOUS VA OBS ON SATELLITE IMAGE. VA TO FL080 MOV SSW. VA TO FL020 OBS MOV NE. VA HEIGHT ESTIMATED BASED ON SATELLITE AND MODEL GUIDANCE.",
-  "next_advisory_by_utc": "2026-10-27T08:12Z",
-  "next_advisory_by_wib": "27 Okt 2026, 15:12 WIB",
+  "remarks": "CONTINUOUS VA OBS ON SATELLITE IMAGE MOV S TO SW. VA HEIGHT AND FCST BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE.",
+  "next_advisory_by_utc": "2026-10-27T14:00Z",
+  "next_advisory_by_wib": "27 Okt 2026, 21:00 WIB",
   "graphic_asset": "assets/vaac_graphic.png",
-  "bulletin_text": "FVAU06 ADRM 270212\nVA ADVISORY\nDTG: 20261027/0212Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/258\nINFO SOURCE: HIMAWARI-9\nERUPTION DETAILS: VA TO FL080 MOV SSW AND VA TO FL020 MOV NE\nOBS VA DTG: 27/0150Z\nOBS VA CLD: SFC/FL020 S0605 E10517 - S0552 E10542 - S0608\nE10549 - S0616 E10521 MOV NE 05KT SFC/FL080 S0559 E10521 -\nS0603 E10533 - S0705 E10529 - S0646 E10438 MOV SW 05KT\nFCST VA CLD +6 HR: 27/0750Z SFC/FL020 S0621 E10524 - S0600\nE10458 - S0540 E10512 - S0539 E10538 - S0607 E10548\nSFC/FL080 S0601 E10533 - S0718 E10529 - S0706 E10450 - S0643\nE10423 - S0556 E10524\nFCST VA CLD +12 HR: 27/1350Z SFC/FL080 S0557 E10524 - S0601\nE10534 - S0718 E10529 - S0706 E10450 - S0643 E10423\nFCST VA CLD +18 HR: 27/1950Z SFC/FL080 S0600 E10534 - S0718\nE10529 - S0705 E10450 - S0642 E10423 - S0556 E10523\nRMK: CONTINUOUS VA OBS ON SATELLITE IMAGE. VA TO FL080 MOV\nSSW. VA TO FL020 OBS MOV NE. VA HEIGHT ESTIMATED BASED ON\nSATELLITE AND MODEL GUIDANCE.\nNXT ADVISORY: NO LATER THAN 20261027/0812Z=",
+  "bulletin_text": "FVAU06 ADRM 270800\nVA ADVISORY\nDTG: 20261027/0800Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/259\nINFO SOURCE: HIMAWARI-9\nERUPTION DETAILS: VA TO FL080 MOV S TO SW OBS AT 27/0740Z\nOBS VA DTG: 27/0740Z\nOBS VA CLD: SFC/FL080 S0600 E10541 - S0704 E10536 - S0704\nE10500 - S0627 E10421 - S0548 E10521 MOV SW 05KT\nFCST VA CLD +6 HR: 27/1340Z SFC/FL080 S0601 E10541 - S0708\nE10515 - S0658 E10435 - S0631 E10417 - S0548 E10521\nFCST VA CLD +12 HR: 27/1940Z SFC/FL080 S0600 E10541 - S0708\nE10515 - S0657 E10435 - S0631 E10416 - S0548 E10521\nFCST VA CLD +18 HR: 28/0140Z SFC/FL080 S0601 E10541 - S0708\nE10515 - S0658 E10435 - S0631 E10417 - S0549 E10521\nRMK: CONTINUOUS VA OBS ON SATELLITE IMAGE MOV S TO SW. VA\nHEIGHT AND FCST BASED ON SATELLITE IMAGERY AND MODEL\nGUIDANCE.\nNXT ADVISORY: NO LATER THAN 20261027/1400Z=",
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
@@ -388,63 +328,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-10-27T04:50:00Z",
-    "t_wib": "27 Okt 2026, 11:50 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-10-27T05:00:00Z",
-    "t_wib": "27 Okt 2026, 12:00 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
-    "t_utc": "2026-10-27T05:10:00Z",
-    "t_wib": "27 Okt 2026, 12:10 WIB",
-    "asset": "assets/loop/f02.jpg"
-   },
-   {
     "t_utc": "2026-10-27T05:20:00Z",
     "t_wib": "27 Okt 2026, 12:20 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-10-27T05:30:00Z",
     "t_wib": "27 Okt 2026, 12:30 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-10-27T05:40:00Z",
     "t_wib": "27 Okt 2026, 12:40 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-10-27T05:50:00Z",
     "t_wib": "27 Okt 2026, 12:50 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-10-27T06:00:00Z",
     "t_wib": "27 Okt 2026, 13:00 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-10-27T06:10:00Z",
     "t_wib": "27 Okt 2026, 13:10 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-10-27T06:20:00Z",
     "t_wib": "27 Okt 2026, 13:20 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-10-27T06:30:00Z",
     "t_wib": "27 Okt 2026, 13:30 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-10-27T06:40:00Z",
     "t_wib": "27 Okt 2026, 13:40 WIB",
+    "asset": "assets/loop/f08.jpg"
+   },
+   {
+    "t_utc": "2026-10-27T06:50:00Z",
+    "t_wib": "27 Okt 2026, 13:50 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-10-27T07:00:00Z",
+    "t_wib": "27 Okt 2026, 14:00 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-27T07:10:00Z",
+    "t_wib": "27 Okt 2026, 14:10 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -460,10 +400,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-27 06:40Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-27T06:40:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
+   "noaa_slot": "2026-10-27 07:10Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band3_Red_Visible_1km/default/2026-10-27T07:10:00Z/GoogleMapsCompatible_Level7/7/66/101.png"
   },
-  "built_utc": "2026-10-27T07:46:59Z"
+  "built_utc": "2026-10-27T08:02:01Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

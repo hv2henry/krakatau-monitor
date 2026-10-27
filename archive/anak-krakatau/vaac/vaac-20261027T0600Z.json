@@ -1,0 +1,63 @@
+{
+ "t": "20261027T0600Z",
+ "state": "advisory",
+ "advisory_nr": "2026/258",
+ "dtg_utc": "2026-10-27T02:12Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL020",
+   "base_km": null,
+   "top_km": 0.61,
+   "move_toward": "NE",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.0833,
+     "lon": 105.2833
+    },
+    {
+     "lat": -5.8667,
+     "lon": 105.7
+    },
+    {
+     "lat": -6.1333,
+     "lon": 105.8167
+    },
+    {
+     "lat": -6.2667,
+     "lon": 105.35
+    }
+   ]
+  },
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "SW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -5.9833,
+     "lon": 105.35
+    },
+    {
+     "lat": -6.05,
+     "lon": 105.55
+    },
+    {
+     "lat": -7.0833,
+     "lon": 105.4833
+    },
+    {
+     "lat": -6.7667,
+     "lon": 104.6333
+    }
+   ]
+  }
+ ],
+ "remarks": "CONTINUOUS VA OBS ON SATELLITE IMAGE. VA TO FL080 MOV SSW. VA TO FL020 OBS MOV NE. VA HEIGHT ESTIMATED BASED ON SATELLITE AND MODEL GUIDANCE."
+}

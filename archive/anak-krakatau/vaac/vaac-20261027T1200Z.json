@@ -1,0 +1,40 @@
+{
+ "t": "20261027T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/259",
+ "dtg_utc": "2026-10-27T08:00Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "SW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.0,
+     "lon": 105.6833
+    },
+    {
+     "lat": -7.0667,
+     "lon": 105.6
+    },
+    {
+     "lat": -7.0667,
+     "lon": 105.0
+    },
+    {
+     "lat": -6.45,
+     "lon": 104.35
+    },
+    {
+     "lat": -5.8,
+     "lon": 105.35
+    }
+   ]
+  }
+ ],
+ "remarks": "CONTINUOUS VA OBS ON SATELLITE IMAGE MOV S TO SW. VA HEIGHT AND FCST BASED ON SATELLITE IMAGERY AND MODEL GUIDANCE."
+}

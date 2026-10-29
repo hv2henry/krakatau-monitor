@@ -1,0 +1,36 @@
+{
+ "t": "20261029T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/264",
+ "dtg_utc": "2026-10-29T15:13Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "SW",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.0333,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.5167
+    },
+    {
+     "lat": -6.4667,
+     "lon": 105.2
+    },
+    {
+     "lat": -6.15,
+     "lon": 105.0167
+    }
+   ]
+  }
+ ],
+ "remarks": "ERUPTION REPORTED BY CVGHM. VA NOT IDENTIFIABLE ON SATELLITE DUE TO MET CLOUD. HEIGHT BASED ON RECENT ACTIVITY AND FCST BASED ON MODEL GUIDANCE."
+}

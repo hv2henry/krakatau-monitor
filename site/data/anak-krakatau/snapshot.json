@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-30T22:45:16Z",
- "generated_wib": "31 Okt 2026, 05:45 WIB",
+ "generated_utc": "2026-10-30T23:00:16Z",
+ "generated_wib": "31 Okt 2026, 06:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-30T22:45:21Z",
-  "fetched_wib": "31 Okt 2026, 05:45 WIB",
+  "fetched_utc": "2026-10-30T23:00:23Z",
+  "fetched_wib": "31 Okt 2026, 06:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -35,13 +35,13 @@
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 4.1,
+   "vaac_age_hours": 4.3,
    "newest_vona_utc": "2026-10-28 15:42:00 UTC",
-   "vona_age_hours": 55.1,
-   "newest_eruption_age_hours": 28.1
+   "vona_age_hours": 55.3,
+   "newest_eruption_age_hours": null
   },
   "since_utc": "2026-10-30T18:45Z",
-  "assessed_utc": "2026-10-30T22:45Z"
+  "assessed_utc": "2026-10-30T23:00Z"
  },
  "report": {
   "period": "Jumat - 30 Oktober 2026 00:00-24:00 WIB",
@@ -61,17 +61,9 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "31 Okt 2026, 05:45 WIB"
+  "fetched_wib": "31 Okt 2026, 06:00 WIB"
  },
- "eruptions": [
-  {
-   "time_label_wib": "01:40 WIB",
-   "utc": "2026-10-29T18:40:00Z",
-   "wib": "30 Okt 2026, 01:40 WIB",
-   "text": "Terjadi erupsi G. Anak Krakatau pada hari Jumat, 30 Oktober 2026, pukul 01:40 WIB. Visual letusan tidak teramati. Erupsi ini terekam di seismograf dengan amplitudo maksimum 50 mm dan durasi 19 detik.",
-   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/f872bfc5-d3c7-11f1-a61d-005056b54356/show"
-  }
- ],
+ "eruptions": [],
  "vona": [
   {
    "code": "ORANGE",
@@ -124,7 +116,7 @@
   "advisory_nr": "2026/269",
   "dtg_utc": "2026-10-30T18:40Z",
   "dtg_wib": "31 Okt 2026, 01:40 WIB",
-  "age_hours": 4.1,
+  "age_hours": 4.3,
   "is_current": true,
   "advisory_status": "terminated",
   "terminated": true,
@@ -171,7 +163,7 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 1,
+   "missing_tiles": 0,
    "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-10-30. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
@@ -186,7 +178,7 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 1,
+   "missing_tiles": 0,
    "credit": "NASA GIBS/Earthdata—Terra MODIS Corrected Reflectance (True Color), 2026-10-30. https://worldview.earthdata.nasa.gov",
    "sensor_label": "Terra (MODIS)"
   }
@@ -274,7 +266,7 @@
    "noaa_slot": "2026-10-30 21:40Z",
    "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-30T21:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-30T22:45:54Z"
+  "built_utc": "2026-10-30T23:01:04Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

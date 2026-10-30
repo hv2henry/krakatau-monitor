@@ -1,0 +1,36 @@
+{
+ "t": "20261030T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/268",
+ "dtg_utc": "2026-10-30T12:40Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "NW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.1333,
+     "lon": 105.4333
+    },
+    {
+     "lat": -6.05,
+     "lon": 105.0333
+    },
+    {
+     "lat": -5.8,
+     "lon": 105.2333
+    },
+    {
+     "lat": -6.0833,
+     "lon": 105.4667
+    }
+   ]
+  }
+ ],
+ "remarks": "VA CURRENTLY OBSCURED BY MET CLOUD AND IS EXPECTED TO DISSIPATE WITHIN 6HRS. VA HEIGHT AND MOVEMENT BASED ON HIMAWARI IMAGERY AND MODEL GUIDANCE."
+}

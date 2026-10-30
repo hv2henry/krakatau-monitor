@@ -1,0 +1,36 @@
+{
+ "t": "20261030T0600Z",
+ "state": "advisory",
+ "advisory_nr": "2026/266",
+ "dtg_utc": "2026-10-30T00:41Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.0833,
+     "lon": 105.45
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.2833,
+     "lon": 105.1167
+    },
+    {
+     "lat": -5.9833,
+     "lon": 105.05
+    }
+   ]
+  }
+ ],
+ "remarks": "CONTINUOUS VA EMISSION PARTIALLY IDENTIFIABLE ON SATELLITE DUE AMONGST MET CLOUD. HEIGHT BASED ON RECENT ACTIVITY AND FORECAST BASED ON HIMAWARI IMAGERY AND MODEL GUIDANCE."
+}

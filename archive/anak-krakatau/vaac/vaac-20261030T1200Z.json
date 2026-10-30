@@ -1,0 +1,36 @@
+{
+ "t": "20261030T1200Z",
+ "state": "advisory",
+ "advisory_nr": "2026/267",
+ "dtg_utc": "2026-10-30T06:41Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL080",
+   "base_km": null,
+   "top_km": 2.44,
+   "move_toward": "W",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.0833,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.4667
+    },
+    {
+     "lat": -6.2333,
+     "lon": 105.0667
+    },
+    {
+     "lat": -5.9167,
+     "lon": 105.0667
+    }
+   ]
+  }
+ ],
+ "remarks": "VA EMISSION OBSCURED BY MET CLOUD ON LATEST SATELLITE IMAGERY. HEIGHT BASED ON RECENT ACTIVITY AND FORECAST BASED ON HIMAWARI IMAGERY AND MODEL GUIDANCE."
+}

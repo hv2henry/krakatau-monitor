@@ -1,0 +1,36 @@
+{
+ "t": "20261031T1800Z",
+ "state": "advisory",
+ "advisory_nr": "2026/270",
+ "dtg_utc": "2026-10-31T13:20Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL060",
+   "base_km": null,
+   "top_km": 1.83,
+   "move_toward": "NW",
+   "speed_kt": 5,
+   "speed_ms": 2.6,
+   "polygon": [
+    {
+     "lat": -6.2167,
+     "lon": 105.4833
+    },
+    {
+     "lat": -6.0167,
+     "lon": 105.0833
+    },
+    {
+     "lat": -5.7167,
+     "lon": 105.3833
+    },
+    {
+     "lat": -6.1167,
+     "lon": 105.5833
+    }
+   ]
+  }
+ ],
+ "remarks": "VA OBSCURED BY MET CLOUD. VA AND MOVEMENT HEIGHT BASED ON MODEL GUIDANCE. VA EXPECTED TO DISSIPATE IN 6HRS."
+}

@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-31T13:45:15Z",
- "generated_wib": "31 Okt 2026, 20:45 WIB",
+ "generated_utc": "2026-10-31T14:00:16Z",
+ "generated_wib": "31 Okt 2026, 21:00 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-31T13:45:22Z",
-  "fetched_wib": "31 Okt 2026, 20:45 WIB",
+  "fetched_utc": "2026-10-31T14:00:22Z",
+  "fetched_wib": "31 Okt 2026, 21:00 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -29,19 +29,19 @@
   "state": "active",
   "reason_code": "vaac_current",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 0.4 jam).",
-   "en": "Darwin VAAC advisory still current (age 0.4 h)."
+   "id": "Advisori Darwin VAAC masih berlaku (umur 0.7 jam).",
+   "en": "Darwin VAAC advisory still current (age 0.7 h)."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": null,
-   "vaac_age_hours": 0.4,
+   "vaac_age_hours": 0.7,
    "newest_vona_utc": "2026-10-31 12:15:00 UTC",
-   "vona_age_hours": 1.5,
-   "newest_eruption_age_hours": 0.1
+   "vona_age_hours": 1.8,
+   "newest_eruption_age_hours": 0.2
   },
   "since_utc": "2026-10-31T11:45Z",
-  "assessed_utc": "2026-10-31T13:45Z"
+  "assessed_utc": "2026-10-31T14:00Z"
  },
  "report": {
   "period": "Sabtu - 31 Oktober 2026 12:00-18:00 WIB",
@@ -58,15 +58,29 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "31 Okt 2026, 20:45 WIB"
+  "fetched_wib": "31 Okt 2026, 21:00 WIB"
  },
  "eruptions": [
+  {
+   "time_label_wib": "20:50 WIB",
+   "utc": "2026-10-31T13:50:00Z",
+   "wib": "31 Okt 2026, 20:50 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 20:50 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/dae02611-d531-11f1-a61d-005056b54356/show"
+  },
   {
    "time_label_wib": "20:39 WIB",
    "utc": "2026-10-31T13:39:00Z",
    "wib": "31 Okt 2026, 20:39 WIB",
    "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 20:39 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
    "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/f81b680b-d52f-11f1-a61d-005056b54356/show"
+  },
+  {
+   "time_label_wib": "20:24 WIB",
+   "utc": "2026-10-31T13:24:00Z",
+   "wib": "31 Okt 2026, 20:24 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 20:24 WIB. Visual letusan tidak teramati. Erupsi ini terekam di seismograf dengan amplitudo maksimum 54 mm dan durasi 271 detik.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/c17907f4-d530-11f1-a61d-005056b54356/show"
   },
   {
    "time_label_wib": "20:18 WIB",
@@ -116,20 +130,6 @@
    "wib": "31 Okt 2026, 19:42 WIB",
    "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 19:42 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
    "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/352a41cc-d528-11f1-a61d-005056b54356/show"
-  },
-  {
-   "time_label_wib": "19:38 WIB",
-   "utc": "2026-10-31T12:38:00Z",
-   "wib": "31 Okt 2026, 19:38 WIB",
-   "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 19:38 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
-   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/410ce043-d527-11f1-a61d-005056b54356/show"
-  },
-  {
-   "time_label_wib": "19:32 WIB",
-   "utc": "2026-10-31T12:32:00Z",
-   "wib": "31 Okt 2026, 19:32 WIB",
-   "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 19:32 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
-   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/6aae0b7f-d526-11f1-a61d-005056b54356/show"
   }
  ],
  "vona": [
@@ -184,7 +184,7 @@
   "advisory_nr": "2026/270",
   "dtg_utc": "2026-10-31T13:20Z",
   "dtg_wib": "31 Okt 2026, 20:20 WIB",
-  "age_hours": 0.4,
+  "age_hours": 0.7,
   "is_current": true,
   "advisory_status": "active",
   "terminated": false,
@@ -290,63 +290,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-10-31T10:50:00Z",
-    "t_wib": "31 Okt 2026, 17:50 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-10-31T11:00:00Z",
-    "t_wib": "31 Okt 2026, 18:00 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
     "t_utc": "2026-10-31T11:10:00Z",
     "t_wib": "31 Okt 2026, 18:10 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-10-31T11:20:00Z",
     "t_wib": "31 Okt 2026, 18:20 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-10-31T11:30:00Z",
     "t_wib": "31 Okt 2026, 18:30 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-10-31T11:40:00Z",
     "t_wib": "31 Okt 2026, 18:40 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-10-31T11:50:00Z",
     "t_wib": "31 Okt 2026, 18:50 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-10-31T12:00:00Z",
     "t_wib": "31 Okt 2026, 19:00 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-10-31T12:10:00Z",
     "t_wib": "31 Okt 2026, 19:10 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-10-31T12:20:00Z",
     "t_wib": "31 Okt 2026, 19:20 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-10-31T12:30:00Z",
     "t_wib": "31 Okt 2026, 19:30 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-10-31T12:40:00Z",
     "t_wib": "31 Okt 2026, 19:40 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-10-31T12:50:00Z",
+    "t_wib": "31 Okt 2026, 19:50 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-31T13:00:00Z",
+    "t_wib": "31 Okt 2026, 20:00 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -362,10 +362,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-31 12:40Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-31T12:40:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
+   "noaa_slot": "2026-10-31 13:00Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-31T13:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-31T13:46:03Z"
+  "built_utc": "2026-10-31T14:01:08Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-10-31T12:15:15Z",
- "generated_wib": "31 Okt 2026, 19:15 WIB",
+ "generated_utc": "2026-10-31T12:30:16Z",
+ "generated_wib": "31 Okt 2026, 19:30 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-10-31T12:15:21Z",
-  "fetched_wib": "31 Okt 2026, 19:15 WIB",
+  "fetched_utc": "2026-10-31T12:30:23Z",
+  "fetched_wib": "31 Okt 2026, 19:30 WIB",
   "indonesia_counts": {
    "Normal": 42,
    "Waspada": 24,
@@ -27,21 +27,21 @@
  "activity": {
   "version": "activity/1.0",
   "state": "active",
-  "reason_code": "fresh_eruption",
+  "reason_code": "fresh_vona",
   "reason": {
-   "id": "Erupsi tercatat MAGMA dalam 0.8 jam terakhir.",
-   "en": "MAGMA recorded an eruption within the last 0.8 h."
+   "id": "VONA MAGMA terbaru terbit 0.3 jam lalu.",
+   "en": "Latest MAGMA VONA was issued 0.3 h ago."
   },
   "evidence": {
    "vaac_state": "advisory",
    "vaac_terminated": true,
-   "vaac_age_hours": 17.6,
-   "newest_vona_utc": "2026-10-28 15:42:00 UTC",
-   "vona_age_hours": 68.6,
-   "newest_eruption_age_hours": 0.8
+   "vaac_age_hours": 17.8,
+   "newest_vona_utc": "2026-10-31 12:15:00 UTC",
+   "vona_age_hours": 0.3,
+   "newest_eruption_age_hours": 0.3
   },
   "since_utc": "2026-10-31T11:45Z",
-  "assessed_utc": "2026-10-31T12:15Z"
+  "assessed_utc": "2026-10-31T12:30Z"
  },
  "report": {
   "period": "Sabtu - 31 Oktober 2026 12:00-18:00 WIB",
@@ -58,9 +58,16 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "31 Okt 2026, 19:15 WIB"
+  "fetched_wib": "31 Okt 2026, 19:30 WIB"
  },
  "eruptions": [
+  {
+   "time_label_wib": "19:15 WIB",
+   "utc": "2026-10-31T12:15:00Z",
+   "wib": "31 Okt 2026, 19:15 WIB",
+   "text": "Terjadi erupsi G. Anak Krakatau pada hari Sabtu, 31 Oktober 2026, pukul 19:15 WIB. Visual letusan tidak teramati. Saat laporan ini dibuat, erupsi masih berlangsung.",
+   "url": "https://magma.esdm.go.id/v1/gunung-api/informasi-letusan/16652c5f-d524-11f1-a61d-005056b54356/show"
+  },
   {
    "time_label_wib": "18:30 WIB",
    "utc": "2026-10-31T11:30:00Z",
@@ -70,6 +77,15 @@
   }
  ],
  "vona": [
+  {
+   "code": "ORANGE",
+   "issued_utc": "2026-10-31 12:15:00 UTC",
+   "wib": "31 Okt 2026, 19:15 WIB",
+   "text": "Eruption at 1215 UTC (1915 local). Ash-cloud is not observed. Ash-cloud is not observed..",
+   "url": "https://magma.esdm.go.id/v1/vona/23058?signature=6072b53a2ca1d5d47eea8da3d952f52911557b9b3feae5fc889db49593386f5c",
+   "ash_top_m": null,
+   "ash_top_ft": null
+  },
   {
    "code": "ORANGE",
    "issued_utc": "2026-10-28 15:42:00 UTC",
@@ -105,15 +121,6 @@
    "url": "https://magma.esdm.go.id/v1/vona/22986?signature=2efcc550d06c1901fbb230a5a2c2cf6a5d8172df4bf457171aa2c4dd6258889e",
    "ash_top_m": null,
    "ash_top_ft": null
-  },
-  {
-   "code": "ORANGE",
-   "issued_utc": "2026-10-18 05:03:00 UTC",
-   "wib": "18 Okt 2026, 12:03 WIB",
-   "text": "Eruption with volcanic ash cloud at 0503 UTC (1203 local). Best estimate of ash-cloud top is around 2102 FT (657 M) above sea level or 1600 FT (500 M) above summit. May be higher than what can be observed clearly. Source of height data: ground observer. Ash cloud moving to north. Volcanic ash is observed to be dark. The intensity of volcanic ash is observed to be thick..",
-   "url": "https://magma.esdm.go.id/v1/vona/22974?signature=cf074b0dd31960904c04fa208afeb566b1c250087d267bbf3f7922aaa7bc868f",
-   "ash_top_m": 657,
-   "ash_top_ft": 2102
   }
  ],
  "vaac": {
@@ -121,7 +128,7 @@
   "advisory_nr": "2026/269",
   "dtg_utc": "2026-10-30T18:40Z",
   "dtg_wib": "31 Okt 2026, 01:40 WIB",
-  "age_hours": 17.6,
+  "age_hours": 17.8,
   "is_current": false,
   "advisory_status": "terminated",
   "terminated": true,
@@ -153,7 +160,7 @@
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
-  "warning": "This advisory is 17.6 h old. Darwin VAAC promised the next by None. Treat the ash picture as OUT OF DATE and re-check."
+  "warning": "This advisory is 17.8 h old. Darwin VAAC promised the next by None. Treat the ash picture as OUT OF DATE and re-check."
  },
  "satellite": {
   "snpp": {
@@ -196,63 +203,63 @@
   "interval_min": 10,
   "frames": [
    {
-    "t_utc": "2026-10-31T09:20:00Z",
-    "t_wib": "31 Okt 2026, 16:20 WIB",
-    "asset": "assets/loop/f00.jpg"
-   },
-   {
-    "t_utc": "2026-10-31T09:30:00Z",
-    "t_wib": "31 Okt 2026, 16:30 WIB",
-    "asset": "assets/loop/f01.jpg"
-   },
-   {
     "t_utc": "2026-10-31T09:40:00Z",
     "t_wib": "31 Okt 2026, 16:40 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f00.jpg"
    },
    {
     "t_utc": "2026-10-31T09:50:00Z",
     "t_wib": "31 Okt 2026, 16:50 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f01.jpg"
    },
    {
     "t_utc": "2026-10-31T10:00:00Z",
     "t_wib": "31 Okt 2026, 17:00 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f02.jpg"
    },
    {
     "t_utc": "2026-10-31T10:10:00Z",
     "t_wib": "31 Okt 2026, 17:10 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-10-31T10:20:00Z",
     "t_wib": "31 Okt 2026, 17:20 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-10-31T10:30:00Z",
     "t_wib": "31 Okt 2026, 17:30 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-10-31T10:40:00Z",
     "t_wib": "31 Okt 2026, 17:40 WIB",
-    "asset": "assets/loop/f08.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-10-31T10:50:00Z",
     "t_wib": "31 Okt 2026, 17:50 WIB",
-    "asset": "assets/loop/f09.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-10-31T11:00:00Z",
     "t_wib": "31 Okt 2026, 18:00 WIB",
-    "asset": "assets/loop/f10.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-10-31T11:10:00Z",
     "t_wib": "31 Okt 2026, 18:10 WIB",
+    "asset": "assets/loop/f09.jpg"
+   },
+   {
+    "t_utc": "2026-10-31T11:20:00Z",
+    "t_wib": "31 Okt 2026, 18:20 WIB",
+    "asset": "assets/loop/f10.jpg"
+   },
+   {
+    "t_utc": "2026-10-31T11:30:00Z",
+    "t_wib": "31 Okt 2026, 18:30 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -268,10 +275,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-10-31 11:10Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-31T11:10:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
+   "noaa_slot": "2026-10-31 11:30Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-10-31T11:30:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-10-31T12:16:00Z"
+  "built_utc": "2026-10-31T12:31:03Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

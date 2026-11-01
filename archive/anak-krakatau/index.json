@@ -1,7 +1,6 @@
 {
- "updated": "20261101T0600Z",
+ "updated": "20261101T1200Z",
  "models": [
-  "models/model-20260911T0252Z.json",
   "models/model-20260911T1033Z.json",
   "models/model-20260911T1549Z.json",
   "models/model-20260911T2024Z.json",
@@ -60,10 +59,10 @@
   "models/model-20261031T1200Z.json",
   "models/model-20261031T1800Z.json",
   "models/model-20261101T0000Z.json",
-  "models/model-20261101T0600Z.json"
+  "models/model-20261101T0600Z.json",
+  "models/model-20261101T1200Z.json"
  ],
  "vaac_states": [
-  "vaac/vaac-20261017T1800Z.json",
   "vaac/vaac-20261018T1200Z.json",
   "vaac/vaac-20261018T1800Z.json",
   "vaac/vaac-20261019T0600Z.json",
@@ -102,7 +101,8 @@
   "vaac/vaac-20261031T1200Z.json",
   "vaac/vaac-20261031T1800Z.json",
   "vaac/vaac-20261101T0000Z.json",
-  "vaac/vaac-20261101T0600Z.json"
+  "vaac/vaac-20261101T0600Z.json",
+  "vaac/vaac-20261101T1200Z.json"
  ],
  "vaac_graphics": [
   "vaac/graphic-2026-237.png",

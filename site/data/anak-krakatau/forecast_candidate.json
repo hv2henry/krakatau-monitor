@@ -11,7 +11,7 @@
    "magma_vona",
    "darwin_vaac"
   ],
-  "content_hash": "807c7879641c3c80"
+  "content_hash": "1f8e37732a0a3c23"
  },
  "layers": [
   {
@@ -2708,7 +2708,7 @@
    "nearest_vector_km": 117.3,
    "confidence": "high",
    "uncertainty_deg": 7.1,
-   "ensemble_spread_deg": 0.5,
+   "ensemble_spread_deg": 0.8,
    "n_eff": 27.9,
    "blended_toward_deg": 266.5648812171136,
    "blended_u_ms": -10.18,

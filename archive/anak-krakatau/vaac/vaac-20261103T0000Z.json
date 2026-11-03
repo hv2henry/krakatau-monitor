@@ -1,0 +1,44 @@
+{
+ "t": "20261103T0000Z",
+ "state": "advisory",
+ "advisory_nr": "2026/272",
+ "dtg_utc": "2026-11-02T19:20Z",
+ "observed_layers": [
+  {
+   "base": "SFC",
+   "top": "FL060",
+   "base_km": null,
+   "top_km": 1.83,
+   "move_toward": "W",
+   "speed_kt": 10,
+   "speed_ms": 5.1,
+   "polygon": [
+    {
+     "lat": -6.05,
+     "lon": 105.6667
+    },
+    {
+     "lat": -6.35,
+     "lon": 105.5
+    },
+    {
+     "lat": -6.7833,
+     "lon": 104.5667
+    },
+    {
+     "lat": -6.2833,
+     "lon": 104.3333
+    },
+    {
+     "lat": -5.85,
+     "lon": 104.5167
+    },
+    {
+     "lat": -5.8167,
+     "lon": 105.4667
+    }
+   ]
+  }
+ ],
+ "remarks": "VONA RECEIVED INDICATING ERUPTION TO UNKNOWN HEIGHT. VA UNIDENTIFIABLE DUE TO MET CLOUD. VA HEIGHT AND FCST BASED ON HIMAWARI-9 SAT IMG AND RECENT ERUPTIVE BEHAVIOUR. VA EXP TO DISSIPATE WITHIN 6 HOURS."
+}

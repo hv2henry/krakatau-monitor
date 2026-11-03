@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-11-03T01:15:18Z",
- "generated_wib": "03 Nov 2026, 08:15 WIB",
+ "generated_utc": "2026-11-03T01:30:19Z",
+ "generated_wib": "03 Nov 2026, 08:30 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-11-03T01:15:27Z",
-  "fetched_wib": "03 Nov 2026, 08:15 WIB",
+  "fetched_utc": "2026-11-03T01:30:28Z",
+  "fetched_wib": "03 Nov 2026, 08:30 WIB",
   "indonesia_counts": {
    "Normal": 43,
    "Waspada": 23,
@@ -27,21 +27,21 @@
  "activity": {
   "version": "activity/1.0",
   "state": "active",
-  "reason_code": "vaac_current",
+  "reason_code": "fresh_vona",
   "reason": {
-   "id": "Advisori Darwin VAAC masih berlaku (umur 5.9 jam).",
-   "en": "Darwin VAAC advisory still current (age 5.9 h)."
+   "id": "VONA MAGMA terbaru terbit 8.5 jam lalu.",
+   "en": "Latest MAGMA VONA was issued 8.5 h ago."
   },
   "evidence": {
    "vaac_state": "advisory",
-   "vaac_terminated": null,
-   "vaac_age_hours": 5.9,
+   "vaac_terminated": true,
+   "vaac_age_hours": 0.2,
    "newest_vona_utc": "2026-11-02 17:00:00 UTC",
-   "vona_age_hours": 8.3,
+   "vona_age_hours": 8.5,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-11-02T18:30Z",
-  "assessed_utc": "2026-11-03T01:15Z"
+  "assessed_utc": "2026-11-03T01:30Z"
  },
  "report": {
   "period": "Selasa - 03 November 2026 00:00-06:00 WIB",
@@ -55,7 +55,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "03 Nov 2026, 08:15 WIB"
+  "fetched_wib": "03 Nov 2026, 08:30 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -107,81 +107,42 @@
  ],
  "vaac": {
   "state": "advisory",
-  "advisory_nr": "2026/272",
-  "dtg_utc": "2026-11-02T19:20Z",
-  "dtg_wib": "03 Nov 2026, 02:20 WIB",
-  "age_hours": 5.9,
+  "advisory_nr": "2026/273",
+  "dtg_utc": "2026-11-03T01:20Z",
+  "dtg_wib": "03 Nov 2026, 08:20 WIB",
+  "age_hours": 0.2,
   "is_current": true,
-  "advisory_status": "active",
-  "terminated": false,
-  "eruption_details": "VA TO FL060 REP AT 02/1700Z",
+  "advisory_status": "terminated",
+  "terminated": true,
+  "eruption_details": "VA TO FL060 REPORTED AT 02/1700Z",
   "info_source": "CVGHM, HIMAWARI-9",
-  "observed_layers": [
-   {
-    "base": "SFC",
-    "top": "FL060",
-    "top_km": 1.83,
-    "top_human_id": "FL060 = 6.000 ft ≈ 1.8 km dpl",
-    "top_human_en": "FL060 = 6,000 ft ≈ 1.8 km asl",
-    "base_human_id": "permukaan tanah (SFC)",
-    "base_human_en": "ground level (SFC)",
-    "move_toward": "W",
-    "speed_kt": 10,
-    "speed_ms": 5.1,
-    "polygon": [
-     [
-      105.6667,
-      -6.05
-     ],
-     [
-      105.5,
-      -6.35
-     ],
-     [
-      104.5667,
-      -6.7833
-     ],
-     [
-      104.3333,
-      -6.2833
-     ],
-     [
-      104.5167,
-      -5.85
-     ],
-     [
-      105.4667,
-      -5.8167
-     ]
-    ]
-   }
-  ],
+  "observed_layers": [],
   "forecasts": {
    "+6h": {
-    "valid_utc": "2026-11-03T01:00Z",
-    "valid_wib": "03 Nov 2026, 08:00 WIB",
-    "layers": []
-   },
-   "+12h": {
     "valid_utc": "2026-11-03T07:00Z",
     "valid_wib": "03 Nov 2026, 14:00 WIB",
     "layers": []
    },
-   "+18h": {
+   "+12h": {
     "valid_utc": "2026-11-03T13:00Z",
     "valid_wib": "03 Nov 2026, 20:00 WIB",
     "layers": []
+   },
+   "+18h": {
+    "valid_utc": "2026-11-03T19:00Z",
+    "valid_wib": "04 Nov 2026, 02:00 WIB",
+    "layers": []
    }
   },
-  "remarks": "VONA RECEIVED INDICATING ERUPTION TO UNKNOWN HEIGHT. VA UNIDENTIFIABLE DUE TO MET CLOUD. VA HEIGHT AND FCST BASED ON HIMAWARI-9 SAT IMG AND RECENT ERUPTIVE BEHAVIOUR. VA EXP TO DISSIPATE WITHIN 6 HOURS.",
-  "next_advisory_by_utc": "2026-11-03T01:20Z",
-  "next_advisory_by_wib": "03 Nov 2026, 08:20 WIB",
+  "remarks": "VA FROM PREVIOUS ERUPTION ASSUMED TO HAVE DISSIPATED. NO EVIDENCE OF NEW OR ONGOING ERUPTION. ADVISORY TERMINATED.",
+  "next_advisory_by_utc": null,
+  "next_advisory_by_wib": null,
   "graphic_asset": "assets/vaac_graphic.png",
-  "bulletin_text": "FVAU01 ADRM 021920\nVA ADVISORY\nDTG: 20261102/1920Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/272\nINFO SOURCE: CVGHM, HIMAWARI-9\nERUPTION DETAILS: VA TO FL060 REP AT 02/1700Z\nEST VA DTG: 02/1900Z\nEST VA CLD: SFC/FL060 S0603 E10540 - S0621 E10530 - S0647\nE10434 - S0617 E10420 - S0551 E10431 - S0549 E10528 MOV W\n10KT\nFCST VA CLD +6 HR: 03/0100Z NO VA EXP\nFCST VA CLD +12 HR: 03/0700Z NO VA EXP\nFCST VA CLD +18 HR: 03/1300Z NO VA EXP\nRMK: VONA RECEIVED INDICATING ERUPTION TO UNKNOWN HEIGHT. VA\nUNIDENTIFIABLE DUE TO MET CLOUD. VA HEIGHT AND FCST BASED ON\nHIMAWARI-9 SAT IMG AND RECENT ERUPTIVE BEHAVIOUR. VA EXP TO\nDISSIPATE WITHIN 6 HOURS.\nNXT ADVISORY: NO LATER THAN 20261103/0120Z=",
+  "bulletin_text": "FVAU01 ADRM 030120\nVA ADVISORY\nDTG: 20261103/0120Z\nVAAC: DARWIN\nVOLCANO: KRAKATAU 262000\nPSN: S0606 E10525\nAREA: INDONESIA\nSOURCE ELEV: 155M AMSL\nADVISORY NR: 2026/273\nINFO SOURCE: CVGHM, HIMAWARI-9\nERUPTION DETAILS: VA TO FL060 REPORTED AT 02/1700Z\nEST VA DTG: 03/0100Z\nEST VA CLD: VA NOT IDENTIFIABLE FM SATELLITE DATA WIND\nSFC/FL060 090/15KT\nFCST VA CLD +6 HR: 03/0700Z NO VA EXP\nFCST VA CLD +12 HR: 03/1300Z NO VA EXP\nFCST VA CLD +18 HR: 03/1900Z NO VA EXP\nRMK: VA FROM PREVIOUS ERUPTION ASSUMED TO HAVE DISSIPATED.\nNO EVIDENCE OF NEW OR ONGOING ERUPTION. ADVISORY TERMINATED.\nNXT ADVISORY: NO FURTHER ADVISORIES=",
   "source_url": "https://www.bom.gov.au/aviation/volcanic-ash/darwin-va-advisory.shtml",
   "data_url": "https://www.bom.gov.au/aviation/php/process.php",
   "via": "POST https://www.bom.gov.au/aviation/php/process.php",
-  "warning": null
+  "warning": "This bulletin TERMINATES the episode (VAAC wording: terminated). Treat the ash picture as closed unless a new advisory or VONA appears."
  },
  "satellite": {
   "snpp": {
@@ -225,63 +186,63 @@
   "interval_min": 10,
   "frames": [
    {
+    "t_utc": "2026-11-02T22:10:00Z",
+    "t_wib": "03 Nov 2026, 05:10 WIB",
+    "asset": "assets/loop/f00.jpg"
+   },
+   {
+    "t_utc": "2026-11-02T22:20:00Z",
+    "t_wib": "03 Nov 2026, 05:20 WIB",
+    "asset": "assets/loop/f01.jpg"
+   },
+   {
+    "t_utc": "2026-11-02T22:30:00Z",
+    "t_wib": "03 Nov 2026, 05:30 WIB",
+    "asset": "assets/loop/f02.jpg"
+   },
+   {
     "t_utc": "2026-11-02T22:40:00Z",
     "t_wib": "03 Nov 2026, 05:40 WIB",
-    "asset": "assets/loop/f00.jpg"
+    "asset": "assets/loop/f03.jpg"
    },
    {
     "t_utc": "2026-11-02T22:50:00Z",
     "t_wib": "03 Nov 2026, 05:50 WIB",
-    "asset": "assets/loop/f01.jpg"
+    "asset": "assets/loop/f04.jpg"
    },
    {
     "t_utc": "2026-11-02T23:00:00Z",
     "t_wib": "03 Nov 2026, 06:00 WIB",
-    "asset": "assets/loop/f02.jpg"
+    "asset": "assets/loop/f05.jpg"
    },
    {
     "t_utc": "2026-11-02T23:10:00Z",
     "t_wib": "03 Nov 2026, 06:10 WIB",
-    "asset": "assets/loop/f03.jpg"
+    "asset": "assets/loop/f06.jpg"
    },
    {
     "t_utc": "2026-11-02T23:20:00Z",
     "t_wib": "03 Nov 2026, 06:20 WIB",
-    "asset": "assets/loop/f04.jpg"
+    "asset": "assets/loop/f07.jpg"
    },
    {
     "t_utc": "2026-11-02T23:30:00Z",
     "t_wib": "03 Nov 2026, 06:30 WIB",
-    "asset": "assets/loop/f05.jpg"
+    "asset": "assets/loop/f08.jpg"
    },
    {
     "t_utc": "2026-11-02T23:40:00Z",
     "t_wib": "03 Nov 2026, 06:40 WIB",
-    "asset": "assets/loop/f06.jpg"
+    "asset": "assets/loop/f09.jpg"
    },
    {
     "t_utc": "2026-11-02T23:50:00Z",
     "t_wib": "03 Nov 2026, 06:50 WIB",
-    "asset": "assets/loop/f07.jpg"
+    "asset": "assets/loop/f10.jpg"
    },
    {
     "t_utc": "2026-11-03T00:00:00Z",
     "t_wib": "03 Nov 2026, 07:00 WIB",
-    "asset": "assets/loop/f08.jpg"
-   },
-   {
-    "t_utc": "2026-11-03T00:10:00Z",
-    "t_wib": "03 Nov 2026, 07:10 WIB",
-    "asset": "assets/loop/f09.jpg"
-   },
-   {
-    "t_utc": "2026-11-03T00:20:00Z",
-    "t_wib": "03 Nov 2026, 07:20 WIB",
-    "asset": "assets/loop/f10.jpg"
-   },
-   {
-    "t_utc": "2026-11-03T00:30:00Z",
-    "t_wib": "03 Nov 2026, 07:30 WIB",
     "asset": "assets/loop/f11.jpg"
    }
   ],
@@ -297,10 +258,10 @@
   "verified": {
    "ten_minute_grid": true,
    "noaa_s3_slot_exists": true,
-   "noaa_slot": "2026-11-03 00:30Z",
-   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-11-03T00:30:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
+   "noaa_slot": "2026-11-03 00:00Z",
+   "verify_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Himawari_AHI_Band13_Clean_Infrared/default/2026-11-03T00:00:00Z/GoogleMapsCompatible_Level6/6/33/50.png"
   },
-  "built_utc": "2026-11-03T01:16:18Z"
+  "built_utc": "2026-11-03T01:31:07Z"
  },
  "official_links": {
   "magma": "https://magma.esdm.go.id",

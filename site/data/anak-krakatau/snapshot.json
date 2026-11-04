@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-11-04T10:30:15Z",
- "generated_wib": "04 Nov 2026, 17:30 WIB",
+ "generated_utc": "2026-11-04T11:15:19Z",
+ "generated_wib": "04 Nov 2026, 18:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-11-04T10:30:23Z",
-  "fetched_wib": "04 Nov 2026, 17:30 WIB",
+  "fetched_utc": "2026-11-04T11:15:26Z",
+  "fetched_wib": "04 Nov 2026, 18:15 WIB",
   "indonesia_counts": {
    "Normal": 43,
    "Waspada": 23,
@@ -37,25 +37,26 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-11-02 17:00:00 UTC",
-   "vona_age_hours": 41.5,
+   "vona_age_hours": 42.3,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-11-03T17:00Z",
-  "assessed_utc": "2026-11-04T10:30Z"
+  "assessed_utc": "2026-11-04T11:15Z"
  },
  "report": {
-  "period": "Rabu - 04 November 2026 06:00-12:00 WIB",
+  "period": "Rabu - 04 November 2026 12:00-18:00 WIB",
   "author": "Muhammad Dika Nurzaman",
-  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Teramati asap kawah utama berwarna putih dengan intensitas tipis, sedang hingga tebal tinggi sekitar 50-300 meter dari puncak. Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut.",
-  "climate": "Cuaca cerah hingga berawan, angin lemah hingga sedang ke arah utara dan barat laut. Suhu udara sekitar 25.2-31.7°C. Kelembaban 70-87%.",
+  "visual": "Gunung api terlihat jelas hingga tertutup Kabut 0-III. Teramati asap kawah utama berwarna putih dengan intensitas tipis, sedang hingga tebal tinggi sekitar 50-150 meter dari puncak. Cuaca cerah, angin lemah ke arah utara dan barat laut.",
+  "climate": "Cuaca cerah, angin lemah ke arah utara dan barat laut. Suhu udara sekitar 28.4-31.7°C. Kelembaban 70-78%.",
   "seismic_counts": {
+   "Hembusan": 2,
    "Tremor Menerus": 1
   },
   "recommendation": "1. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan/pendaki tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 5 km dari pusat erupsi Anak Krakatau. 2. Masyarakat di sekitar Gunungapi Anak Krakatau dan pengunjung/wisatawan tidak diperbolehkan memasuki dan melakukan kegiatan di dalam wilayah radius 1 km dari pulau baru di sektor barat laut dan tenggara Gunungapi Anak Krakatau. 3. Meningkatkan kewaspadaan terhadap ancaman bahaya lontaran batu pijar, hujan abu lebat, aliran lava, dan potensi erupsi sekunder yang ditimbulkan oleh kontak panas lava, baik dengan air laut maupun air hujan dalam radius 5 km dari pusat erupsi Anak Krakatau. 4. Masyarakat di wilayah pantai Provinsi Banten dan Lampung harap tenang dan jangan mempercayai isu-isu tentang erupsi Gunungapi Anak Krakatau yang akan menyebabkan tsunami, serta dapat melakukan kegiatan seperti biasa dengan senantiasa mengikuti arahan BPBD setempat. 5. Untuk mengetahui informasi dapat menghubungi Pusat Vulkanologi dan Mitigasi Bencana Geologi, Badan Geologi (022) 7272606 di Bandung (Provinsi Jawa Barat) atau Pos Pengamatan Gunungapi Krakatau (0254) 651449 atau 085846324506 di Pasauran (Provinsi Banten).",
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "04 Nov 2026, 17:30 WIB"
+  "fetched_wib": "04 Nov 2026, 18:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -141,7 +142,7 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 2,
+   "missing_tiles": 7,
    "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-11-02. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
@@ -156,7 +157,7 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 2,
+   "missing_tiles": 5,
    "credit": "NASA GIBS/Earthdata—Aqua MODIS Corrected Reflectance (True Color), 2026-11-01. https://worldview.earthdata.nasa.gov",
    "sensor_label": "Aqua (MODIS)",
    "sensor_note": "No clean pass on 2026-11-02; showing 2026-11-01."

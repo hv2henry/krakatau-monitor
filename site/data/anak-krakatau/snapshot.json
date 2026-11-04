@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-11-04T09:00:20Z",
- "generated_wib": "04 Nov 2026, 16:00 WIB",
+ "generated_utc": "2026-11-04T09:15:16Z",
+ "generated_wib": "04 Nov 2026, 16:15 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-11-04T09:00:27Z",
-  "fetched_wib": "04 Nov 2026, 16:00 WIB",
+  "fetched_utc": "2026-11-04T09:15:24Z",
+  "fetched_wib": "04 Nov 2026, 16:15 WIB",
   "indonesia_counts": {
    "Normal": 43,
    "Waspada": 23,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-11-02 17:00:00 UTC",
-   "vona_age_hours": 40.0,
+   "vona_age_hours": 40.3,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-11-03T17:00Z",
-  "assessed_utc": "2026-11-04T09:00Z"
+  "assessed_utc": "2026-11-04T09:15Z"
  },
  "report": {
   "period": "Rabu - 04 November 2026 06:00-12:00 WIB",
@@ -55,7 +55,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "04 Nov 2026, 16:00 WIB"
+  "fetched_wib": "04 Nov 2026, 16:15 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -141,7 +141,7 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 0,
+   "missing_tiles": 3,
    "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-11-02. https://worldview.earthdata.nasa.gov"
   },
   "modis": {

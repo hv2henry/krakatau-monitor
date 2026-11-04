@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
  "source_errors": {},
- "generated_utc": "2026-11-04T02:30:20Z",
- "generated_wib": "04 Nov 2026, 09:30 WIB",
+ "generated_utc": "2026-11-04T02:45:16Z",
+ "generated_wib": "04 Nov 2026, 09:45 WIB",
  "volcano": {
   "name": "Anak Krakatau",
   "code": "KRA",
@@ -15,8 +15,8 @@
   "level_name": "Level III (Siaga)",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/tingkat-aktivitas",
-  "fetched_utc": "2026-11-04T02:30:27Z",
-  "fetched_wib": "04 Nov 2026, 09:30 WIB",
+  "fetched_utc": "2026-11-04T02:45:22Z",
+  "fetched_wib": "04 Nov 2026, 09:45 WIB",
   "indonesia_counts": {
    "Normal": 43,
    "Waspada": 23,
@@ -37,11 +37,11 @@
    "vaac_terminated": null,
    "vaac_age_hours": null,
    "newest_vona_utc": "2026-11-02 17:00:00 UTC",
-   "vona_age_hours": 33.5,
+   "vona_age_hours": 33.8,
    "newest_eruption_age_hours": null
   },
   "since_utc": "2026-11-03T17:00Z",
-  "assessed_utc": "2026-11-04T02:30Z"
+  "assessed_utc": "2026-11-04T02:45Z"
  },
  "report": {
   "period": "Rabu - 04 November 2026 00:00-06:00 WIB",
@@ -56,7 +56,7 @@
   "seismogram_asset": "assets/seismogram.png",
   "source": "MAGMA Indonesia/PVMBG",
   "source_url": "https://magma.esdm.go.id/v1/gunung-api/laporan",
-  "fetched_wib": "04 Nov 2026, 09:30 WIB"
+  "fetched_wib": "04 Nov 2026, 09:45 WIB"
  },
  "eruptions": [],
  "vona": [
@@ -142,13 +142,13 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 2,
+   "missing_tiles": 3,
    "credit": "NASA GIBS/Earthdata—Suomi NPP VIIRS Corrected Reflectance (True Color), 2026-11-02. https://worldview.earthdata.nasa.gov"
   },
   "modis": {
    "sensor": "aqua",
    "gibs_layer": "MODIS_Aqua_CorrectedReflectance_TrueColor",
-   "date": "2026-11-02",
+   "date": "2026-11-01",
    "asset": "assets/sat_modis.jpg",
    "bbox": [
     103.6,
@@ -157,10 +157,10 @@
     -4.8
    ],
    "zoom": 9,
-   "missing_tiles": 1,
-   "credit": "NASA GIBS/Earthdata—Aqua MODIS Corrected Reflectance (True Color), 2026-11-02. https://worldview.earthdata.nasa.gov",
+   "missing_tiles": 4,
+   "credit": "NASA GIBS/Earthdata—Aqua MODIS Corrected Reflectance (True Color), 2026-11-01. https://worldview.earthdata.nasa.gov",
    "sensor_label": "Aqua (MODIS)",
-   "sensor_note": "Orbit gap visible (aqua, 2026-11-02); cleanest available pass shown"
+   "sensor_note": "No clean pass on 2026-11-02; showing 2026-11-01."
   }
  },
  "loop": null,
